@@ -56,8 +56,10 @@ public class Destination implements Serializable {
 
     /**
      * 是否为著名地标
+     * 0：是
+     * 1：否
      */
-    private Boolean majorDestination;
+    private Integer majorDestination;
 
     /**
      * 地址
@@ -76,13 +78,17 @@ public class Destination implements Serializable {
 
     /**
      * 是否适合60岁以上老人
+     * 0：是
+     * 1：否
      */
-    private Boolean forOldPeople;
+    private Integer forOldPeople;
 
     /**
      * 是否适合4岁以下小孩
+     * 0：是
+     * 1：否
      */
-    private Boolean forChildren;
+    private Integer forChildren;
 
     /**
      * 开业时间

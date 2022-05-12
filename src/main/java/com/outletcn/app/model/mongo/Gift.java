@@ -32,7 +32,7 @@ public class Gift implements Serializable {
      * 礼品类别
      * 0:实物/1:消费优惠卷
      */
-    private Boolean giftType;
+    private Integer giftType;
 
     /**
      * 礼品有效期
