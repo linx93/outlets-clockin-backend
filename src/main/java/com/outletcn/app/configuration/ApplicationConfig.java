@@ -1,6 +1,7 @@
 package com.outletcn.app.configuration;
 
 import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
@@ -84,5 +85,14 @@ public class ApplicationConfig implements WebMvcConfigurer {
         return interceptor;
     }
 
+    /**
+     * 生成Sequence 雪花算法
+     *
+     * @return
+     */
+    @Bean
+    public Sequence sequence() {
+        return new Sequence();
+    }
 
 }
