@@ -111,16 +111,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>HuaweiCloudSDK</id>
-            <url>https://mirrors.huaweicloud.com/repository/maven/huaweicloudsdk/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
     </repositories>
     <build>
         <plugins>
