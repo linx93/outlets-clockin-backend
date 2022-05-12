@@ -21,8 +21,9 @@ class OutletsClockinBackendApplicationTests {
 
 
         System.out.println(sequence.nextId());
-
-        mongoTemplate.save(new Destination());
+        Destination destination = new Destination();
+        destination.setId(sequence.nextId());
+        mongoTemplate.save(destination);
     }
 
 }
