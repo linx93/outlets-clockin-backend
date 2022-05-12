@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "用户表")
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/v1/api/user")
 public class UserController {
 
 }

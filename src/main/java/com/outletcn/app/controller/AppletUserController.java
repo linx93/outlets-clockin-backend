@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "人员小程序表")
 @RestController
-@RequestMapping("/applet-user")
+@RequestMapping("/v1/api/applet-user")
 public class AppletUserController {
 
 }

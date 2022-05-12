@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "运营人员表")
 @RestController
-@RequestMapping("/operator")
+@RequestMapping("/v1/api/operator")
 public class OperatorController {
 
 }

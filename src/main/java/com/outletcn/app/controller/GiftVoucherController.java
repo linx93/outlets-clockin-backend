@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "礼品券表")
 @RestController
-@RequestMapping("/gift-voucher")
+@RequestMapping("/v1/api/gift-voucher")
 public class GiftVoucherController {
 
 }

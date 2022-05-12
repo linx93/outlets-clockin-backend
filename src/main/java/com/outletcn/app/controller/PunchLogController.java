@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "打卡日志")
 @RestController
-@RequestMapping("/punch-log")
+@RequestMapping("/v1/api/punch-log")
 public class PunchLogController {
 
 }
