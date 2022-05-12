@@ -3,6 +3,8 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 /**
  * 线路
  *
@@ -26,7 +28,7 @@ public class Line {
     /**
      * 线路所含元素
      */
-    private String lineElements;
+    private List<Attribute> lineElements;
 
     /**
      * 推荐理由
@@ -62,5 +64,11 @@ public class Line {
      * 更新时间
      */
     private Long updateTime;
+
+    @Data
+    class Attribute {
+        private String type;
+        private Long id;
+    }
 
 }
