@@ -20,11 +20,6 @@ public class DestinationAttribute implements Serializable {
     private Long id;
 
     /**
-     * ID of the destination attribute.
-     */
-    private String destinationAttributeId;
-
-    /**
      * 目的地属性
      */
     private String destinationAttribute;
