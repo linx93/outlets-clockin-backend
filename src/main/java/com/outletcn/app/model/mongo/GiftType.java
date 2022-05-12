@@ -1,23 +1,21 @@
 package com.outletcn.app.model.mongo;
 
-import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 /**
- * 线路类型
- *
  * @author felix
  */
-@Data
-@Document(collection = "line_type")
-public class LineType {
-
+public class GiftType {
     private Long id;
 
     /**
-     * 线路类型
+     * 礼品类别
      */
-    private Long type;
+    private Integer category;
+
+    /**
+     * 礼品类型
+     */
+    private String type;
+
 
     /**
      * 创建时间

@@ -1,10 +1,12 @@
 package com.outletcn.app.model.mongo;
 
+import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * 目的地群
  */
+@Data
 @Document(collection = "destination_group")
 public class DestinationGroup {
     private Long id;
