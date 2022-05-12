@@ -3,6 +3,7 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,7 +13,9 @@ import java.util.List;
  */
 @Data
 @Document(collection = "line")
-public class Line {
+public class Line implements Serializable {
+    private static final long serialVersionUID = -8698769656625184038L;
+
     private Long id;
 
     /**

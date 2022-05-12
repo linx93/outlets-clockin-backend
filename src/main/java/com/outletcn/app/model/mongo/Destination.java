@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,7 +14,10 @@ import java.util.List;
  */
 @Data
 @Document(collection = "destinations")
-public class Destination {
+public class Destination implements Serializable {
+
+
+    private static final long serialVersionUID = -865278034012709898L;
 
     private Long id;
     /**

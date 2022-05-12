@@ -3,12 +3,17 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * @author felix
  */
 @Data
 @Document(collection = "gift_type")
-public class GiftType {
+public class GiftType implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Long id;
 
     /**

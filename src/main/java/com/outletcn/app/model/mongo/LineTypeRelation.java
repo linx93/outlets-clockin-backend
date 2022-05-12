@@ -3,6 +3,8 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * 线路-类型关联表
  *
@@ -10,7 +12,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Data
 @Document(collection = "line_type_relation")
-public class LineTypeRelation {
+public class LineTypeRelation implements Serializable {
+
+    private static final long serialVersionUID = -8485424098160435365L;
 
     private Long id;
 

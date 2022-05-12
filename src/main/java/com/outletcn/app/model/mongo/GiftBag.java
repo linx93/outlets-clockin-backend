@@ -3,6 +3,8 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * 礼品包表
  *
@@ -10,7 +12,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Data
 @Document(collection = "gift_bag")
-public class GiftBag {
+public class GiftBag implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Long id;
 

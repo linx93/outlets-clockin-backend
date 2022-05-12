@@ -3,6 +3,8 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * 目的地-群关联
  *
@@ -10,7 +12,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Data
 @Document(collection = "destination_group_relation")
-public class DestinationGroupRelation {
+public class DestinationGroupRelation implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Long id;
 

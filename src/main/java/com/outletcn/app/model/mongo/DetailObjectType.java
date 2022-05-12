@@ -4,12 +4,16 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * @author felix
  */
 @Data
 @Document(collection = "detail_object_type")
-public class DetailObjectType {
+public class DetailObjectType implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
 
     private Long id;

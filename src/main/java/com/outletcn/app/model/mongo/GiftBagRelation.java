@@ -3,14 +3,17 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * 礼品-礼品包关联表
  * @author felix
  */
 @Data
 @Document(collection = "gift_bag_relation")
-public class GiftBagRelation {
+public class GiftBagRelation implements Serializable {
 
+    private static final long serialVersionUID = -7242349478617984379L;
 
     private Long id;
 
