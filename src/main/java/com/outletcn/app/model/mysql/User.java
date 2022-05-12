@@ -2,7 +2,11 @@ package com.outletcn.app.model.mysql;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.io.Serializable;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,7 +15,7 @@ import lombok.EqualsAndHashCode;
 /**
  * <p>
  * 用户表
-
+ *
  * </p>
  *
  * @author linx
@@ -19,12 +23,13 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="User对象", description="用户表")
+@ApiModel(value = "User对象", description = "用户表")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @ApiModelProperty(value = "姓名（账户昵称）")
@@ -40,15 +45,18 @@ public class User implements Serializable {
     private String dateOfBirth;
 
     @ApiModelProperty(value = "小程序表关联id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long appletUserId;
 
     @ApiModelProperty(value = "联系地址")
     private String contactAddress;
 
     @ApiModelProperty(value = "创建时间")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createTime;
 
     @ApiModelProperty(value = "修改时间")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateTime;
 
 
