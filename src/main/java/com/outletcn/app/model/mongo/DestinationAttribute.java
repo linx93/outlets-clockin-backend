@@ -13,10 +13,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "destination_attribute")
 public class DestinationAttribute {
 
+
+    private Long id;
+
     /**
      * ID of the destination attribute.
      */
-    @Id
     private String destinationAttributeId;
 
     /**

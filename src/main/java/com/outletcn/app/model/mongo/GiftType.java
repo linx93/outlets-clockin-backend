@@ -1,8 +1,13 @@
 package com.outletcn.app.model.mongo;
 
+import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 /**
  * @author felix
  */
+@Data
+@Document(collection = "gift_type")
 public class GiftType {
     private Long id;
 

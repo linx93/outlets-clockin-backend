@@ -6,16 +6,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * 目的地
+ *
  * @author felix
  */
 @Data
 @Document(collection = "destinations")
 public class Destination {
 
+    private Long id;
     /**
      * 目的地ID
      */
-    @Id
     private String destinationId;
 
     /**
@@ -92,7 +93,6 @@ public class Destination {
      * 更新时间
      */
     private Long updateTime;
-
 
 
 }

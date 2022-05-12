@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "destination_type")
 public class DestinationType {
 
-    private String id;
+    private Long id;
 
     /**
      * 目的地类型
