@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * 目的地群
+ * @author felix
  */
 @Data
 @Document(collection = "destination_group")
@@ -23,7 +24,7 @@ public class DestinationGroup {
     /**
      * 目的地群类型ID
      */
-    private String groupTypeId;
+    private Long groupTypeId;
 
     /**
      * 目的地群推荐图片（列表页长方形缩略图）
