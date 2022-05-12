@@ -1,28 +1,9 @@
-package com.outletcn.app.model.mongo;
+package com.outletcn.app.model.dto.gift;
 
 import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.io.Serializable;
-
-/**
- * 礼品包表
- *
- * @author felix
- */
 @Data
-@Document(collection = "gift_bag")
-public class GiftBag implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private Long id;
-
-    /**
-     * 礼品包唯一ID
-     */
-    private String bagId;
-
+public class GiftBagCreator {
     /**
      * 礼品包名称
      */
@@ -65,16 +46,6 @@ public class GiftBag implements Serializable {
      */
     private String recommendImage;
 
-    /**
-     * 创建时间
-     */
-    private Long createTime;
-
-    /**
-     * 更新时间
-     */
-    private Long updateTime;
-
     /****仅在“是否为超级豪礼”选择为“是”时，可填写以下内容****/
 
     /**
@@ -86,6 +57,5 @@ public class GiftBag implements Serializable {
      * 打卡地所含元素
      */
     private String placeElement;
-
 
 }

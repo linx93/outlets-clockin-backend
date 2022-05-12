@@ -1,28 +1,11 @@
-package com.outletcn.app.model.mongo;
+package com.outletcn.app.model.dto.gift;
 
 import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-/**
- * 礼品
- *
- * @author felix
- */
 @Data
-@Document(collection = "gift")
-public class Gift implements Serializable {
-
-    private static final long serialVersionUID = -8692917283920671612L;
-    private Long id;
-
-    /**
-     * 礼品ID
-     */
-    private String giftId;
-
+public class GiftCreator {
     /**
      * 礼品名称
      */
@@ -84,15 +67,6 @@ public class Gift implements Serializable {
      */
     private String giftInfo;
 
-    /**
-     * 创建时间
-     */
-    private Long createTime;
-
-    /**
-     * 更新时间
-     */
-    private Long updateTime;
 
 
 /*******************仅在“礼品类别“选择”实物”时，可填写以下内容********************/
@@ -121,8 +95,5 @@ public class Gift implements Serializable {
      * 优惠卷承兑商家
      */
     private String couponAcceptor;
-
-
-
 
 }
