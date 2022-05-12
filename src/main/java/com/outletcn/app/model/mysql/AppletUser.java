@@ -50,9 +50,17 @@ public class AppletUser implements Serializable {
     @ApiModelProperty(value = "头像地址")
     private String headPortraitUrl;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createTime;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateTime;
+
+    @ApiModelProperty(value = "小程序的appId")
+    private String appId;
+
+    @ApiModelProperty(value = "标记来源[0:运营 小程序 1:c端小程序]")
+    private Integer appSource;
 
 
 }
