@@ -49,9 +49,10 @@ public class Destination implements Serializable {
     private String destinationRecommendSquareImage;
 
     /**
-     * 目的地类型ID
+     * 目的地类型
      */
-    private String destinationTypeId;
+    private String destinationType;
+
 
     /**
      * 是否为著名地标
