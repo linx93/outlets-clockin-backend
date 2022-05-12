@@ -1,5 +1,6 @@
 package com.outletcn.app.model.mongo;
 
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * 目的地
  * @author felix
  */
+@Data
 @Document(collection = "destinations")
 public class Destination {
 

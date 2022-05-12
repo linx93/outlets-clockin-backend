@@ -4,25 +4,26 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- * 线路-类型关联表
- *
+ * 礼品-礼品包关联表
  * @author felix
  */
 @Data
-@Document(collection = "line_type_relation")
-public class LineTypeRelation {
+@Document(collection = "gift_bag_relation")
+public class GiftBagRelation {
+
 
     private Long id;
 
     /**
-     * 线路ID
+     * 礼品ID
      */
-    private String lineId;
+    private Long giftId;
 
     /**
-     * 线路类型ID
+     * 礼品包ID
      */
-    private String lineTypeId;
+    private Long giftBagId;
+
 
     /**
      * 创建时间
@@ -33,6 +34,4 @@ public class LineTypeRelation {
      * 更新时间
      */
     private Long updateTime;
-
-
 }

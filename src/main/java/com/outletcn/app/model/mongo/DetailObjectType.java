@@ -1,11 +1,13 @@
 package com.outletcn.app.model.mongo;
 
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * @author felix
  */
+@Data
 @Document(collection = "detail_object_type")
 public class DetailObjectType {
 

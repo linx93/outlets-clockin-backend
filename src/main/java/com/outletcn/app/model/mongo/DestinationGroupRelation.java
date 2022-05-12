@@ -1,5 +1,6 @@
 package com.outletcn.app.model.mongo;
 
+import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -7,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *
  * @author felix
  */
+@Data
 @Document(collection = "destination_group_relation")
 public class DestinationGroupRelation {
 
