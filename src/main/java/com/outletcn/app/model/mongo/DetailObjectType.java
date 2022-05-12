@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "detail_object_type")
 public class DetailObjectType {
 
-    @Id
+
     private Long id;
 
     /**
