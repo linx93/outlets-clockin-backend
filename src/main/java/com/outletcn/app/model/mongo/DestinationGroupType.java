@@ -6,27 +6,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serializable;
 
 /**
- * 线路-类型关联表
- *
  * @author felix
  */
 @Data
-@Document(collection = "line_type_relation")
-public class LineTypeRelation implements Serializable {
+@Document(collection = "destination_group_type")
+public class DestinationGroupType implements Serializable {
 
-    private static final long serialVersionUID = -8485424098160435365L;
+    private static final long serialVersionUID = -8452600661397493046L;
 
     private Long id;
 
     /**
-     * 线路ID
+     * 目的群类型
      */
-    private String lineId;
-
-    /**
-     * 线路类型ID
-     */
-    private String lineTypeId;
+    private String type;
 
     /**
      * 创建时间

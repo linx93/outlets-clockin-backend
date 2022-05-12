@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * 目的地属性
  *
@@ -11,8 +13,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Data
 @Document(collection = "destination_attribute")
-public class DestinationAttribute {
+public class DestinationAttribute implements Serializable {
 
+    private static final long serialVersionUID = 1L;
 
     private Long id;
 

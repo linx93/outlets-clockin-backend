@@ -3,6 +3,8 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * 目的地类型
  *
@@ -10,7 +12,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Data
 @Document(collection = "destination_type")
-public class DestinationType {
+public class DestinationType implements Serializable {
+
+    private static final long serialVersionUID = -8287536165814358099L;
 
     private Long id;
 

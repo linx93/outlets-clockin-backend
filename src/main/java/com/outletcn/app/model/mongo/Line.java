@@ -3,6 +3,9 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
  * 线路
  *
@@ -10,7 +13,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Data
 @Document(collection = "line")
-public class Line {
+public class Line implements Serializable {
+    private static final long serialVersionUID = -8698769656625184038L;
+
     private Long id;
 
     /**
@@ -26,7 +31,7 @@ public class Line {
     /**
      * 线路所含元素
      */
-    private String lineElements;
+    private List<Attribute> lineElements;
 
     /**
      * 推荐理由
@@ -62,5 +67,11 @@ public class Line {
      * 更新时间
      */
     private Long updateTime;
+
+    @Data
+    class Attribute {
+        private String type;
+        private Long id;
+    }
 
 }

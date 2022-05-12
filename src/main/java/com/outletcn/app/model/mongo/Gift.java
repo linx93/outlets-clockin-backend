@@ -3,6 +3,7 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -12,7 +13,9 @@ import java.math.BigDecimal;
  */
 @Data
 @Document(collection = "gift")
-public class Gift {
+public class Gift implements Serializable {
+
+    private static final long serialVersionUID = -8692917283920671612L;
     private Long id;
 
     /**

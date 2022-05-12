@@ -3,12 +3,16 @@ package com.outletcn.app.model.mongo;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * 目的地群
+ * @author felix
  */
 @Data
 @Document(collection = "destination_group")
-public class DestinationGroup {
+public class DestinationGroup implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Long id;
     /**
      * 目的地群ID
@@ -23,7 +27,7 @@ public class DestinationGroup {
     /**
      * 目的地群类型ID
      */
-    private String groupTypeId;
+    private Long groupTypeId;
 
     /**
      * 目的地群推荐图片（列表页长方形缩略图）

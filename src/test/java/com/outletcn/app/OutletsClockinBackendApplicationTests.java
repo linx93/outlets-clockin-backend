@@ -1,5 +1,6 @@
 package com.outletcn.app;
 
+import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.outletcn.app.model.mongo.Destination;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,15 @@ class OutletsClockinBackendApplicationTests {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private Sequence sequence;
+
     @Test
     void contextLoads() {
+
+
+        System.out.println(sequence.nextId());
+
         mongoTemplate.save(new Destination());
     }
 
