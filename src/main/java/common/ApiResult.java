@@ -1,4 +1,4 @@
-package com.outletcn.app.utils;
+package common;
 
 import lombok.Data;
 import net.phadata.app.common.ErrorCode;
