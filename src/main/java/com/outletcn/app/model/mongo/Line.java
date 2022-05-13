@@ -34,6 +34,11 @@ public class Line implements Serializable {
     private List<Attribute> lineElements;
 
     /**
+     * 线路属性
+     */
+    private List<String> lineAttrs;
+
+    /**
      * 推荐理由
      */
     private String recommendReason;

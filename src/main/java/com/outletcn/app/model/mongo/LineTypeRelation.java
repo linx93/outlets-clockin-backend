@@ -10,6 +10,7 @@ import java.io.Serializable;
  *
  * @author felix
  */
+@Deprecated
 @Data
 @Document(collection = "line_type_relation")
 public class LineTypeRelation implements Serializable {

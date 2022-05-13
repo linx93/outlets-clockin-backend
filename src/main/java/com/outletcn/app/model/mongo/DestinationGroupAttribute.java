@@ -9,17 +9,17 @@ import java.io.Serializable;
  * @author felix
  */
 @Data
-@Document(collection = "destination_group_type")
-public class DestinationGroupType implements Serializable {
+@Document(collection = "destination_group_attribute")
+public class DestinationGroupAttribute implements Serializable {
 
     private static final long serialVersionUID = -8452600661397493046L;
 
     private Long id;
 
     /**
-     * 目的群类型
+     * 目的群属性
      */
-    private String type;
+    private String attribute;
 
     /**
      * 创建时间

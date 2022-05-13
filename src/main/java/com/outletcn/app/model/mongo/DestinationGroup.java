@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 目的地群
@@ -25,9 +26,9 @@ public class DestinationGroup implements Serializable {
     private String groupName;
 
     /**
-     * 目的地群类型ID
+     * 目的地群属性
      */
-    private Long groupTypeId;
+    private List<String> groupAttrs;
 
     /**
      * 目的地群推荐图片（列表页长方形缩略图）

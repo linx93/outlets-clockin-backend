@@ -48,7 +48,7 @@ class OutletsClockinBackendApplicationTests {
     void testCreateDestinationAttribute() {
 
         CreateDestinationAttributeRequest createDestinationAttributeRequest = new CreateDestinationAttributeRequest();
-        createDestinationAttributeRequest.setDestinationAttribute("景点");
+        createDestinationAttributeRequest.setDestinationAttribute("酒店");
         service.createDestinationAttribute(createDestinationAttributeRequest);
     }
 
