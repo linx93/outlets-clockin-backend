@@ -39,6 +39,12 @@ public class Line implements Serializable {
     private List<String> lineAttrs;
 
     /**
+     * 是否上架
+     * 0:是/1:否
+     */
+    private Integer putOn;
+
+    /**
      * 推荐理由
      */
     private String recommendReason;
@@ -74,7 +80,7 @@ public class Line implements Serializable {
     private Long updateTime;
 
     @Data
-    class Attribute {
+    public class Attribute {
         private String type;
         private Long id;
     }

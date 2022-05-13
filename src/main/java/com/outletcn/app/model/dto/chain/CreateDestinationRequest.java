@@ -12,7 +12,6 @@ import java.util.Map;
  * @desc
  * @datetime 2022/5/12 3:21 PM
  */
-@Builder
 @Data
 public class CreateDestinationRequest {
 

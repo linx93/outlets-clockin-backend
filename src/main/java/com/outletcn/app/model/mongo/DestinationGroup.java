@@ -31,6 +31,12 @@ public class DestinationGroup implements Serializable {
     private List<String> groupAttrs;
 
     /**
+     * 是否上架
+     * 0:是/1:否
+     */
+    private Integer putOn;
+
+    /**
      * 目的地群推荐图片（列表页长方形缩略图）
      */
     private String groupRecommendImage;
