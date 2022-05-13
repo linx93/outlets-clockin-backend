@@ -12,16 +12,16 @@ import java.io.Serializable;
  */
 @Data
 @Document(collection = "line_type")
-public class LineType implements Serializable {
+public class LineAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private Long id;
 
     /**
-     * 线路类型
+     * 线路属性
      */
-    private Long type;
+    private Long attribute;
 
     /**
      * 创建时间

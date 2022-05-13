@@ -1,7 +1,6 @@
 package com.outletcn.app.model.mongo;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -31,9 +30,7 @@ public class Destination implements Serializable {
     private String destinationName;
 
     /**
-     * 目的地属性集合
-     * 目的地属性ID
-     * 填写方式 1,2,3
+     * 目的地属性
      */
     private List<String> destinationAttrs;
 
@@ -52,6 +49,17 @@ public class Destination implements Serializable {
      * 目的地类型
      */
     private String destinationType;
+
+    /**
+     * 摘要
+     */
+    private String summary;
+
+    /**
+     * 是否上架
+     * 0:是/1:否
+     */
+    private Integer putOn;
 
 
     /**

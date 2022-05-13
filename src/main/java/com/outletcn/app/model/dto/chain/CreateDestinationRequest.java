@@ -1,8 +1,10 @@
 package com.outletcn.app.model.dto.chain;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author tanwei
@@ -13,71 +15,110 @@ import java.util.List;
 @Data
 public class CreateDestinationRequest {
 
-    /**
-     * 目的地名称
-     */
-    private String destinationName;
-
-    /**
-     * 目的地属性集合
-     * 目的地属性ID
-     * 填写方式 1,2,3
-     */
-    private List<String> destinationAttrs;
+    private BaseInfo baseInfo;
+    private DetailsInfo detailsInfo;
 
 
-    /**
-     * 目的地推荐图片（列表页长方形缩略图）
-     */
-    private String destinationRecommendImage;
+    @Data
+    public static class DetailsInfo {
 
-    /**
-     * 目的地推荐图片（列表页正方形缩略图）
-     */
-    private String destinationRecommendSquareImage;
+        /**
+         * 推荐视频
+         */
+        private String recommendVideo;
 
-    /**
-     * 目的地类型
-     */
-    private String destinationType;
+        /**
+         * 推荐音频
+         */
 
-    /**
-     * 是否为著名地标
-     */
-    private Integer majorDestination;
+        private String recommendAudio;
 
-    /**
-     * 地址
-     */
-    private String address;
+        /**
+         * 描述
+         */
+        private List<Map<String, Object>> descriptions;
 
-    /**
-     * 经度
-     */
-    private String longitude;
+    }
 
-    /**
-     * 纬度
-     */
-    private String latitude;
+    @Data
+    public static class BaseInfo {
+        /**
+         * 目的地名称
+         */
+        private String destinationName;
 
-    /**
-     * 是否适合60岁以上老人
-     */
-    private Integer forOldPeople;
+        /**
+         * 目的地属性集
+         */
+        private List<String> destinationAttrs;
 
-    /**
-     * 是否适合4岁以下小孩
-     */
-    private Integer forChildren;
 
-    /**
-     * 开业时间
-     */
-    private String openTime;
+        /**
+         * 目的地推荐图片（列表页长方形缩略图）
+         */
+        private String destinationRecommendImage;
 
-    /**
-     * 歇业时间
-     */
-    private String closeTime;
+        /**
+         * 目的地推荐图片（列表页正方形缩略图）
+         */
+        private String destinationRecommendSquareImage;
+
+        /**
+         * 目的地类型
+         */
+        private String destinationType;
+
+        /**
+         * 摘要
+         */
+        private String summary;
+
+        /**
+         * 是否上架
+         * 0:是/1:否
+         */
+        private Integer putOn;
+
+        /**
+         * 是否为著名地标
+         */
+        private Integer majorDestination;
+
+        /**
+         * 地址
+         */
+        private String address;
+
+        /**
+         * 经度
+         */
+        private String longitude;
+
+        /**
+         * 纬度
+         */
+        private String latitude;
+
+        /**
+         * 是否适合60岁以上老人
+         */
+        private Integer forOldPeople;
+
+        /**
+         * 是否适合4岁以下小孩
+         */
+        private Integer forChildren;
+
+        /**
+         * 开业时间
+         */
+        private String openTime;
+
+        /**
+         * 歇业时间
+         */
+        private String closeTime;
+    }
+
+
 }

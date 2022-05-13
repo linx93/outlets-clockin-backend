@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author felix
@@ -26,7 +28,7 @@ public class DetailObjectType implements Serializable {
     /**
      * 主体类型
      */
-    private String objectType;
+    private int objectType;
 
     /**
      * 推荐视频
@@ -42,7 +44,7 @@ public class DetailObjectType implements Serializable {
     /**
      * 描述
      */
-    private String description;
+    private List<Map<String, Object>> descriptions;
 
     /**
      * 摘要

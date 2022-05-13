@@ -34,6 +34,28 @@ public class Line implements Serializable {
     private List<Attribute> lineElements;
 
     /**
+     * 线路属性
+     */
+    private List<String> lineAttrs;
+
+    /**
+     * 摘要
+     */
+    private String summary;
+
+    /**
+     * 是否上架
+     * 0:是/1:否
+     */
+    private Integer putOn;
+
+    /**
+     * 是否置顶
+     * 0:是/1:否
+     */
+    private Integer stick;
+
+    /**
      * 推荐理由
      */
     private String recommendReason;
@@ -69,7 +91,7 @@ public class Line implements Serializable {
     private Long updateTime;
 
     @Data
-    class Attribute {
+    public static class Attribute {
         private String type;
         private Long id;
     }
