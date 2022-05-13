@@ -1,5 +1,6 @@
 package com.outletcn.app.model.dto.gift;
 
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -8,23 +9,14 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-
 @Data
-public class GiftCreator {
+public class VoucherTypeGiftCreator {
     /**
      * 礼品名称
      */
     @NotBlank
     @ApiModelProperty(value = "礼品名称")
     private String giftName;
-
-    /**
-     * 礼品类别
-     * 0:实物/1:消费优惠卷
-     */
-    @NotNull
-    @ApiModelProperty(value = "礼品类别;0:实物/1:消费优惠卷")
-    private Integer giftType;
 
     /**
      * 礼品类型
@@ -86,31 +78,6 @@ public class GiftCreator {
 
 
 
-/*******************仅在“礼品类别“选择”实物”时，可填写以下内容********************/
-
-    /**
-     * 礼品品牌
-     */
-    @NotBlank
-    @ApiModelProperty(value = "礼品品牌")
-    private String giftBrand;
-
-    /**
-     * 单次可兑付数量
-     */
-    @NotNull
-    @ApiModelProperty(value = "单次可兑付数量")
-    private Integer giftNum;
-
-    /**
-     * 个/套
-     * 单位
-     */
-    @NotBlank
-    @ApiModelProperty(value = "单位(个/套)")
-    private String giftUnit;
-
-
     /***************仅在“礼品类别“选择”消费优惠卷”时，可填写以下内容********************/
 
 
@@ -120,5 +87,4 @@ public class GiftCreator {
     @NotBlank
     @ApiModelProperty(value = "优惠卷承兑商家")
     private String couponAcceptor;
-
 }

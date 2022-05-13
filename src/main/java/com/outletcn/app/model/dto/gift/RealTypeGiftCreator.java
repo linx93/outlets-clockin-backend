@@ -8,23 +8,14 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-
 @Data
-public class GiftCreator {
+public class RealTypeGiftCreator {
     /**
      * 礼品名称
      */
     @NotBlank
     @ApiModelProperty(value = "礼品名称")
     private String giftName;
-
-    /**
-     * 礼品类别
-     * 0:实物/1:消费优惠卷
-     */
-    @NotNull
-    @ApiModelProperty(value = "礼品类别;0:实物/1:消费优惠卷")
-    private Integer giftType;
 
     /**
      * 礼品类型
@@ -110,15 +101,5 @@ public class GiftCreator {
     @ApiModelProperty(value = "单位(个/套)")
     private String giftUnit;
 
-
-    /***************仅在“礼品类别“选择”消费优惠卷”时，可填写以下内容********************/
-
-
-    /**
-     * 优惠卷承兑商家
-     */
-    @NotBlank
-    @ApiModelProperty(value = "优惠卷承兑商家")
-    private String couponAcceptor;
 
 }

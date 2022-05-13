@@ -1,17 +1,22 @@
 package com.outletcn.app.service.gift;
 
-import com.outletcn.app.model.dto.gift.GiftBagCreator;
-import com.outletcn.app.model.dto.gift.GiftBagRelationCreator;
-import com.outletcn.app.model.dto.gift.GiftCreator;
-import com.outletcn.app.model.dto.gift.GiftTypeCreator;
+import com.outletcn.app.model.dto.gift.*;
 
 public interface GiftService {
 
     void CreateGift (GiftCreator giftCreator);
 
-    void CreateGiftBag (GiftBagCreator giftBagCreator);
+    void CreateRealTypeGift (RealTypeGiftCreator realTypeGiftCreator);
 
-    void CreateGiftBagRelation (GiftBagRelationCreator giftBagRelationCreator);
+    void CreateVoucherTypeGift (VoucherTypeGiftCreator voucherTypeGiftCreator);
+
+    Long CreateGiftBag (GiftBagCreator giftBagCreator);
+
+    Long CreateLuxuryGiftBag (LuxuryGiftBagCreator luxuryGiftBagCreator);
+
+    Long CreateOrdinaryGiftBag (OrdinaryGiftBagCreator ordinaryGiftBagCreator);
+
+    void CreateGiftBagRelation (Long giftBagId,Long giftId);
 
     void CreateGiftType (GiftTypeCreator giftTypeCreator);
 }

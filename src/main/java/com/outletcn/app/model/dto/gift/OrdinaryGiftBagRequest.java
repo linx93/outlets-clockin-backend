@@ -7,10 +7,10 @@ import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
-public class GiftBagRequest {
+public class OrdinaryGiftBagRequest {
     @NotEmpty
-    @ApiModelProperty(value = "礼品包信息")
-    private GiftBagCreator giftBagCreator;
+    @ApiModelProperty(value = "普通礼品包信息")
+    private OrdinaryGiftBagCreator ordinaryGiftBagCreator;
 
     @NotEmpty
     @ApiModelProperty(value = "礼品id列表(数字类型id)")

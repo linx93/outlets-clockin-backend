@@ -6,23 +6,15 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+//豪华礼品包创建
 @Data
-public class GiftBagCreator {
+public class LuxuryGiftBagCreator {
     /**
      * 礼品包名称
      */
     @NotBlank
     @ApiModelProperty(value = "礼品包名称")
     private String name;
-
-    /**
-     * 礼品包类型
-     * 1:普通礼包
-     * 2:豪华礼包
-     */
-    @NotNull
-    @ApiModelProperty(value = "礼品包类型;1:普通礼包,2:豪华礼包")
-    private Integer type;
 
     /**
      * 礼品包有效期
@@ -68,12 +60,14 @@ public class GiftBagCreator {
     /**
      * 所含打卡地数量
      */
+    @NotNull
     @ApiModelProperty(value = "所含打卡地数量")
     private Integer placeCount;
 
     /**
      * 打卡地所含元素
      */
+    @NotBlank
     @ApiModelProperty(value = "打卡地所含元素")
     private String placeElement;
 
