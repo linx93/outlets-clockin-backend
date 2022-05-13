@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -50,6 +51,8 @@ public class DestinationServiceImpl implements DestinationService {
         destination.setDestinationRecommendImage(baseInfo.getDestinationRecommendImage());
         destination.setDestinationRecommendSquareImage(baseInfo.getDestinationRecommendSquareImage());
         destination.setDestinationType(baseInfo.getDestinationType());
+        destination.setSummary(baseInfo.getSummary());
+        destination.setPutOn(1); // 默认未上架
         destination.setMajorDestination(baseInfo.getMajorDestination());
         destination.setAddress(baseInfo.getAddress());
         destination.setLongitude(baseInfo.getLongitude());
@@ -69,22 +72,23 @@ public class DestinationServiceImpl implements DestinationService {
             throw new BasicException("保存目的地失败：" + ex.getMessage());
         }
 
-        DetailObjectType detailObjectType = new DetailObjectType();
-        detailObjectType.setId(sequence.nextId());
-        detailObjectType.setObjectType(ClockInType.Destination.getType());
-        detailObjectType.setObjectId(primaryId);
-        detailObjectType.setRecommendVideo(detailsInfo.getRecommendVideo());
-        detailObjectType.setRecommendAudio(detailsInfo.getRecommendAudio());
-        detailObjectType.setDescription(detailsInfo.getDescription());
-        detailObjectType.setSummary(detailsInfo.getSummary());
-        detailObjectType.setCreateTime(time);
-        detailObjectType.setUpdateTime(time);
-        try {
-            mongoTemplate.save(detailObjectType);
-        } catch (Exception ex) {
-            log.error("保存目的地详情失败：" + ex.getMessage());
-            mongoTemplate.remove(destination);
-            throw new BasicException("保存目的地详情失败：" + ex.getMessage());
+        if (!Objects.isNull(detailsInfo)) {
+            DetailObjectType detailObjectType = new DetailObjectType();
+            detailObjectType.setId(sequence.nextId());
+            detailObjectType.setObjectType(ClockInType.Destination.getType());
+            detailObjectType.setObjectId(primaryId);
+            detailObjectType.setRecommendVideo(detailsInfo.getRecommendVideo());
+            detailObjectType.setRecommendAudio(detailsInfo.getRecommendAudio());
+            detailObjectType.setDescriptions(detailsInfo.getDescriptions());
+            detailObjectType.setCreateTime(time);
+            detailObjectType.setUpdateTime(time);
+            try {
+                mongoTemplate.save(detailObjectType);
+            } catch (Exception ex) {
+                log.error("保存目的地详情失败：" + ex.getMessage());
+                mongoTemplate.remove(destination);
+                throw new BasicException("保存目的地详情失败：" + ex.getMessage());
+            }
         }
     }
 

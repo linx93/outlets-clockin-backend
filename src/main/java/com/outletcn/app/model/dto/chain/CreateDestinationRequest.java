@@ -20,7 +20,7 @@ public class CreateDestinationRequest {
 
 
     @Data
-    public class DetailsInfo {
+    public static class DetailsInfo {
 
         /**
          * 推荐视频
@@ -36,25 +36,19 @@ public class CreateDestinationRequest {
         /**
          * 描述
          */
-        private Map<String, Object> description;
+        private List<Map<String, Object>> descriptions;
 
-        /**
-         * 摘要
-         */
-        private String summary;
     }
 
     @Data
-    public class BaseInfo {
+    public static class BaseInfo {
         /**
          * 目的地名称
          */
         private String destinationName;
 
         /**
-         * 目的地属性集合
-         * 目的地属性ID
-         * 填写方式 1,2,3
+         * 目的地属性集
          */
         private List<String> destinationAttrs;
 
@@ -73,6 +67,17 @@ public class CreateDestinationRequest {
          * 目的地类型
          */
         private String destinationType;
+
+        /**
+         * 摘要
+         */
+        private String summary;
+
+        /**
+         * 是否上架
+         * 0:是/1:否
+         */
+        private Integer putOn;
 
         /**
          * 是否为著名地标

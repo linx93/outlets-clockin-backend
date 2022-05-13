@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.Arrays;
+import java.util.*;
 
 @SpringBootTest
 class OutletsClockinBackendApplicationTests {
@@ -54,22 +54,54 @@ class OutletsClockinBackendApplicationTests {
 
     @Test
     void testCreateDestination() {
-
         CreateDestinationRequest createDestinationRequest = new CreateDestinationRequest();
-        createDestinationRequest.setDestinationName("金融MIX13号楼");
-        createDestinationRequest.setDestinationAttrs(Arrays.asList(new String[]{"娱乐", "酒店"}));
-        createDestinationRequest.setDestinationRecommendImage("https://oss.phadata.net/01.jpeg");
-        createDestinationRequest.setDestinationRecommendSquareImage("https://oss.phadata.net/02.jpeg");
-        createDestinationRequest.setDestinationType("普通点");
-        createDestinationRequest.setMajorDestination(1);
-        createDestinationRequest.setAddress("贵州省贵阳市观山湖区通宝路18号");
-        createDestinationRequest.setLongitude("106.646353");
-        createDestinationRequest.setLatitude("26.649896");
-        createDestinationRequest.setForOldPeople(1);
-        createDestinationRequest.setForChildren(1);
-        createDestinationRequest.setOpenTime("早上10点");
-        createDestinationRequest.setCloseTime("下午4点");
 
+        CreateDestinationRequest.BaseInfo baseInfo = new CreateDestinationRequest.BaseInfo();
+        baseInfo.setDestinationName("金融MIX13号楼");
+        baseInfo.setDestinationAttrs(Arrays.asList(new String[]{"娱乐", "酒店"}));
+        baseInfo.setDestinationRecommendImage("https://oss.phadata.net/01.jpeg");
+        baseInfo.setDestinationRecommendSquareImage("https://oss.phadata.net/02.jpeg");
+        baseInfo.setDestinationType("普通点");
+        baseInfo.setSummary("这是一个目的地摘要测试");
+        baseInfo.setPutOn(1);
+        baseInfo.setMajorDestination(1);
+        baseInfo.setAddress("贵州省贵阳市观山湖区通宝路18号");
+        baseInfo.setLongitude("106.646353");
+        baseInfo.setLatitude("26.649896");
+        baseInfo.setForOldPeople(1);
+        baseInfo.setForChildren(1);
+        baseInfo.setOpenTime("早上10点");
+        baseInfo.setCloseTime("下午4点");
+
+        CreateDestinationRequest.DetailsInfo detailsInfo = new CreateDestinationRequest.DetailsInfo();
+        detailsInfo.setRecommendVideo("https://oss.phadata.net/01.mp4");
+        detailsInfo.setRecommendAudio("https://oss.phadata.net/01.mp3");
+        List<Map<String, Object>> descriptions = new ArrayList<>();
+        Map<String,Object> descriptionA = new LinkedHashMap<>();
+        descriptionA.put("type", "text");
+        descriptionA.put("content", "123.txt");
+
+        Map<String,Object> descriptionB = new LinkedHashMap<>();
+        descriptionB.put("type", "image");
+        descriptionB.put("content", "123.png");
+
+        Map<String,Object> descriptionC = new LinkedHashMap<>();
+        descriptionC.put("type", "video");
+        descriptionC.put("content", "123.mp4");
+
+        Map<String,Object> descriptionD = new LinkedHashMap<>();
+        descriptionD.put("type", "text");
+        descriptionD.put("content", "456.txt");
+
+        descriptions.add(descriptionA);
+        descriptions.add(descriptionB);
+        descriptions.add(descriptionC);
+        descriptions.add(descriptionD);
+
+        detailsInfo.setDescriptions(descriptions);
+
+        createDestinationRequest.setBaseInfo(baseInfo);
+        createDestinationRequest.setDetailsInfo(detailsInfo);
 
         service.createDestination(createDestinationRequest);
     }
