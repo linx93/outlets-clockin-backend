@@ -56,4 +56,11 @@ public class OrdinaryGiftBagCreator {
     private String recommendImage;
 
 
+    /**
+     * 是否上架
+     * 0:是/1:否
+     */
+    @NotNull
+    @ApiModelProperty(value = "是否上架；0:是/1:否")
+    private Integer putOn;
 }

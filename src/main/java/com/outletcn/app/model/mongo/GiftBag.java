@@ -87,5 +87,10 @@ public class GiftBag implements Serializable {
      */
     private String placeElement;
 
+    /**
+     * 是否上架
+     * 0:是/1:否
+     */
+    private Integer putOn;
 
 }

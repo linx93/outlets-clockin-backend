@@ -77,4 +77,11 @@ public class GiftBagCreator {
     @ApiModelProperty(value = "打卡地所含元素")
     private String placeElement;
 
+    /**
+     * 是否上架
+     * 0:是/1:否
+     */
+    @NotNull
+    @ApiModelProperty(value = "是否上架；0:是/1:否")
+    private Integer putOn;
 }
