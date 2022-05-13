@@ -27,7 +27,7 @@ public class DetailObjectType implements Serializable {
     /**
      * 主体类型
      */
-    private String objectType;
+    private int objectType;
 
     /**
      * 推荐视频
