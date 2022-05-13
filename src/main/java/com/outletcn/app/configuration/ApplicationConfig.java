@@ -52,7 +52,9 @@ public class ApplicationConfig implements WebMvcConfigurer {
                         "/favicon.ico",
                         "/webjars/**",
                         "/swagger-resources/**",
-                        "/v1/api/system/login"
+                        "/v1/api/applet-user/operator/login",
+                        "/v1/api/applet-user/operator/normal-login",
+                        "/v1/api/applet-user/clock-in/login"
                 );
     }
 

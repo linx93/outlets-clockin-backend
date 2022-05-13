@@ -73,3 +73,14 @@ logging:
       max-file-size: 5MB
   level:
     net.phadata.app.certificate: info
+
+
+#小程序配置
+applet:
+  clock-in:
+    app-id: xxxxx
+    secret: yyyyy
+  operator:
+    app-id: aaaaa
+    secret: bbbbb
+  address: https://api.weixin.qq.com
