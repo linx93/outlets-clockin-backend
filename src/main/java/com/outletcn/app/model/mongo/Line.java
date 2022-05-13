@@ -45,6 +45,12 @@ public class Line implements Serializable {
     private Integer putOn;
 
     /**
+     * 是否置顶
+     * 0:是/1:否
+     */
+    private Integer stick;
+
+    /**
      * 推荐理由
      */
     private String recommendReason;
