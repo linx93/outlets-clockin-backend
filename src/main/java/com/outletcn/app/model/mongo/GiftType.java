@@ -1,6 +1,7 @@
 package com.outletcn.app.model.mongo;
 
 import lombok.Data;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -24,6 +25,7 @@ public class GiftType implements Serializable {
     /**
      * 礼品类型
      */
+    @Indexed(unique = true)
     private String type;
 
 

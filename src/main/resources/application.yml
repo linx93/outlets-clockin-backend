@@ -17,6 +17,8 @@ spring:
   data:
     mongodb:
       uri: mongodb://test:123456@192.168.1.102:27018/test
+      #开启索引创建
+      auto-index-creation: true
   #Springboot2.6以后将SpringMVC 默认路径匹配策略从AntPathMatcher 更改为PathPatternParser，导致出错
   mvc:
     pathmatch:

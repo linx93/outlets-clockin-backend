@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.UUID;
-import java.util.prefs.BackingStoreException;
+
 
 
 @AllArgsConstructor
@@ -113,6 +113,7 @@ public class GiftServiceImpl implements GiftService {
         long time = Instant.now().getEpochSecond();
         giftType.setCreateTime(time);
         giftType.setUpdateTime(time);
-        mongoTemplate.save(giftType);
+        GiftType ng = mongoTemplate.save(giftType);
+        System.out.println(ng);
     }
 }

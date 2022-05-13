@@ -25,14 +25,15 @@ public class TokenInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
-        String token = request.getHeader(CommonUtil.TOKEN);
+        //TODO 开发阶段暂时关闭
+/*        String token = request.getHeader(CommonUtil.TOKEN);
         if (StringUtils.isBlank(token)) {
             throw new BasicException("token不能为空");
         }
         //验证过期时间
         if (JwtUtil.isExpiration(token)) {
             throw new BasicException("登陆已过期，请重新登陆");
-        }
+        }*/
         return true;
     }
 }
