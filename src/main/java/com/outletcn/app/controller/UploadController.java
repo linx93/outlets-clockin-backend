@@ -48,7 +48,7 @@ public class UploadController {
         return ApiResult.thin(ErrorCode.SUCCESS, map);
     }
 
-    @ApiOperation(value = "获取临时密钥", notes = "对上传大文件进行上传时，需要获取临时密钥")
+    @ApiOperation(value = "获取临时密钥", notes = "对上传大文件进行上传时，需要获取临时密钥,前端使用参考https://my.oschina.net/u/214777/blog/5464539")
     @GetMapping(value = "/get-temp-key")
     public ApiResult<?> get() {
         Response credential = TencentCosUtil.getCredentialOneBucket();
