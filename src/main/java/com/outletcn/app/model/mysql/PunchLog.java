@@ -52,7 +52,6 @@ public class PunchLog implements Serializable {
     private String punchLatitude;
 
     @ApiModelProperty(value = "积分值")
-    @TableField("Integral_value")
     private Integer integralValue;
 
     @JsonSerialize(using = ToStringSerializer.class)
