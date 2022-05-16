@@ -26,8 +26,8 @@ spring:
   ## 上传文件大小限制
   servlet:
     multipart:
-      max-file-size: 512MB
-      max-request-size: 512MB
+      max-file-size: 32MB
+      max-request-size: 32MB
 
 ## swagger 文档配置
 knife4j:
@@ -73,3 +73,24 @@ logging:
       max-file-size: 5MB
   level:
     net.phadata.app.certificate: info
+
+
+#小程序配置
+applet:
+  clock-in:
+    app-id: xxxxx
+    secret: yyyyy
+  operator:
+    app-id: aaaaa
+    secret: bbbbb
+  address: https://api.weixin.qq.com
+
+## 腾讯cos配置
+tencent:
+  cos:
+    appid: 1311883259
+    # 存储桶的命名格式为 BucketName-APPID，此处填写的存储桶名称必须为此格式
+    bucket-name: "test-${tencent.cos.appid}"
+    region: ap-chongqing
+    secret-id: AKIDwiHacNt8GBpDKAj23nGSN0MRFEwNXQ2N
+    secret-key: 7xVmmW2HFxPaU8VbPwDF0UifLjriIbdP
