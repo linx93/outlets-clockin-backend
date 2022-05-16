@@ -92,7 +92,7 @@ public class Line implements Serializable {
 
     @Data
     public static class Attribute {
-        private String type;
+        private int type;
         private Long id;
     }
 

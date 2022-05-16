@@ -21,7 +21,7 @@ public class LineAttribute implements Serializable {
     /**
      * 线路属性
      */
-    private Long attribute;
+    private String attribute;
 
     /**
      * 创建时间

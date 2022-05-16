@@ -1,15 +1,18 @@
 package com.outletcn.app.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.extension.api.R;
+import com.outletcn.app.exception.BasicException;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.exception.CosClientException;
+import com.qcloud.cos.http.CosHttpRequest;
 import com.qcloud.cos.http.HttpProtocol;
+import com.qcloud.cos.internal.CosServiceRequest;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
+import com.qcloud.cos.retry.RetryPolicy;
 import com.qcloud.cos.transfer.*;
 import com.tencent.cloud.CosStsClient;
 import com.tencent.cloud.Response;
@@ -17,6 +20,7 @@ import com.tencent.cloud.Response;
 
 import com.tencent.cloud.Scope;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -107,9 +111,16 @@ public class TencentCosUtil {
         // 以下的设置，是可选的：
 
         // 设置 socket 读取超时，默认 30s
-        clientConfig.setSocketTimeout(30 * 1000);
+        clientConfig.setSocketTimeout(60 * 1000);
         // 设置建立连接超时，默认 30s
-        clientConfig.setConnectionTimeout(30 * 1000);
+        clientConfig.setConnectionTimeout(60 * 1000);
+
+        //设置重试次数
+        clientConfig.setMaxErrorRetry(5);
+
+        OnlyIOExceptionRetryPolicy retryPolicy = new OnlyIOExceptionRetryPolicy();
+
+        clientConfig.setRetryPolicy(retryPolicy);
 
         // 如果需要的话，设置 http 代理，ip 以及 port
         // clientConfig.setHttpProxyIp("httpProxyIp");
@@ -282,9 +293,11 @@ public class TencentCosUtil {
             PutObjectResult putObjectResult = client.putObject(putObjectRequest);
             log.info("requestID: {}", putObjectResult.getRequestId());
         } catch (CosClientException | IOException e) {
-            log.error("cosClientException", e);
+            log.error("cosClientException {}", e.getMessage(), e);
+            throw new BasicException(e.getMessage());
         }
         URL url = client.getObjectUrl(BUCKET_NAME, key);
+        client.shutdown();
         return url.toString();
     }
 
@@ -443,13 +456,31 @@ public class TencentCosUtil {
     /**
      * 获取文件名
      *
-     * @param args
+     * @param file file
      */
     public static String getFileName(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         return uuid + originalFilename.substring(originalFilename.lastIndexOf("."));
     }
+
+    /**
+     * 自定义重试策略
+     */
+    public static class OnlyIOExceptionRetryPolicy extends RetryPolicy {
+        @Override
+        public <X extends CosServiceRequest> boolean shouldRetry(CosHttpRequest<X> request,
+                                                                 HttpResponse response,
+                                                                 Exception exception,
+                                                                 int retryIndex) {
+            // 如果是客户端的 IOException 异常则重试，否则不重试
+            if (exception.getCause() instanceof IOException) {
+                return true;
+            }
+            return false;
+        }
+    }
+
 
     public static void main(String[] args) {
 //        upload();

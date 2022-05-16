@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.outletcn.app.common.ApiResult;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.net.SocketException;
 
@@ -72,6 +73,12 @@ public class ErrorCodeHandler {
         log.error("网络请求错误: {}", exception.getMessage());
         log.error("网络请求错误:", exception);
         return ApiResult.result(ErrorCode.FAILED.getCode(), exception.getMessage());
+    }
+
+    @ExceptionHandler(value = MaxUploadSizeExceededException.class)
+    public ApiResult<?> exceptionHandler(MaxUploadSizeExceededException exception) {
+        log.error("上传文件过大: {}", exception.getMessage());
+        return ApiResult.result(ErrorCode.FAILED.getCode(), "上传文件大于32MB");
     }
 
     @ExceptionHandler(value = Exception.class)
