@@ -1,16 +1,17 @@
 package com.outletcn.app.service.chain.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
+import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.ClockInType;
+import com.outletcn.app.common.LineElementType;
 import com.outletcn.app.exception.BasicException;
+import com.outletcn.app.model.dto.applet.LineElementsVO;
+import com.outletcn.app.model.dto.applet.LineVO;
 import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateLineRequest;
 import com.outletcn.app.model.dto.chain.DetailsInfo;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
-import com.outletcn.app.model.mongo.DestinationAttribute;
-import com.outletcn.app.model.mongo.DetailObjectType;
-import com.outletcn.app.model.mongo.Line;
-import com.outletcn.app.model.mongo.LineAttribute;
+import com.outletcn.app.model.mongo.*;
 import com.outletcn.app.service.chain.LineService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author tanwei
@@ -107,5 +107,35 @@ public class LineServiceImpl implements LineService {
     @Override
     public void putOnLine(PutOnRequest putOnRequest) {
 
+    }
+
+    @Override
+    public ApiResult<LineElementsVO> lineElementsById(Long id) {
+        LineElementsVO lineElementsVO = new LineElementsVO();
+        Line byId = mongoTemplate.findById(id, Line.class);
+        if (byId == null) {
+            throw new BasicException("线路不存在");
+        }
+        List<Destination> destinations = new ArrayList<>(8);
+        List<DestinationGroup> destinationGroups = new ArrayList<>(8);
+        List<Line.Attribute> lineElements = byId.getLineElements();
+        if (lineElements.isEmpty()) {
+            lineElementsVO.setDestination(destinations);
+            lineElementsVO.setDestinationGroup(destinationGroups);
+            return ApiResult.ok(lineElementsVO);
+        }
+        lineElements.forEach(item -> {
+            Long id_ = item.getId();
+            if (LineElementType.DESTINATION.getCode() == item.getType()) {
+                Destination destination = mongoTemplate.findById(id_, Destination.class);
+                destinations.add(destination);
+            } else if (LineElementType.DESTINATION_GROUP.getCode() == item.getType()) {
+                DestinationGroup destinationGroup = mongoTemplate.findById(id_, DestinationGroup.class);
+                destinationGroups.add(destinationGroup);
+            }
+        });
+        lineElementsVO.setDestination(destinations);
+        lineElementsVO.setDestinationGroup(destinationGroups);
+        return ApiResult.ok(lineElementsVO);
     }
 }
