@@ -1,5 +1,7 @@
 package com.outletcn.app.controller;
 
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.utils.TencentCosUtil;
 import com.tencent.cloud.Response;
@@ -28,6 +30,7 @@ import java.util.Map;
 public class UploadController {
 
 
+    @LogRecord(type = "文件存储", success = "成功上传了文件,地址:{{#url}}", bizNo = "{{#key}}")
     @ApiOperation(value = "文件上传", notes = "上传文件,")
     @PostMapping(value = "/file")
     public ApiResult<Map<String, String>> upload(MultipartFile file) {
@@ -45,6 +48,8 @@ public class UploadController {
         }
         Map<String, String> map = new HashMap<>(2);
         map.put("url", url);
+        LogRecordContext.putVariable("url", url);
+        LogRecordContext.putVariable("key", key);
         return ApiResult.thin(ErrorCode.SUCCESS, map);
     }
 
