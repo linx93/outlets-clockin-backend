@@ -1,10 +1,10 @@
 package com.outletcn.app;
 
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
-import com.outletcn.app.model.dto.chain.CreateDestinationAttributeRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationTypeRequest;
+import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.Destination;
+import com.outletcn.app.model.mongo.DetailObjectType;
+import com.outletcn.app.service.chain.DestinationGroupService;
 import com.outletcn.app.service.chain.DestinationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ class OutletsClockinBackendApplicationTests {
         baseInfo.setOpenTime("早上10点");
         baseInfo.setCloseTime("下午4点");
 
-        CreateDestinationRequest.DetailsInfo detailsInfo = new CreateDestinationRequest.DetailsInfo();
+        DetailsInfo detailsInfo = new DetailsInfo();
         detailsInfo.setRecommendVideo("https://oss.phadata.net/01.mp4");
         detailsInfo.setRecommendAudio("https://oss.phadata.net/01.mp3");
         List<Map<String, Object>> descriptions = new ArrayList<>();
@@ -104,6 +104,66 @@ class OutletsClockinBackendApplicationTests {
         createDestinationRequest.setDetailsInfo(detailsInfo);
 
         service.createDestination(createDestinationRequest);
+//        service.modifyDestination(createDestinationRequest, 1526028166982877186L);
     }
 
+    @Test
+    void testDeleteDestination() {
+        boolean b = service.deleteDestination(1526087701726564354L);
+        System.out.println(b);
+    }
+
+    @Autowired
+    DestinationGroupService destinationGroupService;
+
+    @Test
+    void testCreateDestinationGroup() {
+
+        CreateDestinationGroupRequest createDestinationGroupRequest = new CreateDestinationGroupRequest();
+        CreateDestinationGroupRequest.BaseInfo baseInfo = new CreateDestinationGroupRequest.BaseInfo();
+        baseInfo.setGroupName("贵州金融城");
+        baseInfo.setGroupAttrs(Arrays.asList(new String[]{"景点", "餐饮", "娱乐"}));
+        baseInfo.setSummary("贵州金融城");
+        baseInfo.setDestinations(Arrays.asList(new Long[]{1526087701726564354L}));
+        baseInfo.setPutOn(1);
+        baseInfo.setGroupRecommendImage("https://oss.phadata.net/01.jpeg");
+        baseInfo.setGroupRecommendSquareImage("https://oss.phadata.net/01.jpeg");
+        baseInfo.setGroupMainAddress("贵州金融城MAX-D");
+        baseInfo.setGroupMainLongitude("106.646353");
+        baseInfo.setGroupMainLatitude("26.649896");
+
+
+        DetailsInfo detailsInfo = new DetailsInfo();
+        detailsInfo.setRecommendVideo("https://oss.phadata.net/01.mp4");
+        detailsInfo.setRecommendAudio("https://oss.phadata.net/01.mp3");
+        List<Map<String, Object>> descriptions = new ArrayList<>();
+        Map<String,Object> descriptionA = new LinkedHashMap<>();
+        descriptionA.put("type", "text");
+        descriptionA.put("content", "123.txt");
+
+        Map<String,Object> descriptionB = new LinkedHashMap<>();
+        descriptionB.put("type", "image");
+        descriptionB.put("content", "123.png");
+
+        Map<String,Object> descriptionC = new LinkedHashMap<>();
+        descriptionC.put("type", "video");
+        descriptionC.put("content", "123.mp4");
+
+        Map<String,Object> descriptionD = new LinkedHashMap<>();
+        descriptionD.put("type", "text");
+        descriptionD.put("content", "456.txt");
+
+        descriptions.add(descriptionA);
+        descriptions.add(descriptionB);
+        descriptions.add(descriptionC);
+        descriptions.add(descriptionD);
+        detailsInfo.setDescriptions(descriptions);
+
+
+        createDestinationGroupRequest.setBaseInfo(baseInfo);
+        createDestinationGroupRequest.setDetailsInfo(detailsInfo);
+
+        destinationGroupService.createDestinationGroup(createDestinationGroupRequest);
+
+    }
 }

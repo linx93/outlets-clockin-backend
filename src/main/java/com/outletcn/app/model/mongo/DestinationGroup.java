@@ -31,6 +31,11 @@ public class DestinationGroup implements Serializable {
     private List<String> groupAttrs;
 
     /**
+     * 目的地集合
+     */
+    private List<Long> destinations;
+
+    /**
      * 摘要
      */
     private String summary;

@@ -1,23 +1,22 @@
 package com.outletcn.app.service.chain.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
+import com.mongodb.client.result.DeleteResult;
 import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.exception.BasicException;
-import com.outletcn.app.model.dto.chain.CreateDestinationAttributeRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationTypeRequest;
-import com.outletcn.app.model.mongo.Destination;
-import com.outletcn.app.model.mongo.DestinationAttribute;
-import com.outletcn.app.model.mongo.DestinationType;
-import com.outletcn.app.model.mongo.DetailObjectType;
+import com.outletcn.app.model.dto.chain.*;
+import com.outletcn.app.model.mongo.*;
 import com.outletcn.app.service.chain.DestinationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -29,7 +28,7 @@ import java.util.UUID;
  */
 @Slf4j
 @AllArgsConstructor
-@Service
+@Service("destinationService")
 public class DestinationServiceImpl implements DestinationService {
 
 
@@ -39,57 +38,62 @@ public class DestinationServiceImpl implements DestinationService {
     @Override
     public void createDestination(CreateDestinationRequest createDestinationRequest) {
 
-        Destination destination = new Destination();
-        CreateDestinationRequest.BaseInfo baseInfo = createDestinationRequest.getBaseInfo();
-        CreateDestinationRequest.DetailsInfo detailsInfo = createDestinationRequest.getDetailsInfo();
-
-        long primaryId = sequence.nextId();
-        destination.setId(primaryId);
-        destination.setDestinationId(UUID.randomUUID().toString());
-        destination.setDestinationName(baseInfo.getDestinationName());
-        destination.setDestinationAttrs(baseInfo.getDestinationAttrs());
-        destination.setDestinationRecommendImage(baseInfo.getDestinationRecommendImage());
-        destination.setDestinationRecommendSquareImage(baseInfo.getDestinationRecommendSquareImage());
-        destination.setDestinationType(baseInfo.getDestinationType());
-        destination.setSummary(baseInfo.getSummary());
-        destination.setPutOn(1); // 默认未上架
-        destination.setMajorDestination(baseInfo.getMajorDestination());
-        destination.setAddress(baseInfo.getAddress());
-        destination.setLongitude(baseInfo.getLongitude());
-        destination.setLatitude(baseInfo.getLatitude());
-        destination.setForOldPeople(baseInfo.getForOldPeople());
-        destination.setForChildren(baseInfo.getForChildren());
-        destination.setOpenTime(baseInfo.getOpenTime());
-        destination.setCloseTime(baseInfo.getCloseTime());
-
-        long time = Instant.now().getEpochSecond();
-        destination.setCreateTime(time);
-        destination.setUpdateTime(time);
         try {
-            mongoTemplate.save(destination);
+            Destination destination = new Destination();
+            CreateDestinationRequest.BaseInfo baseInfo = createDestinationRequest.getBaseInfo();
+
+            long primaryId = sequence.nextId();
+            destination.setId(primaryId);
+            destination.setDestinationId(UUID.randomUUID().toString());
+            destination.setDestinationName(baseInfo.getDestinationName());
+            destination.setDestinationAttrs(baseInfo.getDestinationAttrs());
+            destination.setDestinationRecommendImage(baseInfo.getDestinationRecommendImage());
+            destination.setDestinationRecommendSquareImage(baseInfo.getDestinationRecommendSquareImage());
+            destination.setDestinationType(baseInfo.getDestinationType());
+            destination.setSummary(baseInfo.getSummary());
+            destination.setPutOn(0); // 默认上架
+            destination.setMajorDestination(baseInfo.getMajorDestination());
+            destination.setAddress(baseInfo.getAddress());
+            destination.setLongitude(baseInfo.getLongitude());
+            destination.setLatitude(baseInfo.getLatitude());
+            destination.setForOldPeople(baseInfo.getForOldPeople());
+            destination.setForChildren(baseInfo.getForChildren());
+            destination.setOpenTime(baseInfo.getOpenTime());
+            destination.setCloseTime(baseInfo.getCloseTime());
+
+            long time = Instant.now().getEpochSecond();
+            destination.setCreateTime(time);
+            destination.setUpdateTime(time);
+            try {
+                mongoTemplate.save(destination);
+            } catch (Exception ex) {
+                log.error("保存目的地失败：" + ex.getMessage());
+                throw new BasicException(ex.getMessage());
+            }
+
+            DetailsInfo detailsInfo = createDestinationRequest.getDetailsInfo();
+            if (!Objects.isNull(detailsInfo)) {
+                DetailObjectType detailObjectType = new DetailObjectType();
+                detailObjectType.setId(sequence.nextId());
+                detailObjectType.setObjectType(ClockInType.Destination.getType());
+                detailObjectType.setObjectId(primaryId);
+                detailObjectType.setRecommendVideo(detailsInfo.getRecommendVideo());
+                detailObjectType.setRecommendAudio(detailsInfo.getRecommendAudio());
+                detailObjectType.setDescriptions(detailsInfo.getDescriptions());
+                detailObjectType.setCreateTime(time);
+                detailObjectType.setUpdateTime(time);
+                try {
+                    mongoTemplate.save(detailObjectType);
+                } catch (Exception ex) {
+                    log.error("保存目的地详情失败：" + ex.getMessage());
+                    mongoTemplate.remove(destination);
+                    throw new BasicException(ex.getMessage());
+                }
+            }
         } catch (Exception ex) {
-            log.error("保存目的地失败：" + ex.getMessage());
-            throw new BasicException("保存目的地失败：" + ex.getMessage());
+            throw new BasicException("保存目的地详情失败：" + ex.getMessage());
         }
 
-        if (!Objects.isNull(detailsInfo)) {
-            DetailObjectType detailObjectType = new DetailObjectType();
-            detailObjectType.setId(sequence.nextId());
-            detailObjectType.setObjectType(ClockInType.Destination.getType());
-            detailObjectType.setObjectId(primaryId);
-            detailObjectType.setRecommendVideo(detailsInfo.getRecommendVideo());
-            detailObjectType.setRecommendAudio(detailsInfo.getRecommendAudio());
-            detailObjectType.setDescriptions(detailsInfo.getDescriptions());
-            detailObjectType.setCreateTime(time);
-            detailObjectType.setUpdateTime(time);
-            try {
-                mongoTemplate.save(detailObjectType);
-            } catch (Exception ex) {
-                log.error("保存目的地详情失败：" + ex.getMessage());
-                mongoTemplate.remove(destination);
-                throw new BasicException("保存目的地详情失败：" + ex.getMessage());
-            }
-        }
     }
 
     @Override
@@ -118,5 +122,134 @@ public class DestinationServiceImpl implements DestinationService {
         mongoTemplate.save(destinationAttribute);
 
 
+    }
+
+    @Override
+    public boolean deleteDestination(Long id) {
+        try {
+            // 判断是否在目的地群
+            List<DestinationGroupRelation> destinationGroupRelations = mongoTemplate.find(Query.query(
+                    Criteria.where("destinationId").is(id)), DestinationGroupRelation.class);
+            if (!destinationGroupRelations.isEmpty()) {
+                List<Long> groupIds = new ArrayList<>();
+                List<String> groupNames = new ArrayList<>();
+                destinationGroupRelations.stream().forEach(destinationGroupRelation -> {
+                    Long groupId = destinationGroupRelation.getGroupId();
+                    groupIds.add(groupId);
+                });
+                List<DestinationGroup> destinationGroups = mongoTemplate.find(Query.query(
+                        Criteria.where("id").in(groupIds)), DestinationGroup.class);
+                if (!destinationGroups.isEmpty()) {
+                    destinationGroups.stream().forEach(destinationGroup -> {
+                        String groupName = destinationGroup.getGroupName();
+                        groupNames.add(groupName);
+                    });
+                }
+                log.error("删除失败，目的地存在于目的地群中：" + groupNames);
+                throw new BasicException("目的地存在于目的地群中：" + groupNames);
+            }
+
+            // 判断是否在线路
+            List<Line> lines = mongoTemplate.findAll(Line.class);
+            List<Line> hasLines = new ArrayList<>();
+            lines.stream().forEach(line -> {
+                List<Line.Attribute> lineElements = line.getLineElements();
+                lineElements.stream().forEach(attribute -> {
+                    int type = attribute.getType();
+                    if (type == ClockInType.Destination.getType()) {
+                        Long attributeId = attribute.getId();
+                        if (attributeId == id) {
+                            hasLines.add(line);
+                        }
+                    }
+                });
+            });
+
+            if (!hasLines.isEmpty()) {
+                List<String> lineNames = new ArrayList<>();
+                for (Line line : hasLines) {
+                    lineNames.add(line.getLineName());
+                }
+                throw new BasicException("目的地存在于线路中：" + lineNames);
+            }
+
+            DeleteResult deleteResult = mongoTemplate.remove(Query.query(Criteria.where("id").is(id)), Destination.class);
+            long deletedCount = deleteResult.getDeletedCount();
+            if (deletedCount == 1) {
+                // 删除详情
+                mongoTemplate.remove(Query.query(Criteria.where("objectId").is(id)
+                        .and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+                return Boolean.TRUE;
+            }
+        } catch (Exception ex) {
+            throw new BasicException(ex.getMessage());
+        }
+        return Boolean.FALSE;
+    }
+
+    @Override
+    public void modifyDestination(CreateDestinationRequest createDestinationRequest, Long id) {
+        Destination destination = mongoTemplate.findOne(
+                Query.query(Criteria.where("id").is(id)), Destination.class);
+        if (Objects.isNull(destination)) {
+            throw new BasicException("更新失败：目的地不存在");
+        }
+
+        Destination destinationBackup = destination;
+
+        CreateDestinationRequest.BaseInfo baseInfo = createDestinationRequest.getBaseInfo();
+        destination.setDestinationName(baseInfo.getDestinationName());
+        destination.setDestinationAttrs(baseInfo.getDestinationAttrs());
+        destination.setDestinationRecommendImage(baseInfo.getDestinationRecommendImage());
+        destination.setDestinationRecommendSquareImage(baseInfo.getDestinationRecommendSquareImage());
+        destination.setDestinationType(baseInfo.getDestinationType());
+        destination.setSummary(baseInfo.getSummary());
+        destination.setMajorDestination(baseInfo.getMajorDestination());
+        destination.setAddress(baseInfo.getAddress());
+        destination.setLongitude(baseInfo.getLongitude());
+        destination.setLatitude(baseInfo.getLatitude());
+        destination.setForOldPeople(baseInfo.getForOldPeople());
+        destination.setForChildren(baseInfo.getForChildren());
+        destination.setOpenTime(baseInfo.getOpenTime());
+        destination.setCloseTime(baseInfo.getCloseTime());
+
+        long time = Instant.now().getEpochSecond();
+        destination.setUpdateTime(time);
+        try {
+            mongoTemplate.save(destination);
+        } catch (Exception ex) {
+            log.error("更新目的地失败：" + ex.getMessage());
+            throw new BasicException("更新目的地失败：" + ex.getMessage());
+        }
+
+        DetailsInfo detailsInfo = createDestinationRequest.getDetailsInfo();
+        if (!Objects.isNull(detailsInfo)) {
+            DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(
+                    Criteria.where("objectId").is(id).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+            detailObjectType.setRecommendVideo(detailsInfo.getRecommendVideo());
+            detailObjectType.setRecommendAudio(detailsInfo.getRecommendAudio());
+            detailObjectType.setDescriptions(detailsInfo.getDescriptions());
+            detailObjectType.setUpdateTime(time);
+            try {
+                mongoTemplate.save(detailObjectType);
+            } catch (Exception ex) {
+                log.error("更新目的地详情失败：" + ex.getMessage());
+                mongoTemplate.save(destinationBackup);
+                throw new BasicException("更新目的地详情失败：" + ex.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void putOnDestination(PutOnRequest putOnRequest) {
+        Long id = putOnRequest.getId();
+        Destination destination = mongoTemplate.findOne(Query.query(
+                Criteria.where("id").is(id)), Destination.class);
+        destination.setPutOn(putOnRequest.getPutOn());
+        try {
+            mongoTemplate.save(destination);
+        } catch (Exception ex) {
+            throw new BasicException("置顶目的地失败：" + ex.getMessage());
+        }
     }
 }
