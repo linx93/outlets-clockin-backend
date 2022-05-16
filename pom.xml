@@ -62,8 +62,19 @@
                     <artifactId>javassist</artifactId>
                     <groupId>org.javassist</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>mapstruct</artifactId>
+                    <groupId>org.mapstruct</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.28.0-GA</version>
+        </dependency>
+
         <!--公司内部公共组件-->
         <dependency>
             <groupId>net.phadata.app</groupId>
@@ -122,6 +133,12 @@
             <groupId>io.github.mouzt</groupId>
             <artifactId>bizlog-sdk</artifactId>
             <version>2.0.3</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>lombok</artifactId>
+                    <groupId>org.projectlombok</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

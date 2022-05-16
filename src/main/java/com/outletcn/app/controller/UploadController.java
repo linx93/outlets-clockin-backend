@@ -1,5 +1,7 @@
 package com.outletcn.app.controller;
 
+import com.github.xiaoymin.knife4j.annotations.DynamicParameter;
+import com.github.xiaoymin.knife4j.annotations.DynamicResponseParameters;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import com.outletcn.app.exception.BasicException;
@@ -30,8 +32,11 @@ import java.util.Map;
 public class UploadController {
 
 
+    @DynamicResponseParameters(properties = {
+            @DynamicParameter(name = "url", value = "文件地址", example = "https://test-1311883259.cos.ap-chongqing.myqcloud.com/8bfb571890ef4bd59073e86216208315.pdf"),
+    })
     @LogRecord(type = "文件存储", success = "成功上传了文件,地址:{{#url}}", bizNo = "{{#key}}", fail = "{{#fail}}")
-    @ApiOperation(value = "文件上传", notes = "上传文件,")
+    @ApiOperation(value = "文件上传", notes = "上传文件,文件大小限制32MB")
     @PostMapping(value = "/file")
     public ApiResult<Map<String, String>> upload(MultipartFile file) {
         if (file.isEmpty()) {
@@ -56,7 +61,7 @@ public class UploadController {
 
     @ApiOperation(value = "获取临时密钥", notes = "对上传大文件进行上传时，需要获取临时密钥,前端使用参考https://my.oschina.net/u/214777/blog/5464539")
     @GetMapping(value = "/get-temp-key")
-    public ApiResult<?> get() {
+    public ApiResult<Response> get() {
         Response credential = TencentCosUtil.getCredentialOneBucket();
         log.info("获取临时密钥 credential :{}", credential);
         return ApiResult.thin(ErrorCode.SUCCESS, credential);
