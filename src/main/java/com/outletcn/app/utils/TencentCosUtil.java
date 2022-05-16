@@ -1,6 +1,7 @@
 package com.outletcn.app.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
@@ -12,23 +13,20 @@ import com.qcloud.cos.region.Region;
 import com.qcloud.cos.transfer.*;
 import com.tencent.cloud.CosStsClient;
 import com.tencent.cloud.Response;
-import com.tencentcloudapi.common.exception.TencentCloudSDKException;
-import com.tencentcloudapi.common.profile.ClientProfile;
-import com.tencentcloudapi.common.profile.HttpProfile;
-import com.tencentcloudapi.common.profile.Language;
-import com.tencentcloudapi.common.Credential;
 
+
+import com.tencent.cloud.Scope;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -38,6 +36,7 @@ import java.util.concurrent.Executors;
  * 腾讯云OSS工具类
  */
 @Slf4j
+@Component
 public class TencentCosUtil {
 
     //签名过期。Timestamp和服务器时间1652429111相差过大，请使用本地时间并注意开启NTP服务进行时间同步。
@@ -46,18 +45,44 @@ public class TencentCosUtil {
      * SecretId: AKIDwiHacNt8GBpDKAj23nGSN0MRFEwNXQ2N
      * SecretKey: 7xVmmW2HFxPaU8VbPwDF0UifLjriIbdP
      */
-    private static final String REGION = "ap-chongqing";
 
-    private static final String ACCESS_KEY_ID = "AKIDwiHacNt8GBpDKAj23nGSN0MRFEwNXQ2N";
+    private static String REGION;
 
-    private static final String ACCESS_KEY_SECRET = "7xVmmW2HFxPaU8VbPwDF0UifLjriIbdP";
+    private static String ACCESS_KEY_ID;
 
-    private static final String APP_ID = "1311883259";
+    private static String ACCESS_KEY_SECRET;
+
+    private static String APP_ID;
     /**
      * 存储桶的命名格式为 BucketName-APPID，此处填写的存储桶名称必须为此格式
      */
-    private static final String BUCKET_NAME = "test-" + APP_ID;
 
+    private static String BUCKET_NAME;
+
+    @Value("${tencent.cos.region}")
+    public void setREGION(String REGION) {
+        TencentCosUtil.REGION = REGION;
+    }
+
+    @Value("${tencent.cos.secret-id}")
+    public void setAccessKeyId(String accessKeyId) {
+        ACCESS_KEY_ID = accessKeyId;
+    }
+
+    @Value("${tencent.cos.secret-key}")
+    public void setAccessKeySecret(String accessKeySecret) {
+        ACCESS_KEY_SECRET = accessKeySecret;
+    }
+
+    @Value("${tencent.cos.appid}")
+    public void setAppId(String appId) {
+        APP_ID = appId;
+    }
+
+    @Value("${tencent.cos.bucket-name}")
+    public void setBucketName(String bucketName) {
+        BUCKET_NAME = bucketName;
+    }
 
     public static COSClient cosClient() {
         // 创建 COSClient 实例，这个实例用来后续调用请求
@@ -94,6 +119,7 @@ public class TencentCosUtil {
         return new COSClient(cred, clientConfig);
     }
 
+
     /**
      * 创建 TransferManager 实例，这个实例用来后续调用高级接口
      */
@@ -123,7 +149,7 @@ public class TencentCosUtil {
     /**
      * 获取临时密钥
      */
-    public static Response getCredential() {
+    public static Response getCredentialOneBucket() {
 
         TreeMap<String, Object> config = new TreeMap<>();
 
@@ -145,10 +171,7 @@ public class TencentCosUtil {
             config.put("region", REGION);
 
             // 可以通过 allowPrefixes 指定前缀数组, 例子： a.jpg 或者 a/* 或者 * (使用通配符*存在重大安全风险, 请谨慎评估使用)
-            config.put("allowPrefixes", new String[]{
-                    "exampleobject",
-                    "exampleobject2"
-            });
+            config.put("allowPrefixes", new String[]{"*"});
 
             // 密钥的权限列表。简单上传和分片需要以下的权限，其他权限列表请看 https://cloud.tencent.com/document/product/436/31923
             String[] allowActions = new String[]{
@@ -170,17 +193,39 @@ public class TencentCosUtil {
             System.out.println(response.credentials.sessionToken);
             return response;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("获取临时密钥失败 {}", e.getMessage(), e);
             throw new IllegalArgumentException("no valid secret !");
         }
     }
 
 
+    public static Response getCredentialManyBucket() {
+        TreeMap<String, Object> config = new TreeMap<>();
+        try {
+            // 固定密钥 SecretId
+            config.put("secretId", ACCESS_KEY_ID);
+            // 固定密钥 SecretKey
+            config.put("secretKey", ACCESS_KEY_SECRET);
+            // 临时密钥有效时长，单位是秒
+            config.put("durationSeconds", 1800);
+            //设置 policy
+            List<Scope> scopes = new ArrayList<>();
+            Scope scope = new Scope("name/cos:PutObject", BUCKET_NAME, REGION, "");
+            scopes.add(scope);
+            scopes.add(new Scope("name/cos:GetObject", BUCKET_NAME, REGION, ""));
+            config.put("policy", CosStsClient.getPolicy(scopes));
+            return CosStsClient.getCredential(config);
+        } catch (Exception e) {
+            log.error("获取临时密钥失败 {}", e.getMessage(), e);
+            throw new IllegalArgumentException("no valid secret !");
+        }
+    }
+
     /**
      * @param file 文件
      * @param key  对象键(Key)是对象在存储桶中的唯一标识。
      */
-    public static void upload(File file, String key) {
+    public static void advancedUpload(File file, String key) {
         // 使用高级接口必须先保证本进程存在一个 TransferManager 实例，如果没有则创建
         // 详细代码参见本页：高级接口 -> 创建 TransferManager
         TransferManager transferManager = createTransferManager();
@@ -204,10 +249,50 @@ public class TencentCosUtil {
         shutdownTransferManager(transferManager);
     }
 
+
+    /**
+     * 简单上传
+     */
+    public static String simpleUpload(File file, String key) {
+        COSClient client = cosClient();
+        PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET_NAME, key, file);
+        try {
+            PutObjectResult putObjectResult = client.putObject(putObjectRequest);
+            System.out.println(putObjectResult.getRequestId());
+        } catch (CosClientException e) {
+            log.error("cosClientException", e);
+        }
+        URL url = client.getObjectUrl(BUCKET_NAME, key);
+        return url.toString();
+    }
+
+    /**
+     * @param inputStream
+     * @param key
+     * @return
+     */
+    public static String simpleUpload(InputStream inputStream, String key) {
+        COSClient client = cosClient();
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        // 上传的流如果能够获取准确的流长度，则推荐一定填写 content-length
+        // 如果确实没办法获取到，则下面这行可以省略，但同时高级接口也没办法使用分块上传了
+        try {
+            objectMetadata.setContentLength(inputStream.available());
+            PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET_NAME, key, inputStream, objectMetadata);
+            PutObjectResult putObjectResult = client.putObject(putObjectRequest);
+            log.info("requestID: {}", putObjectResult.getRequestId());
+        } catch (CosClientException | IOException e) {
+            log.error("cosClientException", e);
+        }
+        URL url = client.getObjectUrl(BUCKET_NAME, key);
+        return url.toString();
+    }
+
+
     /**
      * @param key 对象键(Key)是对象在存储桶中的唯一标识。
      */
-    public static String upload(InputStream inputStream, String key) {
+    public static String advancedUpload(InputStream inputStream, String key) {
         // 使用高级接口必须先保证本进程存在一个 TransferManager 实例，如果没有则创建
         // 详细代码参见本页：高级接口 -> 创建 TransferManager
         TransferManager transferManager = createTransferManager();
@@ -371,7 +456,7 @@ public class TencentCosUtil {
 //        getlist();
 
 
-        getCredential();
+        getCredentialOneBucket();
 
 
     }
