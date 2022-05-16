@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.mongodb.client.result.DeleteResult;
 import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.exception.BasicException;
+import com.outletcn.app.model.dto.chain.CreateDestinationGroupAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
 import com.outletcn.app.model.dto.chain.DetailsInfo;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
@@ -117,7 +118,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
                 int type = attribute.getType();
                 if (type == ClockInType.DestinationGroup.getType()) {
                     Long attributeId = attribute.getId();
-                    if (attributeId == id) {
+                    if (attributeId.equals(id)) {
                         hasLines.add(line);
                     }
                 }
@@ -157,8 +158,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
     @Override
     public void modifyDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest, Long id) {
 
-        DestinationGroup destinationGroup = mongoTemplate.findOne(
-                Query.query(Criteria.where("id").is(id)), DestinationGroup.class);
+        DestinationGroup destinationGroup = mongoTemplate.findById(id, DestinationGroup.class);
         if (Objects.isNull(destinationGroup)) {
             throw new BasicException("更新失败：目的地群不存在");
         }
@@ -197,10 +197,25 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
     }
 
     @Override
-    public void putOnDestination(PutOnRequest putOnRequest) {
+    public void createDestinationGroupAttribute(CreateDestinationGroupAttributeRequest createDestinationGroupAttributeRequest) {
+
+        DestinationGroupAttribute destinationGroupAttribute = new DestinationGroupAttribute();
+        destinationGroupAttribute.setId(sequence.nextId());
+        destinationGroupAttribute.setAttribute(createDestinationGroupAttributeRequest.getDestinationGroupAttribute());
+        long time = Instant.now().getEpochSecond();
+        destinationGroupAttribute.setCreateTime(time);
+        destinationGroupAttribute.setUpdateTime(time);
+        try {
+            mongoTemplate.save(destinationGroupAttribute);
+        } catch (Exception ex) {
+            throw new BasicException("创建目的地群属性失败：" + ex.getMessage());
+        }
+    }
+
+    @Override
+    public void putOnDestinationGroup(PutOnRequest putOnRequest) {
         Long id = putOnRequest.getId();
-        DestinationGroup destinationGroup = mongoTemplate.findOne(Query.query(
-                Criteria.where("id").is(id)), DestinationGroup.class);
+        DestinationGroup destinationGroup = mongoTemplate.findById(id, DestinationGroup.class);
         destinationGroup.setPutOn(putOnRequest.getPutOn());
         try {
             mongoTemplate.save(destinationGroup);

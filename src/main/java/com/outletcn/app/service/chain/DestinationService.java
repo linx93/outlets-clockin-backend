@@ -4,6 +4,9 @@ import com.outletcn.app.model.dto.chain.CreateDestinationAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateDestinationRequest;
 import com.outletcn.app.model.dto.chain.CreateDestinationTypeRequest;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
+import com.outletcn.app.model.mongo.Destination;
+
+import java.util.List;
 
 /**
  * @author tanwei
@@ -50,4 +53,16 @@ public interface DestinationService {
      * @param putOnRequest
      */
     void putOnDestination(PutOnRequest putOnRequest);
+
+    /**
+     * 基于名称模糊查询
+     * @param name
+     */
+    List<Destination> findDestinationByName(String name);
+
+    /**
+     * 基于属性模糊查询
+     * @param attr
+     */
+    List<Destination> findDestinationByAttr(String attr);
 }

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * @author tanwei
@@ -119,8 +120,11 @@ public class DestinationServiceImpl implements DestinationService {
         long time = Instant.now().getEpochSecond();
         destinationAttribute.setCreateTime(time);
         destinationAttribute.setUpdateTime(time);
-        mongoTemplate.save(destinationAttribute);
-
+        try {
+            mongoTemplate.save(destinationAttribute);
+        } catch (Exception ex) {
+            throw new BasicException("创建目的地属性失败：" + ex.getMessage());
+        }
 
     }
 
@@ -158,7 +162,7 @@ public class DestinationServiceImpl implements DestinationService {
                     int type = attribute.getType();
                     if (type == ClockInType.Destination.getType()) {
                         Long attributeId = attribute.getId();
-                        if (attributeId == id) {
+                        if (attributeId.equals(id)) {
                             hasLines.add(line);
                         }
                     }
@@ -189,8 +193,7 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Override
     public void modifyDestination(CreateDestinationRequest createDestinationRequest, Long id) {
-        Destination destination = mongoTemplate.findOne(
-                Query.query(Criteria.where("id").is(id)), Destination.class);
+        Destination destination = mongoTemplate.findById(id, Destination.class);
         if (Objects.isNull(destination)) {
             throw new BasicException("更新失败：目的地不存在");
         }
@@ -243,13 +246,34 @@ public class DestinationServiceImpl implements DestinationService {
     @Override
     public void putOnDestination(PutOnRequest putOnRequest) {
         Long id = putOnRequest.getId();
-        Destination destination = mongoTemplate.findOne(Query.query(
-                Criteria.where("id").is(id)), Destination.class);
+        Destination destination = mongoTemplate.findById(id, Destination.class);
         destination.setPutOn(putOnRequest.getPutOn());
         try {
             mongoTemplate.save(destination);
         } catch (Exception ex) {
             throw new BasicException("上下架目的地失败：" + ex.getMessage());
         }
+    }
+
+    @Override
+    public List<Destination> findDestinationByName(String name) {
+        Query query = new Query();
+        Pattern pattern = Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
+        query.addCriteria(Criteria.where("destinationName").regex(pattern));
+        List<Destination> destinations = mongoTemplate.find(query, Destination.class);
+        return destinations;
+    }
+
+    @Override
+    public List<Destination> findDestinationByAttr(String attr) {
+        List<Destination> destinations = mongoTemplate.findAll(Destination.class);
+        List<Destination> destinationsByAttr = new ArrayList<>();
+        for (Destination destination : destinations) {
+            List<String> destinationAttrs = destination.getDestinationAttrs();
+            if (destinationAttrs.contains(attr)) {
+                destinationsByAttr.add(destination);
+            }
+        }
+        return destinationsByAttr;
     }
 }

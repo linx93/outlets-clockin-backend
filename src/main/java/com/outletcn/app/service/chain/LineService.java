@@ -1,5 +1,7 @@
 package com.outletcn.app.service.chain;
 
+import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
+import com.outletcn.app.model.dto.chain.CreateLineRequest;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
 
 /**
@@ -11,8 +13,20 @@ import com.outletcn.app.model.dto.chain.PutOnRequest;
 public interface LineService {
 
     /**
+     * 创建线路
+     * @param createLineRequest
+     */
+    void createLine(CreateLineRequest createLineRequest);
+
+    /**
+     * 创建线路属性
+     * @param createLineAttributeRequest
+     */
+    void createLineAttribute(CreateLineAttributeRequest createLineAttributeRequest);
+
+    /**
      * 上/下架线路
      * @param putOnRequest
      */
-    void putOnDestination(PutOnRequest putOnRequest);
+    void putOnLine(PutOnRequest putOnRequest);
 }
