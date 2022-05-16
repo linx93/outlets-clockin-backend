@@ -6,6 +6,7 @@ import com.outletcn.app.model.dto.LoginRequest;
 import com.outletcn.app.model.dto.LoginResponse;
 import com.outletcn.app.model.dto.applet.AppletLoginRequest;
 import com.outletcn.app.service.AuthService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,7 @@ import javax.validation.Valid;
  * @author linx
  * @since 2022-05-16
  */
+@Api(tags = "核销小程序用户")
 @AllArgsConstructor
 @RestController
 @RequestMapping("/write-off")

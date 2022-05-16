@@ -18,7 +18,7 @@ public class UpdateUserRequest {
     @ApiModelProperty(value = "手机号")
     private String phone;
 
-    @ApiModelProperty(value = "性别（0:男，1:女）")
+    @ApiModelProperty(value = "性别（0:未知 1:男 2:女）")
     private Integer gender;
 
     @ApiModelProperty(value = "头像")

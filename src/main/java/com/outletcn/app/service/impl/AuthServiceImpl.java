@@ -114,7 +114,7 @@ public class AuthServiceImpl extends ServiceImpl<AuthMapper, Auth> implements Au
     }
     private LoginResponse buildLoginResponse(ClockInUser clockInUser, Auth auth) {
         UserInfo userInfo = userConverter.toUserInfo(clockInUser, auth);
-        userInfo.setType(UserTypeEnum.WRITE_OFF);
+        userInfo.setType(UserTypeEnum.CLOCK_IN);
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setUserInfo(userInfo);
         String jwtToken = JwtUtil.create(userInfo.getAccount(), userInfo);

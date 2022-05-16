@@ -4,6 +4,7 @@ import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.UpdateUserRequest;
 import com.outletcn.app.model.mysql.Auth;
 import com.outletcn.app.model.mysql.ClockInUser;
+import com.outletcn.app.model.mysql.Operator;
 import com.outletcn.app.model.mysql.WriteOffUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,6 +25,10 @@ public interface UserConverter {
             @Mapping(source = "auth.id", target = "authId"),
     })
     UserInfo toUserInfo(WriteOffUser writeOffUser, Auth auth);
+
+
+    UserInfo toUserInfo(Operator one);
+
 
     @Mappings({
 
