@@ -11,8 +11,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 运营人员表[pc端的管理人员表]
-
+ * 认证表
  * </p>
  *
  * @author linx
@@ -20,27 +19,28 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="Operator对象", description="运营人员表[pc端的管理人员表]")
-public class Operator implements Serializable {
+@ApiModel(value="Auth对象", description="认证表")
+public class Auth implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "认证ID")
       @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
-    @ApiModelProperty(value = "用户账号（账号昵称）")
-    private String account;
+    @ApiModelProperty(value = "数字身份")
+    private String dtid;
 
-    @ApiModelProperty(value = "手机号")
-    private String phone;
+    @ApiModelProperty(value = "身份证")
+    private String idCard;
 
-    @ApiModelProperty(value = "密码")
-    private String password;
+    @ApiModelProperty(value = "姓名")
+    private String name;
 
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
-    @ApiModelProperty(value = "修改时间")
+    @ApiModelProperty(value = "更新时间")
     private Date updateTime;
 
 

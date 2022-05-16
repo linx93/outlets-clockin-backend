@@ -29,6 +29,6 @@ public class AppletConfigTest {
     @Test
     void weChatLoginTest() {
         //todo 暂时不能测试，需要和前端联调
-        Code2Session jscode = weChatApi.jscode2session(UserTypeEnum.OPERATOR, "JSCODE");
+        Code2Session jscode = weChatApi.jscode2session(UserTypeEnum.WRITE_OFF, "JSCODE");
     }
 }

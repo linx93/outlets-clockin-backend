@@ -62,7 +62,7 @@ public class CodeGenerator {
         // 5、策略配置
         StrategyConfig strategy = new StrategyConfig();
         String[] tables1 = {};
-        String[] tables = {"applet_user","gift_voucher","operator","punch_log","user"};
+        String[] tables = {"operator"};
         strategy.setInclude(tables);
 
         strategy.setNaming(NamingStrategy.underline_to_camel);//数据库表映射到实体的命名策略

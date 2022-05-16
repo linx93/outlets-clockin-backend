@@ -10,7 +10,7 @@ public enum UserTypeEnum {
     /**
      * 运营小程序用户
      */
-    OPERATOR,
+    WRITE_OFF,
     /**
      * 打卡小程序用户
      */

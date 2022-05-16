@@ -1,7 +1,7 @@
 package com.outletcn.app.common;
 
 import com.outletcn.app.model.dto.applet.ClockIn;
-import com.outletcn.app.model.dto.applet.Operator;
+import com.outletcn.app.model.dto.applet.WriteOff;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -17,6 +17,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "applet")
 public class AppletConfig {
     private ClockIn clockIn;
-    private Operator operator;
+    private WriteOff writeOff;
     private String address;
 }

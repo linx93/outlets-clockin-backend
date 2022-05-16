@@ -80,7 +80,7 @@ applet:
   clock-in:
     app-id: xxxxx
     secret: yyyyy
-  operator:
+  write-off:
     app-id: aaaaa
     secret: bbbbb
   address: https://api.weixin.qq.com

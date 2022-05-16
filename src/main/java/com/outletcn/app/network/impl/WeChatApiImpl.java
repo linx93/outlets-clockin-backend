@@ -67,9 +67,9 @@ public class WeChatApiImpl implements BaseApi, WeChatApi {
         if (userTypeEnum.equals(UserTypeEnum.CLOCK_IN)) {
             formMap.put("appid", appletConfig.getClockIn().getAppId());
             formMap.put("secret", appletConfig.getClockIn().getSecret());
-        } else if (userTypeEnum.equals(UserTypeEnum.OPERATOR)) {
-            formMap.put("appid", appletConfig.getOperator().getAppId());
-            formMap.put("secret", appletConfig.getOperator().getSecret());
+        } else if (userTypeEnum.equals(UserTypeEnum.WRITE_OFF)) {
+            formMap.put("appid", appletConfig.getWriteOff().getAppId());
+            formMap.put("secret", appletConfig.getWriteOff().getSecret());
         } else {
             throw new BasicException("无效的小程序用户类型");
         }
