@@ -75,6 +75,18 @@ public class GiftBag implements Serializable {
      */
     private Long updateTime;
 
+
+    /**
+     * 上下架时间
+     */
+    private Long stateUpdateTime;
+
+    /**
+     * 是否上架
+     * 0:是/1:否
+     */
+    private Integer putOn;
+
     /****仅在“是否为超级豪礼”选择为“是”时，可填写以下内容****/
 
     /**
@@ -87,10 +99,6 @@ public class GiftBag implements Serializable {
      */
     private String placeElement;
 
-    /**
-     * 是否上架
-     * 0:是/1:否
-     */
-    private Integer putOn;
+
 
 }

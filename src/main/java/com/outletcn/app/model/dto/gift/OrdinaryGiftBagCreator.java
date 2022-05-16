@@ -9,6 +9,9 @@ import javax.validation.constraints.NotNull;
 //普通礼品包创建
 @Data
 public class OrdinaryGiftBagCreator {
+
+    private Long id;
+
     /**
      * 礼品包名称
      */

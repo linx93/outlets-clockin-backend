@@ -1,22 +1,35 @@
 package com.outletcn.app.service.gift;
 
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.gift.*;
 
 public interface GiftService {
 
-    void CreateGift (GiftCreator giftCreator);
+    void createGift(GiftCreator giftCreator);
 
-    void CreateRealTypeGift (RealTypeGiftCreator realTypeGiftCreator);
+    void updateGift(GiftCreator giftCreator);
 
-    void CreateVoucherTypeGift (VoucherTypeGiftCreator voucherTypeGiftCreator);
+    GiftInfoResponse getGiftInfo(Long id);
 
-    Long CreateGiftBag (GiftBagCreator giftBagCreator);
+    void createRealTypeGift(RealTypeGiftCreator realTypeGiftCreator);
 
-    Long CreateLuxuryGiftBag (LuxuryGiftBagCreator luxuryGiftBagCreator);
+    void createVoucherTypeGift(VoucherTypeGiftCreator voucherTypeGiftCreator);
 
-    Long CreateOrdinaryGiftBag (OrdinaryGiftBagCreator ordinaryGiftBagCreator);
+    Long createGiftBag(GiftBagCreator giftBagCreator);
 
-    void CreateGiftBagRelation (Long giftBagId,Long giftId);
+    Long createLuxuryGiftBag(LuxuryGiftBagCreator luxuryGiftBagCreator);
 
-    void CreateGiftType (GiftTypeCreator giftTypeCreator);
+    void updateLuxuryGiftBag(LuxuryGiftBagCreator luxuryGiftBagCreator);
+
+    Long createOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator);
+
+    void updateOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator);
+
+    void createGiftBagRelation(Long giftBagId, Long giftId);
+
+    void createGiftType(GiftTypeCreator giftTypeCreator);
+
+    PageInfo<GiftBagListResponse> getGiftBagList(GiftBagListRequest giftBagListRequest);
+
+    PageInfo<GiftListResponse> getGiftList(GiftListRequest giftListRequest);
 }
