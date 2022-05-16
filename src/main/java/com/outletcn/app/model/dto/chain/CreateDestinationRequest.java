@@ -3,7 +3,6 @@ package com.outletcn.app.model.dto.chain;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author tanwei

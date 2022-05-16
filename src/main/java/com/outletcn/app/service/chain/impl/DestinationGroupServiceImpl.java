@@ -6,6 +6,7 @@ import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
 import com.outletcn.app.model.dto.chain.DetailsInfo;
+import com.outletcn.app.model.dto.chain.PutOnRequest;
 import com.outletcn.app.model.mongo.*;
 import com.outletcn.app.service.chain.DestinationGroupService;
 import lombok.AllArgsConstructor;
@@ -137,7 +138,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
             if (deletedCount == 1) {
                 // 删除详情
                 DeleteResult deleteResult1 = mongoTemplate.remove(Query.query(Criteria.where("objectId").is(id)
-                        .and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+                        .and("objectType").is(ClockInType.DestinationGroup.getType())), DetailObjectType.class);
                 if (deleteResult1.getDeletedCount() == 1) {
                     // 删除目的地-目的地群详情关联
                     DeleteResult deleteResult2 = mongoTemplate.remove(Query.query(
@@ -192,6 +193,19 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
                 mongoTemplate.save(destinationGroupBackup);
                 throw new BasicException("更新目的地群详情失败：" + ex.getMessage());
             }
+        }
+    }
+
+    @Override
+    public void putOnDestination(PutOnRequest putOnRequest) {
+        Long id = putOnRequest.getId();
+        DestinationGroup destinationGroup = mongoTemplate.findOne(Query.query(
+                Criteria.where("id").is(id)), DestinationGroup.class);
+        destinationGroup.setPutOn(putOnRequest.getPutOn());
+        try {
+            mongoTemplate.save(destinationGroup);
+        } catch (Exception ex) {
+            throw new BasicException("上下架目的地群失败：" + ex.getMessage());
         }
     }
 }

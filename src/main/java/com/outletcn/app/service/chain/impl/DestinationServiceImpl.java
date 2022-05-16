@@ -249,7 +249,7 @@ public class DestinationServiceImpl implements DestinationService {
         try {
             mongoTemplate.save(destination);
         } catch (Exception ex) {
-            throw new BasicException("置顶目的地失败：" + ex.getMessage());
+            throw new BasicException("上下架目的地失败：" + ex.getMessage());
         }
     }
 }

@@ -166,4 +166,10 @@ class OutletsClockinBackendApplicationTests {
         destinationGroupService.createDestinationGroup(createDestinationGroupRequest);
 
     }
+
+    @Test
+    void testDeleteDestinationGroup() {
+        boolean b = destinationGroupService.deleteDestinationGroup(1526099748220624898L);
+        System.out.println(b);
+    }
 }

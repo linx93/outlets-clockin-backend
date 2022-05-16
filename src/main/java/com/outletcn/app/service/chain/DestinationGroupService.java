@@ -1,6 +1,7 @@
 package com.outletcn.app.service.chain;
 
 import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
+import com.outletcn.app.model.dto.chain.PutOnRequest;
 
 /**
  * @author tanwei
@@ -29,4 +30,10 @@ public interface DestinationGroupService {
      * @param id
      */
     void modifyDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest, Long id);
+
+    /**
+     * 上/下架线路
+     * @param putOnRequest
+     */
+    void putOnDestination(PutOnRequest putOnRequest);
 }
