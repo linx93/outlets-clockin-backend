@@ -30,7 +30,7 @@ import java.util.Map;
 public class UploadController {
 
 
-    @LogRecord(type = "文件存储", success = "成功上传了文件,地址:{{#url}}", bizNo = "{{#key}}")
+    @LogRecord(type = "文件存储", success = "成功上传了文件,地址:{{#url}}", bizNo = "{{#key}}", fail = "{{#fail}}")
     @ApiOperation(value = "文件上传", notes = "上传文件,")
     @PostMapping(value = "/file")
     public ApiResult<Map<String, String>> upload(MultipartFile file) {
@@ -44,6 +44,7 @@ public class UploadController {
             url = TencentCosUtil.simpleUpload(file.getInputStream(), key);
         } catch (IOException e) {
             log.error("上传失败 :{}", e.getMessage(), e);
+            LogRecordContext.putVariable("fail", "上传失败:" + e.getMessage());
             throw new BasicException(ErrorCode.FAILED);
         }
         Map<String, String> map = new HashMap<>(2);

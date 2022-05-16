@@ -6,6 +6,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
+/**
+ * @author felix
+ */
 @Mapper(componentModel = "spring")
 public interface LogRecordConverter {
     /**

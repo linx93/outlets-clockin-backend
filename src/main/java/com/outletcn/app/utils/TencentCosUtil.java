@@ -1,7 +1,7 @@
 package com.outletcn.app.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.extension.api.R;
+import com.outletcn.app.exception.BasicException;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
@@ -111,12 +111,12 @@ public class TencentCosUtil {
         // 以下的设置，是可选的：
 
         // 设置 socket 读取超时，默认 30s
-        clientConfig.setSocketTimeout(30 * 1000);
+        clientConfig.setSocketTimeout(60 * 1000);
         // 设置建立连接超时，默认 30s
-        clientConfig.setConnectionTimeout(30 * 1000);
+        clientConfig.setConnectionTimeout(60 * 1000);
 
         //设置重试次数
-        clientConfig.setMaxErrorRetry(4);
+        clientConfig.setMaxErrorRetry(5);
 
         OnlyIOExceptionRetryPolicy retryPolicy = new OnlyIOExceptionRetryPolicy();
 
@@ -293,9 +293,11 @@ public class TencentCosUtil {
             PutObjectResult putObjectResult = client.putObject(putObjectRequest);
             log.info("requestID: {}", putObjectResult.getRequestId());
         } catch (CosClientException | IOException e) {
-            log.error("cosClientException", e);
+            log.error("cosClientException {}", e.getMessage(), e);
+            throw new BasicException(e.getMessage());
         }
         URL url = client.getObjectUrl(BUCKET_NAME, key);
+        client.shutdown();
         return url.toString();
     }
 
@@ -454,7 +456,7 @@ public class TencentCosUtil {
     /**
      * 获取文件名
      *
-     * @param args
+     * @param file file
      */
     public static String getFileName(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
