@@ -2,6 +2,7 @@ package com.outletcn.app.model.dto.applet;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.outletcn.app.model.mongo.Line;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +16,7 @@ import java.util.List;
  * @since 2022-05-16 16:22
  */
 @Data
-@ApiModel(value="线路展示对象", description="线路展示对象")
+@ApiModel(value = "线路展示对象", description = "线路展示对象")
 public class LineVO {
 
     @ApiModelProperty(value = "线路id")
@@ -37,7 +38,7 @@ public class LineVO {
      * 线路所含元素
      */
     @ApiModelProperty(value = "线路所含元素")
-    private List<Attribute> lineElements;
+    private List<Line.Attribute> lineElements;
 
     /**
      * 线路属性
@@ -81,13 +82,38 @@ public class LineVO {
     @ApiModelProperty(value = "线路预计游览时间，单位：小时")
     private Integer lineExpectTime;
 
-    @Data
-    public static class Attribute {
-        @ApiModelProperty(value = "类型 1:目的地 2:目的地群")
-        private int type;
 
-        @ApiModelProperty(value = "目的地或目的地群的ID")
-        @JsonSerialize(using = ToStringSerializer.class)
-        private Long id;
-    }
+    /**
+     * 是否上架
+     * 0:是/1:否
+     */
+    //private Integer putOn;
+
+    /**
+     * 是否置顶
+     * 0:是/1:否
+     */
+    private Integer stick;
+
+    /**
+     * 置顶时间
+     */
+    private Long stickTime;
+
+    /**
+     * 创建时间
+     */
+    //private Long createTime;
+
+    /**
+     * 更新时间
+     */
+    //private Long updateTime;
+
+    @ApiModelProperty(value = "打卡点数量和")
+    private Integer clockInDestinationSum;
+
+    @ApiModelProperty(value = "打卡签章数量和")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long clockInSignSum;
 }

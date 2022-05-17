@@ -116,7 +116,10 @@ public class Line implements Serializable {
 
     @Data
     public static class Attribute {
+        @ApiModelProperty(value = "类型 1:目的地 2:目的地群")
         private int type;
+
+        @ApiModelProperty(value = "目的地或目的地群的ID")
         @JsonSerialize(using = ToStringSerializer.class)
         private Long id;
     }

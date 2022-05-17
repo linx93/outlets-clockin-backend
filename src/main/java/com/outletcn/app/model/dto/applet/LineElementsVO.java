@@ -18,8 +18,8 @@ import java.util.List;
 @ApiModel(value="线路下的目的地和目的地群", description="线路下的目的地和目的地群")
 public class LineElementsVO {
     @ApiModelProperty(value = "目的地的集合")
-    private List<Destination> destination;
+    private List<DestinationVO> destination;
 
     @ApiModelProperty(value = "目的地群的集合")
-    private List<DestinationGroup> destinationGroup;
+    private List<DestinationGroupVO> destinationGroup;
 }

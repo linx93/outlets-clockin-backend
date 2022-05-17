@@ -1,7 +1,7 @@
 package com.outletcn.app.service.chain;
 
 import com.outletcn.app.common.ApiResult;
-import com.outletcn.app.model.dto.applet.LineElementsVO;
+import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateLineRequest;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
@@ -59,5 +59,25 @@ public interface LineService {
      * @param id 线路id
      * @return
      */
-    ApiResult<LineElementsVO> lineElementsById(Long id);
+    LineElementsVO lineElementsById(Long id);
+
+    /**
+     * 通过线路id查询线路下所有目的地的经纬度
+     * @param id 线路id
+     * @return apiResult
+     */
+    List<DestinationMapVO> lineElementsMapById(Long id);
+
+    /**
+     * 路线列表
+     * @param lineListRequest
+     * @return 路线列表
+     */
+    List<LineVO> lineList(LineListRequest lineListRequest);
+
+    /**
+     * 路线的选项卡接口
+     * @return LineTabVO
+     */
+    List<LineTabVO> lineTab();
 }

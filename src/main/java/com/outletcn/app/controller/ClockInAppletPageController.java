@@ -1,8 +1,7 @@
 package com.outletcn.app.controller;
 
 import com.outletcn.app.common.ApiResult;
-import com.outletcn.app.model.dto.applet.LineElementsVO;
-import com.outletcn.app.model.dto.applet.LineVO;
+import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.mongo.Line;
 import com.outletcn.app.service.chain.LineService;
 import io.swagger.annotations.Api;
@@ -10,6 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 打卡小程序页面的相关查询接口
@@ -27,9 +28,32 @@ public class ClockInAppletPageController {
     @ApiOperation(value = "通过线路id查询线路下的目的地和目的地群")
     @GetMapping(value = "/line-elements")
     public ApiResult<LineElementsVO> lineElementsById(@ApiParam(value = "路线id", name = "id") @RequestParam(value = "id") Long id) {
-        ApiResult<LineElementsVO> apiResult = lineService.lineElementsById(id);
-        return apiResult;
+        LineElementsVO apiResult = lineService.lineElementsById(id);
+        return ApiResult.ok(apiResult);
     }
 
+    @ApiOperation(value = "通过线路id查询线路下所有目的地的经纬度，给首页地图渲染使用")
+    @GetMapping(value = "/line-elements-map")
+    public ApiResult<List<DestinationMapVO>> lineElementsMapById(@ApiParam(value = "路线id", name = "id") @RequestParam(value = "id") Long id) {
+        List<DestinationMapVO> apiResult = lineService.lineElementsMapById(id);
+        return ApiResult.ok(apiResult);
+    }
+
+
+    @ApiOperation(value = "首页路线列表，推荐路线列表")
+    @PostMapping(value = "/line-list")
+    public ApiResult<List<LineVO>> lineList(@RequestBody LineListRequest lineListRequest) {
+        List<LineVO> apiResult = lineService.lineList(lineListRequest);
+        return ApiResult.ok(apiResult);
+    }
+
+
+
+    @ApiOperation(value = "路线的选项卡接口")
+    @GetMapping(value = "/line-tab")
+    public ApiResult<List<LineTabVO>> lineTab() {
+        List<LineTabVO> lineTabVOS = lineService.lineTab();
+        return ApiResult.ok(lineTabVOS);
+    }
 
 }
