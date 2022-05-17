@@ -72,9 +72,9 @@ public class DestinationGroupController {
     }
 
     /**
-     * 上/下架线路
+     * 上/下架目的地群
      */
-    @ApiOperation(value = "上/下架线路")
+    @ApiOperation(value = "上/下架目的地群")
     @PostMapping("/putOnDestinationGroup")
     public ApiResult<List<PutOnDestinationResponse.LineItem>> putOnDestinationGroup(@RequestBody @Valid PutOnRequest putOnRequest) {
         List<PutOnDestinationResponse.LineItem> lineItems =
