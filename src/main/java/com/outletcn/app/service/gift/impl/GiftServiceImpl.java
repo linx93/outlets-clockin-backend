@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.gift.*;
-import com.outletcn.app.model.mongo.Gift;
-import com.outletcn.app.model.mongo.GiftBag;
-import com.outletcn.app.model.mongo.GiftBagRelation;
-import com.outletcn.app.model.mongo.GiftType;
+import com.outletcn.app.model.mongo.*;
 import com.outletcn.app.service.gift.GiftService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
@@ -405,6 +402,15 @@ public class GiftServiceImpl implements GiftService {
         }
     }
 
+    //查询礼品类型列表
+    @Override
+    public List<GiftTypeResponse> getGiftTypeList(Integer type) {
+        Query query = new Query();
+        Criteria criteria = Criteria.where("category").is(type);
+        query.addCriteria(criteria);
+        return mongoTemplate.findAll(GiftTypeResponse.class);
+    }
+
     //获取礼品包列表
     @Override
     public PageInfo<GiftBagListResponse> getGiftBagList(GiftBagListRequest giftBagListRequest) {
@@ -440,5 +446,49 @@ public class GiftServiceImpl implements GiftService {
         pageInfo.setSize((long) giftListRequest.getPageSize());
         pageInfo.setCurrent((long) giftListRequest.getPageNum());
         return pageInfo;
+    }
+
+    //创建礼品品牌
+    @Override
+    public void createGiftBrand(String name) {
+        GiftBrand giftBrand = new GiftBrand();
+        giftBrand.setId(sequence.nextId());
+        giftBrand.setName(name);
+        long time = Instant.now().getEpochSecond();
+        giftBrand.setCreateTime(time);
+        giftBrand.setUpdateTime(time);
+        try {
+            mongoTemplate.save(giftBrand);
+        } catch (DuplicateKeyException duplicateKeyException) {
+            throw new BasicException("礼品类型已存在");
+        } catch (Exception e) {
+            throw new BasicException("插入出错");
+        }
+    }
+
+    //更新礼品品牌
+    @Override
+    public void updateGiftBrand(GiftBrandCreator giftBrandCreator) {
+        Query query = new Query();
+        Criteria criteria = Criteria.where("id").is(giftBrandCreator.getId());
+        query.addCriteria(criteria);
+        GiftBrand giftBrandTemp = mongoTemplate.findOne(query,GiftBrand.class);
+        if(Objects.isNull(giftBrandTemp)){
+            throw new BasicException("记录不存在");
+        }
+        giftBrandTemp.setName(giftBrandCreator.getName());
+        long time = Instant.now().getEpochSecond();
+        giftBrandTemp.setUpdateTime(time);
+        try {
+            mongoTemplate.save(giftBrandTemp);
+        } catch (Exception e) {
+            throw new BasicException("更新出错");
+        }
+    }
+
+    //查询礼品品牌
+    @Override
+    public List<GiftBrandCreator> getGiftBrandList() {
+        return  mongoTemplate.findAll(GiftBrandCreator.class);
     }
 }

@@ -11,4 +11,8 @@ public class GiftBrand {
      * 礼品品牌
      */
     private String name;
+
+    private Long createTime;
+
+    private Long updateTime;
 }
