@@ -65,7 +65,7 @@ public class CreateDestinationRequest {
         /**
          * 目的地打卡分值
          */
-        @NotBlank(message = "目的地打卡分值")
+        @NotNull(message = "目的地打卡分值不能为空")
         @ApiModelProperty(value = "目的地打卡分值")
         private Integer score;
 
