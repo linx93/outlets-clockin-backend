@@ -500,6 +500,7 @@ public class GiftServiceImpl implements GiftService {
         for (Gift g : gifts
         ) {
             GiftListResponse giftListResponse = new GiftListResponse();
+            giftListResponse.setId(g.getId());
             giftListResponse.setGiftId(g.getGiftId());
             giftListResponse.setGiftCost(g.getGiftCost());
             giftListResponse.setGiftName(g.getGiftName());
