@@ -271,4 +271,13 @@ class OutletsClockinBackendApplicationTests {
         PageInfo<Destination> page = destinationMongoRepository.findObjForPage(query, pageInfo);
         System.out.println(page);
     }
+
+    @Test
+    void testPutOnDestination() {
+        PutOnRequest putOnRequest = new PutOnRequest();
+        putOnRequest.setPutOn(1);
+        putOnRequest.setId(1526109603924832258L);
+        PutOnDestinationResponse putOnDestinationResponse = service.putOnDestination(putOnRequest);
+        System.out.println(putOnDestinationResponse);
+    }
 }

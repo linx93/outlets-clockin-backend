@@ -3,6 +3,7 @@ package com.outletcn.app.controller.chain;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.CreateDestinationGroupAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
+import com.outletcn.app.model.dto.chain.PutOnDestinationResponse;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
 import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.service.chain.DestinationGroupService;
@@ -75,9 +76,14 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "上/下架线路")
     @PostMapping("/putOnDestinationGroup")
-    public ApiResult<Boolean> putOnDestinationGroup(@RequestBody @Valid PutOnRequest putOnRequest) {
-        boolean group = destinationGroupService.putOnDestinationGroup(putOnRequest);
-        return ApiResult.thin(ErrorCode.SUCCESS, group);
+    public ApiResult<List<PutOnDestinationResponse.LineItem>> putOnDestinationGroup(@RequestBody @Valid PutOnRequest putOnRequest) {
+        List<PutOnDestinationResponse.LineItem> lineItems =
+                destinationGroupService.putOnDestinationGroup(putOnRequest);
+        if (!lineItems.isEmpty()) {
+            return new ApiResult<>(ErrorCode.DATA_ALREADY_EXISTED.getCode(),
+                    "目的地群存在于线路中", lineItems);
+        }
+        return ApiResult.thin(ErrorCode.SUCCESS, null);
     }
 
     /**

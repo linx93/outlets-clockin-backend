@@ -2,10 +2,7 @@ package com.outletcn.app.controller.chain;
 
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.PageInfo;
-import com.outletcn.app.model.dto.chain.CreateDestinationAttributeRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationTypeRequest;
-import com.outletcn.app.model.dto.chain.PutOnRequest;
+import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.service.chain.DestinationService;
 import io.swagger.annotations.Api;
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author tanwei
@@ -103,9 +101,13 @@ public class DestinationController {
      */
     @ApiOperation(value = "上/下架目的地")
     @PostMapping("putOnDestination")
-    public ApiResult<Boolean> putOnDestination(@RequestBody @Valid PutOnRequest putOnRequest) {
-        boolean destination = destinationService.putOnDestination(putOnRequest);
-        return ApiResult.result(ErrorCode.SUCCESS,destination);
+    public ApiResult<PutOnDestinationResponse> putOnDestination(@RequestBody @Valid PutOnRequest putOnRequest) {
+        PutOnDestinationResponse putOnDestinationResponse = destinationService.putOnDestination(putOnRequest);
+        if (!Objects.isNull(putOnDestinationResponse)) {
+            return ApiResult.result(ErrorCode.DATA_ALREADY_EXISTED.getCode(),
+                    "目的地存在于目的地群或线路中", putOnDestinationResponse);
+        }
+        return ApiResult.result(ErrorCode.SUCCESS, null);
     }
 
     /**
