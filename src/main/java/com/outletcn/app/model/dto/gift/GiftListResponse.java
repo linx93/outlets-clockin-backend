@@ -7,6 +7,13 @@ import java.math.BigDecimal;
 
 @Data
 public class GiftListResponse {
+    private Long id;
+
+    /**
+     * 礼品ID
+     */
+    private String giftId;
+
     /**
      * 礼品名称
      */

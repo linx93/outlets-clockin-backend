@@ -40,8 +40,8 @@ public class GiftController {
 
     @GetMapping("/getGiftTypeList")
     @ApiOperation(value = "查询礼品类型列表")
-    public ApiResult<List<GiftTypeResponse>> getGiftTypeList(@RequestParam Integer type) {
-        return ApiResult.ok(giftService.getGiftTypeList(type));
+    public ApiResult<List<GiftTypeResponse>> getGiftTypeList(@RequestParam Integer category) {
+        return ApiResult.ok(giftService.getGiftTypeList(category));
     }
 
     @PostMapping("/createGift")
