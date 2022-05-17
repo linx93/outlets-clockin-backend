@@ -49,6 +49,12 @@ public interface LineService {
     List<Line> findLineByAttr(String attr);
 
     /**
+     * 基于目的地查询线路
+     * @param destinationName
+     */
+    List<Line> findLineByDestinationName(String destinationName);
+
+    /**
      * 通过线路id查询线路下的目的地和目的地群
      * @param id 线路id
      * @return

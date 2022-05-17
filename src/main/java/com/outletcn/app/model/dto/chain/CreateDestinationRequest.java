@@ -63,6 +63,13 @@ public class CreateDestinationRequest {
         private String destinationType;
 
         /**
+         * 目的地打卡分值
+         */
+        @NotBlank(message = "目的地打卡分值")
+        @ApiModelProperty(value = "目的地打卡分值")
+        private Integer score;
+
+        /**
          * 摘要
          */
         @NotBlank(message = "摘要不能为空")

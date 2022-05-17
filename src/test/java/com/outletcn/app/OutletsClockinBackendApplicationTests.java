@@ -280,4 +280,19 @@ class OutletsClockinBackendApplicationTests {
         PutOnDestinationResponse putOnDestinationResponse = service.putOnDestination(putOnRequest);
         System.out.println(putOnDestinationResponse);
     }
+
+    @Test
+    void testPutOnDestinationGroup() {
+        PutOnRequest putOnRequest = new PutOnRequest();
+        putOnRequest.setPutOn(1);
+        putOnRequest.setId(1526129253316354049L);
+        List<PutOnDestinationResponse.LineItem> lineItems = destinationGroupService.putOnDestinationGroup(putOnRequest);
+        System.out.println(lineItems);
+    }
+
+    @Test
+    void testFindLineForDestination() {
+        List<Line> lines = lineService.findLineByDestinationName("贵州");
+        System.out.println(lines);
+    }
 }

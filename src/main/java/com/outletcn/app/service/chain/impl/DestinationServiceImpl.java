@@ -56,6 +56,7 @@ public class DestinationServiceImpl implements DestinationService {
             destination.setDestinationRecommendImage(baseInfo.getDestinationRecommendImage());
             destination.setDestinationRecommendSquareImage(baseInfo.getDestinationRecommendSquareImage());
             destination.setDestinationType(baseInfo.getDestinationType());
+            destination.setScore(baseInfo.getScore());
             destination.setSummary(baseInfo.getSummary());
             destination.setPutOn(0); // 默认上架
             destination.setMajorDestination(baseInfo.getMajorDestination());
@@ -107,7 +108,6 @@ public class DestinationServiceImpl implements DestinationService {
         DestinationType destinationType = new DestinationType();
         destinationType.setId(sequence.nextId());
         destinationType.setType(createDestinationTypeRequest.getType());
-        destinationType.setScore(createDestinationTypeRequest.getScore());
 
         long time = Instant.now().getEpochSecond();
         destinationType.setCreateTime(time);

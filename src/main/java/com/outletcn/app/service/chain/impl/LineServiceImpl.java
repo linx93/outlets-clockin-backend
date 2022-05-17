@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author tanwei
@@ -141,6 +142,38 @@ public class LineServiceImpl implements LineService {
             }
         }
         return lines;
+    }
+
+    @Override
+    public List<Line> findLineByDestinationName(String destinationName) {
+        List<Line> lines = mongoTemplate.findAll(Line.class);
+        Map<Long, List<Long>> lineAndDestinationMap = new LinkedHashMap<>();
+
+        for (Line line : lines) {
+            List<Long> destinationIds = new ArrayList<>();
+            List<Line.Attribute> lineElements = line.getLineElements();
+            for (Line.Attribute element : lineElements) {
+                if (element.getType() == ClockInType.Destination.getType()) {
+                    destinationIds.add(element.getId());
+                }
+            }
+            lineAndDestinationMap.put(line.getId(), destinationIds);
+        }
+
+        List<Long> hasLineIds = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("^.*"+destinationName+".*$", Pattern.CASE_INSENSITIVE);
+        Iterator<Long> iterator = lineAndDestinationMap.keySet().iterator();
+        while (iterator.hasNext()) {
+            Long lineId = iterator.next();
+            List<Long> destinationIds = lineAndDestinationMap.get(lineId);
+            List<Destination> destinations = mongoTemplate.find(
+                    Query.query(Criteria.where("destinationName").regex(pattern).and("id").in(destinationIds)), Destination.class);
+            if (!destinations.isEmpty()) {
+                hasLineIds.add(lineId);
+            }
+        }
+        return mongoTemplate.find(Query.query(Criteria.where("id").in(hasLineIds)), Line.class);
     }
 
     @Override
