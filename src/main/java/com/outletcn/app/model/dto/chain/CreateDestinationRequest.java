@@ -3,7 +3,9 @@ package com.outletcn.app.model.dto.chain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -16,9 +18,9 @@ import java.util.List;
 @Data
 public class CreateDestinationRequest {
 
-    @NotNull
+    @Valid
     private BaseInfo baseInfo;
-    @NotNull
+    @Valid
     private DetailsInfo detailsInfo;
 
 
@@ -34,7 +36,7 @@ public class CreateDestinationRequest {
         /**
          * 目的地属性集
          */
-        @NotBlank(message = "目的地属性集不能为空")
+        @NotEmpty(message = "目的地属性集不能为空")
         @ApiModelProperty(value = "目的地属性集")
         private List<String> destinationAttrs;
 
@@ -78,7 +80,7 @@ public class CreateDestinationRequest {
         /**
          * 是否为著名地标
          */
-        @NotBlank(message = "是否为著名地标不能为空")
+        @NotNull(message = "是否为著名地标不能为空")
         @ApiModelProperty(value = "是否为著名地标")
         private Integer majorDestination;
 

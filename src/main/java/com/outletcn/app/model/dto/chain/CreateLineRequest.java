@@ -4,7 +4,9 @@ import com.outletcn.app.model.mongo.Line;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -17,9 +19,9 @@ import java.util.List;
 @Data
 public class CreateLineRequest {
 
-    @NotNull
+    @Valid
     private BaseInfo baseInfo;
-    @NotNull
+    @Valid
     private DetailsInfo detailsInfo;
 
     @Data
@@ -42,14 +44,14 @@ public class CreateLineRequest {
         /**
          * 线路所含元素
          */
-        @NotNull(message = "线路所含元素不能为空")
+        @NotEmpty(message = "线路所含元素不能为空")
         @ApiModelProperty("线路所含元素")
         private List<Line.Attribute> lineElements;
 
         /**
          * 线路属性
          */
-        @NotNull(message = "线路属性不能为空")
+        @NotEmpty(message = "线路属性不能为空")
         @ApiModelProperty("线路属性")
         private List<String> lineAttrs;
 
