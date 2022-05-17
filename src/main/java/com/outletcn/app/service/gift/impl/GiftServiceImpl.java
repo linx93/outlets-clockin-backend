@@ -58,7 +58,7 @@ public class GiftServiceImpl implements GiftService {
 
         gift.setGiftName(giftCreator.getGiftName());
         gift.setGiftType(giftCreator.getGiftType());
-        gift.setGiftTypeName(JSON.toJSONString(giftCreator.getGiftTypeName()));
+        gift.setGiftTypeName(giftCreator.getGiftTypeName());
         gift.setGiftScore(giftCreator.getGiftScore());
         gift.setSupplierName(giftCreator.getSupplierName());
         gift.setGiftCost(new BigDecimal(giftCreator.getGiftCost()));
@@ -109,7 +109,7 @@ public class GiftServiceImpl implements GiftService {
 
         gift.setGiftName(giftCreator.getGiftName());
         gift.setGiftType(giftCreator.getGiftType());
-        gift.setGiftTypeName(JSON.toJSONString(giftCreator.getGiftTypeName()));
+        gift.setGiftTypeName(giftCreator.getGiftTypeName());
         gift.setGiftScore(giftCreator.getGiftScore());
         gift.setSupplierName(giftCreator.getSupplierName());
         gift.setGiftCost(new BigDecimal(giftCreator.getGiftCost()));
@@ -142,7 +142,7 @@ public class GiftServiceImpl implements GiftService {
 
         giftInfo.setGiftName(gift.getGiftName());
         giftInfo.setGiftType(gift.getGiftType());
-        giftInfo.setGiftTypeName(JSON.toJSONString(gift.getGiftTypeName()));
+        giftInfo.setGiftTypeName(gift.getGiftTypeName());
         giftInfo.setGiftScore(gift.getGiftScore());
         giftInfo.setSupplierName(gift.getSupplierName());
         giftInfo.setGiftCost(gift.getGiftCost());
@@ -500,6 +500,7 @@ public class GiftServiceImpl implements GiftService {
         for (Gift g : gifts
         ) {
             GiftListResponse giftListResponse = new GiftListResponse();
+            giftListResponse.setGiftId(g.getGiftId());
             giftListResponse.setGiftCost(g.getGiftCost());
             giftListResponse.setGiftName(g.getGiftName());
             giftListResponse.setGiftType(g.getGiftType());

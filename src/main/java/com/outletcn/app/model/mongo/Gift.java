@@ -40,7 +40,7 @@ public class Gift implements Serializable {
     /**
      * 礼品类型
      */
-    private String giftTypeName;
+    private List<String> giftTypeName;
 
     /**
      * 兑换所需打卡分值
