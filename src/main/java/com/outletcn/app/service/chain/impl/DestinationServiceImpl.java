@@ -42,7 +42,7 @@ public class DestinationServiceImpl implements DestinationService {
     DestinationMongoRepository destinationMongoRepository;
 
     @Override
-    public void createDestination(CreateDestinationRequest createDestinationRequest) {
+    public boolean createDestination(CreateDestinationRequest createDestinationRequest) {
 
         try {
             Destination destination = new Destination();
@@ -99,11 +99,11 @@ public class DestinationServiceImpl implements DestinationService {
         } catch (Exception ex) {
             throw new BasicException("保存目的地详情失败：" + ex.getMessage());
         }
-
+        return Boolean.TRUE;
     }
 
     @Override
-    public void createDestinationType(CreateDestinationTypeRequest createDestinationTypeRequest) {
+    public boolean createDestinationType(CreateDestinationTypeRequest createDestinationTypeRequest) {
         DestinationType destinationType = new DestinationType();
         destinationType.setId(sequence.nextId());
         destinationType.setType(createDestinationTypeRequest.getType());
@@ -112,12 +112,17 @@ public class DestinationServiceImpl implements DestinationService {
         long time = Instant.now().getEpochSecond();
         destinationType.setCreateTime(time);
         destinationType.setUpdateTime(time);
-        mongoTemplate.save(destinationType);
+        try {
+            mongoTemplate.save(destinationType);
+        } catch (Exception ex) {
+            throw new BasicException("创建目的地类型错误：" + ex.getMessage());
+        }
+        return Boolean.TRUE;
 
     }
 
     @Override
-    public void createDestinationAttribute(CreateDestinationAttributeRequest createDestinationAttributeRequest) {
+    public boolean createDestinationAttribute(CreateDestinationAttributeRequest createDestinationAttributeRequest) {
 
         DestinationAttribute destinationAttribute = new DestinationAttribute();
         destinationAttribute.setId(sequence.nextId());
@@ -130,7 +135,7 @@ public class DestinationServiceImpl implements DestinationService {
         } catch (Exception ex) {
             throw new BasicException("创建目的地属性失败：" + ex.getMessage());
         }
-
+        return Boolean.TRUE;
     }
 
     @Override
@@ -197,7 +202,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
-    public void modifyDestination(CreateDestinationRequest createDestinationRequest, Long id) {
+    public boolean modifyDestination(CreateDestinationRequest createDestinationRequest, Long id) {
         Destination destination = mongoTemplate.findById(id, Destination.class);
         if (Objects.isNull(destination)) {
             throw new BasicException("更新失败：目的地不存在");
@@ -246,10 +251,11 @@ public class DestinationServiceImpl implements DestinationService {
                 throw new BasicException("更新目的地详情失败：" + ex.getMessage());
             }
         }
+        return Boolean.TRUE;
     }
 
     @Override
-    public void putOnDestination(PutOnRequest putOnRequest) {
+    public boolean putOnDestination(PutOnRequest putOnRequest) {
         Long id = putOnRequest.getId();
         Destination destination = mongoTemplate.findById(id, Destination.class);
         destination.setPutOn(putOnRequest.getPutOn());
@@ -258,6 +264,7 @@ public class DestinationServiceImpl implements DestinationService {
         } catch (Exception ex) {
             throw new BasicException("上下架目的地失败：" + ex.getMessage());
         }
+        return Boolean.TRUE;
     }
 
     @Override
@@ -301,7 +308,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
-    public PageInfo<Destination> findDestinationByPutOn(int putOn, int current, int size) {
+    public PageInfo<Destination> findDestinationByPutOnForPage(int putOn, int current, int size) {
         PageInfo<Destination> pageInfo = new PageInfo<>();
         pageInfo.setSize(size);
         pageInfo.setCurrent(current);
@@ -312,7 +319,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
-    public PageInfo<Destination> findAll(int current, int size) {
+    public PageInfo<Destination> findAllForPage(int current, int size) {
         PageInfo<Destination> pageInfo = new PageInfo<>();
         pageInfo.setSize(size);
         pageInfo.setCurrent(current);

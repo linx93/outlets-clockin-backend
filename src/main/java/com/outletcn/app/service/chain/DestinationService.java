@@ -21,19 +21,19 @@ public interface DestinationService {
      * 创建目的地
      * @param createDestinationRequest
      */
-    void createDestination(CreateDestinationRequest createDestinationRequest);
+    boolean createDestination(CreateDestinationRequest createDestinationRequest);
 
     /**
      * 创建目的地类型
      * @param createDestinationTypeRequest
      */
-    void createDestinationType(CreateDestinationTypeRequest createDestinationTypeRequest);
+    boolean createDestinationType(CreateDestinationTypeRequest createDestinationTypeRequest);
 
     /**
      * 创建目的地属性
      * @param createDestinationAttributeRequest
      */
-    void createDestinationAttribute(CreateDestinationAttributeRequest createDestinationAttributeRequest);
+    boolean createDestinationAttribute(CreateDestinationAttributeRequest createDestinationAttributeRequest);
 
     /**
      * 删除目的地
@@ -47,13 +47,13 @@ public interface DestinationService {
      * @param createDestinationRequest
      * @param id
      */
-    void modifyDestination(CreateDestinationRequest createDestinationRequest, Long id);
+    boolean modifyDestination(CreateDestinationRequest createDestinationRequest, Long id);
 
     /**
      * 上/下架目的地
      * @param putOnRequest
      */
-    void putOnDestination(PutOnRequest putOnRequest);
+    boolean putOnDestination(PutOnRequest putOnRequest);
 
     /**
      * 基于名称模糊查询
@@ -83,12 +83,12 @@ public interface DestinationService {
      * 基于上下架状态查询
      * @param putOn
      */
-    PageInfo<Destination> findDestinationByPutOn(int putOn, int current, int size);
+    PageInfo<Destination> findDestinationByPutOnForPage(int putOn, int current, int size);
 
     /**
      * 查询所有
      * @return
      */
-    PageInfo<Destination> findAll(int current, int size);
+    PageInfo<Destination> findAllForPage(int current, int size);
 
 }

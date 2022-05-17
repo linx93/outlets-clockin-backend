@@ -22,13 +22,13 @@ public interface LineService {
      * 创建线路
      * @param createLineRequest
      */
-    void createLine(CreateLineRequest createLineRequest);
+    boolean createLine(CreateLineRequest createLineRequest);
 
     /**
      * 创建线路属性
      * @param createLineAttributeRequest
      */
-    void createLineAttribute(CreateLineAttributeRequest createLineAttributeRequest);
+    boolean createLineAttribute(CreateLineAttributeRequest createLineAttributeRequest);
 
     /**
      * 上/下架线路
