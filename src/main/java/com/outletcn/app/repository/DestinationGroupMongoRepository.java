@@ -24,7 +24,7 @@ public class DestinationGroupMongoRepository implements MongoRepository<Destinat
 
     @Override
     public PageInfo<DestinationGroup> findObjForPage(Query query, PageInfo<DestinationGroup> page) {
-        long count = mongoTemplate.count(query, Destination.class);
+        long count = mongoTemplate.count(query, DestinationGroup.class);
         query.skip((page.getCurrent() - 1) * page.getSize());
         query.limit((int)page.getSize());
         List<DestinationGroup> contents = mongoTemplate.find(query, DestinationGroup.class);
