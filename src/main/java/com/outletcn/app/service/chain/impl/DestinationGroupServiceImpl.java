@@ -3,12 +3,14 @@ package com.outletcn.app.service.chain.impl;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.mongodb.client.result.DeleteResult;
 import com.outletcn.app.common.ClockInType;
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.chain.CreateDestinationGroupAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
 import com.outletcn.app.model.dto.chain.DetailsInfo;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
 import com.outletcn.app.model.mongo.*;
+import com.outletcn.app.repository.DestinationGroupMongoRepository;
 import com.outletcn.app.service.chain.DestinationGroupService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * @author tanwei
@@ -37,8 +40,10 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
     MongoTemplate mongoTemplate;
     Sequence sequence;
 
+    DestinationGroupMongoRepository destinationGroupMongoRepository;
+
     @Override
-    public void createDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest) {
+    public boolean createDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest) {
 
         DestinationGroup destinationGroup = new DestinationGroup();
 
@@ -105,6 +110,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
 
             }
         }
+        return Boolean.TRUE;
     }
 
     @Override
@@ -156,7 +162,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
     }
 
     @Override
-    public void modifyDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest, Long id) {
+    public boolean modifyDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest, Long id) {
 
         DestinationGroup destinationGroup = mongoTemplate.findById(id, DestinationGroup.class);
         if (Objects.isNull(destinationGroup)) {
@@ -194,10 +200,11 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
                 throw new BasicException("更新目的地群详情失败：" + ex.getMessage());
             }
         }
+        return Boolean.TRUE;
     }
 
     @Override
-    public void createDestinationGroupAttribute(CreateDestinationGroupAttributeRequest createDestinationGroupAttributeRequest) {
+    public boolean createDestinationGroupAttribute(CreateDestinationGroupAttributeRequest createDestinationGroupAttributeRequest) {
 
         DestinationGroupAttribute destinationGroupAttribute = new DestinationGroupAttribute();
         destinationGroupAttribute.setId(sequence.nextId());
@@ -210,10 +217,11 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         } catch (Exception ex) {
             throw new BasicException("创建目的地群属性失败：" + ex.getMessage());
         }
+        return Boolean.TRUE;
     }
 
     @Override
-    public void putOnDestinationGroup(PutOnRequest putOnRequest) {
+    public boolean putOnDestinationGroup(PutOnRequest putOnRequest) {
         Long id = putOnRequest.getId();
         DestinationGroup destinationGroup = mongoTemplate.findById(id, DestinationGroup.class);
         destinationGroup.setPutOn(putOnRequest.getPutOn());
@@ -222,5 +230,60 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         } catch (Exception ex) {
             throw new BasicException("上下架目的地群失败：" + ex.getMessage());
         }
+        return Boolean.TRUE;
+    }
+
+    @Override
+    public List<DestinationGroup> findDestinationGroupByName(String name) {
+        Query query = new Query();
+        Pattern pattern = Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
+        query.addCriteria(Criteria.where("groupName").regex(pattern));
+        List<DestinationGroup> destinationGroups = mongoTemplate.find(query, DestinationGroup.class);
+        return destinationGroups;
+    }
+
+    @Override
+    public PageInfo<DestinationGroup> findDestinationGroupByNameForPage(String name, int current, int size) {
+        PageInfo<DestinationGroup> pageInfo = new PageInfo<>();
+        pageInfo.setSize(size);
+        pageInfo.setCurrent(current);
+        PageInfo<DestinationGroup> destinationGroupPageInfo = destinationGroupMongoRepository.findObjForPage(Query.query(
+                Criteria.where("groupName").is(name)
+        ), pageInfo);
+        return destinationGroupPageInfo;
+    }
+
+    @Override
+    public List<DestinationGroup> findDestinationGroupByAttr(String attr) {
+        List<DestinationGroup> destinationGroups = mongoTemplate.findAll(DestinationGroup.class);
+        List<DestinationGroup> destinationGroupsByAttr = new ArrayList<>();
+        for (DestinationGroup destinationGroup : destinationGroups) {
+            List<String> destinationGroupAttrs = destinationGroup.getGroupAttrs();
+            if (destinationGroupAttrs.contains(attr)) {
+                destinationGroupsByAttr.add(destinationGroup);
+            }
+        }
+        return destinationGroupsByAttr;
+    }
+
+    @Override
+    public PageInfo<DestinationGroup> findDestinationGroupByPutOnForPage(int putOn, int current, int size) {
+        PageInfo<DestinationGroup> pageInfo = new PageInfo<>();
+        pageInfo.setSize(size);
+        pageInfo.setCurrent(current);
+        PageInfo<DestinationGroup> destinationGroupPageInfo = destinationGroupMongoRepository.findObjForPage(Query.query(
+                Criteria.where("putOn").is(putOn)
+        ), pageInfo);
+        return destinationGroupPageInfo;
+    }
+
+    @Override
+    public PageInfo<DestinationGroup> findAllForPage(int current, int size) {
+        PageInfo<DestinationGroup> pageInfo = new PageInfo<>();
+        pageInfo.setSize(size);
+        pageInfo.setCurrent(current);
+        PageInfo<DestinationGroup> destinationGroupPageInfo = destinationGroupMongoRepository.findObjForPage(
+                new Query(), pageInfo);
+        return destinationGroupPageInfo;
     }
 }

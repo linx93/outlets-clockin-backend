@@ -35,7 +35,7 @@ public class LineServiceImpl implements LineService {
     Sequence sequence;
 
     @Override
-    public void createLine(CreateLineRequest createLineRequest) {
+    public boolean createLine(CreateLineRequest createLineRequest) {
 
         CreateLineRequest.BaseInfo baseInfo = createLineRequest.getBaseInfo();
 
@@ -85,10 +85,11 @@ public class LineServiceImpl implements LineService {
                 throw new BasicException(ex.getMessage());
             }
         }
+        return Boolean.TRUE;
     }
 
     @Override
-    public void createLineAttribute(CreateLineAttributeRequest createLineAttributeRequest) {
+    public boolean createLineAttribute(CreateLineAttributeRequest createLineAttributeRequest) {
         LineAttribute lineAttribute = new LineAttribute();
         lineAttribute.setId(sequence.nextId());
         lineAttribute.setAttribute(createLineAttributeRequest.getLineAttribute());
@@ -100,6 +101,7 @@ public class LineServiceImpl implements LineService {
         } catch (Exception ex) {
             throw new BasicException("保存线路属性失败：" + ex.getMessage());
         }
+        return Boolean.TRUE;
     }
 
 
