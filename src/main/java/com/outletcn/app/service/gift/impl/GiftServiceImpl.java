@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -87,7 +88,7 @@ public class GiftServiceImpl implements GiftService {
         Criteria criteria = Criteria.where("id").is(giftCreator.getId());
         query.addCriteria(criteria);
         Gift gift = mongoTemplate.findOne(query, Gift.class);
-        if (Objects.isNull(gift)){
+        if (Objects.isNull(gift)) {
             throw new BasicException("记录不存在");
         }
 
@@ -128,12 +129,36 @@ public class GiftServiceImpl implements GiftService {
 
     //查询礼品详情
     @Override
-    public GiftInfoResponse getGiftInfo(Long id){
+    public GiftInfoResponse getGiftInfo(Long id) {
         Query query = new Query();
         Criteria criteria = Criteria.where("id").is(id);
         query.addCriteria(criteria);
-        GiftInfoResponse giftInfo = mongoTemplate.findOne(query, GiftInfoResponse.class);
-        if (Objects.isNull(giftInfo)){
+        Gift gift = mongoTemplate.findOne(query, Gift.class);
+
+        GiftInfoResponse giftInfo = new GiftInfoResponse();
+        giftInfo.setId(sequence.nextId());
+        giftInfo.setGiftId(UUID.randomUUID().toString());
+
+        giftInfo.setGiftName(gift.getGiftName());
+        giftInfo.setGiftType(gift.getGiftType());
+        giftInfo.setGiftTypeName(JSON.toJSONString(gift.getGiftTypeName()));
+        giftInfo.setGiftScore(gift.getGiftScore());
+        giftInfo.setSupplierName(gift.getSupplierName());
+        giftInfo.setGiftCost(gift.getGiftCost());
+        giftInfo.setGiftMarketPrice(gift.getGiftMarketPrice());
+        giftInfo.setGiftRecommendPic(gift.getGiftRecommendPic());
+        giftInfo.setGiftRecommendPicSquare(gift.getGiftRecommendPicSquare());
+        giftInfo.setGiftInfo(gift.getGiftInfo());
+
+        giftInfo.setGiftBrand(gift.getGiftBrand());
+        giftInfo.setGiftNum(gift.getGiftNum());
+        giftInfo.setGiftUnit(gift.getGiftUnit());
+
+        giftInfo.setCouponAcceptor(gift.getCouponAcceptor());
+        giftInfo.setCreateTime(gift.getCreateTime());
+        giftInfo.setUpdateTime(gift.getUpdateTime());
+
+        if (Objects.isNull(giftInfo)) {
             throw new BasicException("记录不存在");
         }
         return giftInfo;
@@ -276,7 +301,7 @@ public class GiftServiceImpl implements GiftService {
         Criteria criteria = Criteria.where("id").is(luxuryGiftBagCreator.getId());
         query.addCriteria(criteria);
         GiftBag giftBag = mongoTemplate.findOne(query, GiftBag.class);
-        if (Objects.isNull(giftBag)){
+        if (Objects.isNull(giftBag)) {
             throw new BasicException("记录不存在");
         }
 
@@ -338,7 +363,7 @@ public class GiftServiceImpl implements GiftService {
         Criteria criteria = Criteria.where("id").is(ordinaryGiftBagCreator.getId());
         query.addCriteria(criteria);
         GiftBag giftBag = mongoTemplate.findOne(query, GiftBag.class);
-        if (Objects.isNull(giftBag)){
+        if (Objects.isNull(giftBag)) {
             throw new BasicException("记录不存在");
         }
 
@@ -408,7 +433,16 @@ public class GiftServiceImpl implements GiftService {
         Query query = new Query();
         Criteria criteria = Criteria.where("category").is(type);
         query.addCriteria(criteria);
-        return mongoTemplate.findAll(GiftTypeResponse.class);
+        List<GiftType> giftTypes = mongoTemplate.findAll(GiftType.class);
+        List<GiftTypeResponse> responses = new ArrayList<>();
+        for (GiftType g :giftTypes) {
+            GiftTypeResponse giftTypeResponse = new GiftTypeResponse();
+            giftTypeResponse.setId(g.getId());
+            giftTypeResponse.setType(g.getType());
+            giftTypeResponse.setCategory(g.getCategory());
+            responses.add(giftTypeResponse);
+        }
+        return responses;
     }
 
     //获取礼品包列表
@@ -421,7 +455,22 @@ public class GiftServiceImpl implements GiftService {
         Pageable pageable = PageRequest.of(giftBagListRequest.getPageNum(), giftBagListRequest.getPageSize());
         Sort sort = Sort.by(Sort.Direction.DESC, "stateUpdateTime");
         long totalCount = mongoTemplate.count(query, "id");
-        List<GiftBagListResponse> records = mongoTemplate.find(query.with(sort).with(pageable), GiftBagListResponse.class);
+        List<GiftBag> giftBags = mongoTemplate.find(query.with(sort).with(pageable), GiftBag.class);
+        List<GiftBagListResponse> records = new ArrayList<>();
+        for (GiftBag g : giftBags) {
+            GiftBagListResponse giftBagListResponse = new GiftBagListResponse();
+            giftBagListResponse.setId(g.getId());
+            giftBagListResponse.setBagId(g.getBagId());
+            giftBagListResponse.setName(g.getName());
+            giftBagListResponse.setType(g.getType());
+            giftBagListResponse.setValidDate(g.getValidDate());
+            giftBagListResponse.setPutOn(g.getPutOn());
+            giftBagListResponse.setStateUpdateTime(g.getStateUpdateTime());
+            giftBagListResponse.setCreateTime(g.getCreateTime());
+            giftBagListResponse.setUpdateTime(g.getUpdateTime());
+            records.add(giftBagListResponse);
+        }
+
         pageInfo.setRecords(records);
         pageInfo.setTotal(totalCount);
         pageInfo.setSize((long) giftBagListRequest.getPageSize());
@@ -439,7 +488,19 @@ public class GiftServiceImpl implements GiftService {
         Pageable pageable = PageRequest.of(giftListRequest.getPageNum(), giftListRequest.getPageSize());
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         long totalCount = mongoTemplate.count(query, "id");
-        List<GiftListResponse> records = mongoTemplate.find(query.with(sort).with(pageable), GiftListResponse.class);
+        List<Gift> gifts = mongoTemplate.find(query.with(sort).with(pageable), Gift.class);
+        List<GiftListResponse> records = new ArrayList<>();
+        for (Gift g : gifts
+        ) {
+            GiftListResponse giftListResponse = new GiftListResponse();
+            giftListResponse.setGiftCost(g.getGiftCost());
+            giftListResponse.setGiftName(g.getGiftName());
+            giftListResponse.setGiftType(g.getGiftType());
+            giftListResponse.setGiftTypeName(g.getGiftTypeName());
+            giftListResponse.setCreateTime(g.getCreateTime());
+            giftListResponse.setUpdateTime(g.getUpdateTime());
+            records.add(giftListResponse);
+        }
 
         pageInfo.setRecords(records);
         pageInfo.setTotal(totalCount);
@@ -460,7 +521,7 @@ public class GiftServiceImpl implements GiftService {
         try {
             mongoTemplate.save(giftBrand);
         } catch (DuplicateKeyException duplicateKeyException) {
-            throw new BasicException("礼品类型已存在");
+            throw new BasicException("礼品品牌已存在");
         } catch (Exception e) {
             throw new BasicException("插入出错");
         }
@@ -472,8 +533,8 @@ public class GiftServiceImpl implements GiftService {
         Query query = new Query();
         Criteria criteria = Criteria.where("id").is(giftBrandCreator.getId());
         query.addCriteria(criteria);
-        GiftBrand giftBrandTemp = mongoTemplate.findOne(query,GiftBrand.class);
-        if(Objects.isNull(giftBrandTemp)){
+        GiftBrand giftBrandTemp = mongoTemplate.findOne(query, GiftBrand.class);
+        if (Objects.isNull(giftBrandTemp)) {
             throw new BasicException("记录不存在");
         }
         giftBrandTemp.setName(giftBrandCreator.getName());
@@ -489,6 +550,15 @@ public class GiftServiceImpl implements GiftService {
     //查询礼品品牌
     @Override
     public List<GiftBrandCreator> getGiftBrandList() {
-        return  mongoTemplate.findAll(GiftBrandCreator.class);
+        List<GiftBrandCreator> result = new ArrayList<>();
+        List<GiftBrand> giftBrands = mongoTemplate.findAll(GiftBrand.class);
+        for (GiftBrand giftBrand : giftBrands
+        ) {
+            GiftBrandCreator giftBrandCreator = new GiftBrandCreator();
+            giftBrandCreator.setId(giftBrand.getId());
+            giftBrandCreator.setName(giftBrand.getName());
+            result.add(giftBrandCreator);
+        }
+        return result;
     }
 }
