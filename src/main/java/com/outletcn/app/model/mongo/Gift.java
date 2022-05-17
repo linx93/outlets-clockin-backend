@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 礼品
@@ -117,7 +118,7 @@ public class Gift implements Serializable {
     /**
      * 优惠卷承兑商家
      */
-    private String couponAcceptor;
+    private List<String> couponAcceptor;
 
 
 
