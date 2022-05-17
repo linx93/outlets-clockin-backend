@@ -50,6 +50,7 @@ public class LineServiceImpl implements LineService {
         line.setSummary(baseInfo.getSummary());
         line.setPutOn(0);
         line.setStick(1);
+
         line.setRecommendReason(baseInfo.getRecommendReason());
         line.setMainDestination(baseInfo.getMainDestination());
         line.setLineRecommendImage(baseInfo.getLineRecommendImage());
@@ -59,6 +60,7 @@ public class LineServiceImpl implements LineService {
         long epochSecond = Instant.now().getEpochSecond();
         line.setCreateTime(epochSecond);
         line.setUpdateTime(epochSecond);
+        line.setStickTime(epochSecond);
 
         try {
             mongoTemplate.save(line);
