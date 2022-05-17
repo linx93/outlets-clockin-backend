@@ -20,8 +20,6 @@ public class UserInfo {
     @ApiModelProperty(value = "用户账号")
     private String account;
 
-    @ApiModelProperty(value = "密码")
-    private String password;
 
     @ApiModelProperty(value = "手机号")
     private String phone;
