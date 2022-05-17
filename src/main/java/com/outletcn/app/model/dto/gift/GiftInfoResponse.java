@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class GiftInfoResponse {
@@ -107,6 +108,6 @@ public class GiftInfoResponse {
     /**
      * 优惠卷承兑商家
      */
-    private String couponAcceptor;
+    private List<String> couponAcceptor;
 
 }

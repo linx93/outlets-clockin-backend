@@ -86,5 +86,5 @@ public class VoucherTypeGiftCreator {
      */
     @NotBlank
     @ApiModelProperty(value = "优惠卷承兑商家")
-    private String couponAcceptor;
+    private List<String> couponAcceptor;
 }
