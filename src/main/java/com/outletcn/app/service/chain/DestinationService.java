@@ -1,10 +1,7 @@
 package com.outletcn.app.service.chain;
 
 import com.outletcn.app.common.PageInfo;
-import com.outletcn.app.model.dto.chain.CreateDestinationAttributeRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationTypeRequest;
-import com.outletcn.app.model.dto.chain.PutOnRequest;
+import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.Destination;
 
 import java.util.List;
@@ -52,8 +49,9 @@ public interface DestinationService {
     /**
      * 上/下架目的地
      * @param putOnRequest
+     * @return
      */
-    boolean putOnDestination(PutOnRequest putOnRequest);
+    PutOnDestinationResponse putOnDestination(PutOnRequest putOnRequest);
 
     /**
      * 基于名称模糊查询
@@ -62,8 +60,11 @@ public interface DestinationService {
     List<Destination> findDestinationByName(String name);
 
     /**
-     * 基于名称模糊查询（分页）
+     * 基于名称模糊查询（分页
      * @param name
+     * @param current
+     * @param size
+     * @return
      */
     PageInfo<Destination> findDestinationByNameForPage(String name, int current, int size);
 
@@ -82,11 +83,16 @@ public interface DestinationService {
     /**
      * 基于上下架状态查询
      * @param putOn
+     * @param current
+     * @param size
+     * @return
      */
     PageInfo<Destination> findDestinationByPutOnForPage(int putOn, int current, int size);
 
     /**
      * 查询所有
+     * @param current
+     * @param size
      * @return
      */
     PageInfo<Destination> findAllForPage(int current, int size);

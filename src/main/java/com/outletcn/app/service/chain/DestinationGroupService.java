@@ -3,6 +3,7 @@ package com.outletcn.app.service.chain;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.CreateDestinationGroupAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
+import com.outletcn.app.model.dto.chain.PutOnDestinationResponse;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
 import com.outletcn.app.model.mongo.DestinationGroup;
 
@@ -46,7 +47,7 @@ public interface DestinationGroupService {
      * 上/下架目的地群
      * @param putOnRequest
      */
-    boolean putOnDestinationGroup(PutOnRequest putOnRequest);
+    List<PutOnDestinationResponse.LineItem> putOnDestinationGroup(PutOnRequest putOnRequest);
 
     /**
      * 基于名称模糊查询
@@ -57,6 +58,9 @@ public interface DestinationGroupService {
     /**
      * 基于名称模糊查询（分页）
      * @param name
+     * @param current
+     * @param size
+     * @return
      */
     PageInfo<DestinationGroup> findDestinationGroupByNameForPage(String name, int current, int size);
 
@@ -69,11 +73,16 @@ public interface DestinationGroupService {
     /**
      * 基于上下架状态查询
      * @param putOn
+     * @param current
+     * @param size
+     * @return
      */
     PageInfo<DestinationGroup> findDestinationGroupByPutOnForPage(int putOn, int current, int size);
 
     /**
      * 查询所有
+     * @param current
+     * @param size
      * @return
      */
     PageInfo<DestinationGroup> findAllForPage(int current, int size);

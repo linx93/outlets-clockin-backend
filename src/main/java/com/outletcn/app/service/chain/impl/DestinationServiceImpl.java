@@ -255,16 +255,69 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
-    public boolean putOnDestination(PutOnRequest putOnRequest) {
-        Long id = putOnRequest.getId();
-        Destination destination = mongoTemplate.findById(id, Destination.class);
-        destination.setPutOn(putOnRequest.getPutOn());
-        try {
-            mongoTemplate.save(destination);
-        } catch (Exception ex) {
-            throw new BasicException("上下架目的地失败：" + ex.getMessage());
+    public PutOnDestinationResponse putOnDestination(PutOnRequest putOnRequest) {
+
+        PutOnDestinationResponse putOnDestinationResponse = null;
+        int putOn = putOnRequest.getPutOn();
+        if (putOn == 1) {
+
+            List<PutOnDestinationResponse.DestinationGroupItem> destinationGroupItems = new ArrayList<>();
+            List<PutOnDestinationResponse.LineItem> lineItems = new ArrayList<>();
+
+            // 查询是否在目的地群中
+            List<DestinationGroupRelation> destinationGroupRelations = mongoTemplate.find(Query.query(
+                    Criteria.where("destinationId").is(putOnRequest.getId())), DestinationGroupRelation.class);
+            if (!destinationGroupRelations.isEmpty()) {
+                List<Long> groupIds = new ArrayList<>();
+                for (DestinationGroupRelation destinationGroupRelation : destinationGroupRelations) {
+                    Long groupId = destinationGroupRelation.getGroupId();
+                    groupIds.add(groupId);
+                }
+                List<DestinationGroup> destinationGroups = mongoTemplate.find(Query.query(
+                        Criteria.where("id").in(groupIds).and("putOn").is(0)), DestinationGroup.class);
+                if (!destinationGroups.isEmpty()) { // 存在于目的地群中
+                    for (DestinationGroup destinationGroup : destinationGroups) {
+                        PutOnDestinationResponse.DestinationGroupItem destinationGroupItem =
+                                new PutOnDestinationResponse.DestinationGroupItem();
+                        destinationGroupItem.setId(destinationGroup.getId());
+                        destinationGroupItem.setGroupName(destinationGroup.getGroupName());
+                        destinationGroupItems.add(destinationGroupItem);
+                    }
+                }
+            }
+            // 查询是否在线路中
+            List<Line> lines = mongoTemplate.findAll(Line.class);
+            for (Line line : lines) {
+                List<Line.Attribute> lineElements = line.getLineElements();
+                for (Line.Attribute element : lineElements) {
+                    int type = element.getType();
+                    if (ClockInType.Destination.getType() == type) {
+                        Long id = element.getId();
+                        if (putOnRequest.getId().equals(id)) { // 存在于线路中
+                            PutOnDestinationResponse.LineItem lineItem = new PutOnDestinationResponse.LineItem();
+                            lineItem.setId(line.getId());
+                            lineItem.setLineName(line.getLineName());
+                            lineItems.add(lineItem);
+                        }
+                    }
+                }
+            }
+            if (!destinationGroupItems.isEmpty() || !lineItems.isEmpty()) {
+                putOnDestinationResponse = new PutOnDestinationResponse();
+                putOnDestinationResponse.setGroups(destinationGroupItems);
+                putOnDestinationResponse.setLines(lineItems);
+            }
+        } else {
+            Long id = putOnRequest.getId();
+            Destination destination = mongoTemplate.findById(id, Destination.class);
+            destination.setPutOn(putOn);
+            try {
+                mongoTemplate.save(destination);
+            } catch (Exception ex) {
+                throw new BasicException("上下架目的地失败：" + ex.getMessage());
+            }
         }
-        return Boolean.TRUE;
+        return putOnDestinationResponse;
     }
 
     @Override

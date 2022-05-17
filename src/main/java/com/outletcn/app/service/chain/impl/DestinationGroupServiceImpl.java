@@ -5,10 +5,7 @@ import com.mongodb.client.result.DeleteResult;
 import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.exception.BasicException;
-import com.outletcn.app.model.dto.chain.CreateDestinationGroupAttributeRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
-import com.outletcn.app.model.dto.chain.DetailsInfo;
-import com.outletcn.app.model.dto.chain.PutOnRequest;
+import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.*;
 import com.outletcn.app.repository.DestinationGroupMongoRepository;
 import com.outletcn.app.service.chain.DestinationGroupService;
@@ -221,16 +218,37 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
     }
 
     @Override
-    public boolean putOnDestinationGroup(PutOnRequest putOnRequest) {
-        Long id = putOnRequest.getId();
-        DestinationGroup destinationGroup = mongoTemplate.findById(id, DestinationGroup.class);
-        destinationGroup.setPutOn(putOnRequest.getPutOn());
-        try {
-            mongoTemplate.save(destinationGroup);
-        } catch (Exception ex) {
-            throw new BasicException("上下架目的地群失败：" + ex.getMessage());
+    public List<PutOnDestinationResponse.LineItem> putOnDestinationGroup(PutOnRequest putOnRequest) {
+
+        // 查询是否在线路中
+        List<PutOnDestinationResponse.LineItem> lineItems = new ArrayList<>();
+        if (putOnRequest.getPutOn() == 1) {
+            List<Line> lines = mongoTemplate.findAll(Line.class);
+            for (Line line : lines) {
+                List<Line.Attribute> lineElements = line.getLineElements();
+                for (Line.Attribute element : lineElements) {
+                    int type = element.getType();
+                    if (ClockInType.DestinationGroup.getType() == type) {
+                        Long id = element.getId();
+                        if (putOnRequest.getId().equals(id)) { // 存在于线路中
+                            PutOnDestinationResponse.LineItem lineItem = new PutOnDestinationResponse.LineItem();
+                            lineItem.setId(line.getId());
+                            lineItem.setLineName(line.getLineName());
+                            lineItems.add(lineItem);
+                        }
+                    }
+                }
+            }
+        } else {
+            DestinationGroup destinationGroup = mongoTemplate.findById(putOnRequest.getId(), DestinationGroup.class);
+            destinationGroup.setPutOn(putOnRequest.getPutOn());
+            try {
+                mongoTemplate.save(destinationGroup);
+            } catch (Exception ex) {
+                throw new BasicException("上下架目的地群失败：" + ex.getMessage());
+            }
         }
-        return Boolean.TRUE;
+        return lineItems;
     }
 
     @Override
