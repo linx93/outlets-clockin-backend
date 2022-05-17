@@ -62,6 +62,13 @@ public class Destination implements Serializable {
     @ApiModelProperty(value = "目的地类型")
     private String destinationType;
 
+
+    /**
+     * 目的地积分值
+     */
+    @ApiModelProperty(value = "目的地积分值")
+    private Integer score;
+
     /**
      * 摘要
      */

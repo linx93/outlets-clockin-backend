@@ -10,6 +10,7 @@ import java.io.Serializable;
  *
  * @author felix
  */
+
 @Data
 @Document(collection = "destination_type")
 public class DestinationType implements Serializable {
@@ -23,10 +24,6 @@ public class DestinationType implements Serializable {
      */
     private String type;
 
-    /**
-     * 目的地积分值
-     */
-    private Integer score;
 
     /**
      * 创建时间
