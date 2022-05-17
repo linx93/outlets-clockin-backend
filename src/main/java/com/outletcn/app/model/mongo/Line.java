@@ -56,6 +56,11 @@ public class Line implements Serializable {
     private Integer stick;
 
     /**
+     * 置顶时间
+     */
+    private Long stickTime;
+
+    /**
      * 推荐理由
      */
     private String recommendReason;
