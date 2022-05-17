@@ -6,12 +6,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serializable;
 
 /**
- * 线路类型
+ * 线路属性
  *
  * @author felix
  */
 @Data
-@Document(collection = "line_type")
+@Document(collection = "line_attribute")
 public class LineAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
