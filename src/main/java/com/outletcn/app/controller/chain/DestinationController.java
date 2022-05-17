@@ -150,4 +150,15 @@ public class DestinationController {
         PageInfo<Destination> pageInfo = destinationService.findAllForPage(page, size);
         return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);
     }
+
+    /**
+     * 基于名称、上下架查询
+     */
+    @ApiOperation(value = "基于名称、上下架查询")
+    @GetMapping("findDestinationByNameOrPutOnForPage")
+    public ApiResult<PageInfo<Destination>> findDestinationByNameOrPutOnForPage(@RequestParam(value = "name",required = false) String name, @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+        PageInfo<Destination> destinations = destinationService.findDestinationByNameOrPutOnForPage(name, putOn, page, size);
+        return ApiResult.thin(ErrorCode.SUCCESS, destinations);
+    }
+
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.Destination;
+import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.model.mongo.DetailObjectType;
 import com.outletcn.app.model.mongo.Line;
 import com.outletcn.app.repository.DestinationMongoRepository;
@@ -294,5 +295,17 @@ class OutletsClockinBackendApplicationTests {
     void testFindLineForDestination() {
         List<Line> lines = lineService.findLineByDestinationName("贵州");
         System.out.println(lines);
+    }
+
+    @Test
+    void testFindDestinationByNameOrPutOnForPage() {
+        PageInfo<Destination> destinationByNameOrPutOnForPage = service.findDestinationByNameOrPutOnForPage("", 0, 1, 10);
+        System.out.println(destinationByNameOrPutOnForPage);
+    }
+
+    @Test
+    void testFindDestinationGroupByNameOrPutOnForPage() {
+        PageInfo<DestinationGroup> destinationGroupByNameOrPutOnForPage = destinationGroupService.findDestinationGroupByNameOrPutOnForPage("", 0, 1, 10);
+        System.out.println(destinationGroupByNameOrPutOnForPage);
     }
 }

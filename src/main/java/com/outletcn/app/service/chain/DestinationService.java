@@ -97,4 +97,15 @@ public interface DestinationService {
      */
     PageInfo<Destination> findAllForPage(int current, int size);
 
+
+    /**
+     * 基于名称、上下架查询
+     * @param name
+     * @param putOn
+     * @param current
+     * @param size
+     * @return
+     */
+    PageInfo<Destination> findDestinationByNameOrPutOnForPage(String name, int putOn, int current, int size);
+
 }
