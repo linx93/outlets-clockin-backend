@@ -27,12 +27,6 @@ public class CreateLineRequest {
     @Data
     public static class BaseInfo {
 
-        /**
-         * 线路ID
-         */
-        @NotBlank(message = "线路ID不能为空")
-        @ApiModelProperty("线路ID")
-        private String lineId;
 
         /**
          * 线路名称

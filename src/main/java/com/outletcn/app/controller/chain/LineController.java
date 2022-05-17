@@ -80,4 +80,14 @@ public class LineController {
         List<Line> line = lineService.findLineByAttr(attribute);
         return ApiResult.thin(ErrorCode.SUCCESS, line);
     }
+
+    /**
+     * 基于目的地查询线路
+     */
+    @ApiOperation(value = "基于目的地查询线路")
+    @GetMapping("/findLineByDestinationName")
+    public ApiResult<List<Line>> findLineByDestinationName(@RequestParam(value = "destinationName") String destinationName) {
+        List<Line> line = lineService.findLineByDestinationName(destinationName);
+        return ApiResult.thin(ErrorCode.SUCCESS, line);
+    }
 }

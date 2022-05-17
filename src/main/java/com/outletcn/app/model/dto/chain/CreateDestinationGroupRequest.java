@@ -26,12 +26,7 @@ public class CreateDestinationGroupRequest {
     @Data
     public static class BaseInfo {
 
-        /**
-         * 目的地群ID
-         */
-        @NotBlank(message = "目的地群ID不能为空")
-        @ApiModelProperty(value = "目的地群ID")
-        private String groupId;
+
 
         /**
          * 目的地群名称
