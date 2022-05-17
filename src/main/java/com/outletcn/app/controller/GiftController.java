@@ -58,7 +58,7 @@ public class GiftController {
         return ApiResult.ok(null);
     }
 
-    @PostMapping("/createRealTypeGift")
+/*    @PostMapping("/createRealTypeGift")
     @ApiOperation(value = "创建实物礼品")
     public ApiResult createRealTypeGift(@Valid @RequestBody RealTypeGiftCreator giftCreator) {
         giftService.createRealTypeGift(giftCreator);
@@ -81,7 +81,7 @@ public class GiftController {
             giftService.createGiftBagRelation(giftBagId, giftId);
         }
         return ApiResult.ok(null);
-    }
+    }*/
 
     @PostMapping("/createLuxuryGiftBag")
     @ApiOperation(value = "创建豪华礼品包")
@@ -132,7 +132,7 @@ public class GiftController {
     }
 
     @PostMapping("/getGiftList")
-    @ApiOperation(value = "获取礼品列表(已上架或未上架)")
+    @ApiOperation(value = "获取礼品列表")
     public ApiResult<PageInfo<GiftListResponse>> getGiftList(@RequestBody GiftListRequest giftListRequest) {
         return ApiResult.ok(giftService.getGiftList(giftListRequest));
     }

@@ -15,11 +15,11 @@ public interface GiftService {
 
     GiftInfoResponse getGiftInfo(Long id);
 
-    void createRealTypeGift(RealTypeGiftCreator realTypeGiftCreator);
+/*    void createRealTypeGift(RealTypeGiftCreator realTypeGiftCreator);
 
     void createVoucherTypeGift(VoucherTypeGiftCreator voucherTypeGiftCreator);
 
-    Long createGiftBag(GiftBagCreator giftBagCreator);
+    Long createGiftBag(GiftBagCreator giftBagCreator);*/
 
     Long createLuxuryGiftBag(LuxuryGiftBagCreator luxuryGiftBagCreator);
 
@@ -28,6 +28,8 @@ public interface GiftService {
     Long createOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator);
 
     void updateOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator);
+
+    void getGiftBagById (Long id );
 
     void createGiftBagRelation(Long giftBagId, Long giftId);
 

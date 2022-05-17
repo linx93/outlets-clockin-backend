@@ -95,14 +95,14 @@ public class GiftCreator {
     /**
      * 礼品品牌
      */
-    @NotBlank
+//    @NotBlank
     @ApiModelProperty(value = "礼品品牌")
     private String giftBrand;
 
     /**
      * 单次可兑付数量
      */
-    @NotNull
+//    @NotNull
     @ApiModelProperty(value = "单次可兑付数量")
     private Integer giftNum;
 
@@ -110,7 +110,7 @@ public class GiftCreator {
      * 个/套
      * 单位
      */
-    @NotBlank
+//    @NotBlank
     @ApiModelProperty(value = "单位(个/套)")
     private String giftUnit;
 
@@ -121,7 +121,7 @@ public class GiftCreator {
     /**
      * 优惠卷承兑商家
      */
-    @NotBlank
+//    @NotEmpty
     @ApiModelProperty(value = "优惠卷承兑商家")
     private List<String> couponAcceptor;
 

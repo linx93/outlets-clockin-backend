@@ -6,5 +6,5 @@ import lombok.Data;
 public class GiftListRequest {
     private Integer pageSize;
     private Integer pageNum;
-    private Integer putOn;
+    private String name;
 }

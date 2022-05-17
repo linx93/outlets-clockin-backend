@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 
 @AllArgsConstructor
@@ -164,7 +165,7 @@ public class GiftServiceImpl implements GiftService {
         return giftInfo;
     }
 
-    //新增实物
+/*    //新增实物
     @Override
     public void createRealTypeGift(RealTypeGiftCreator realTypeGiftCreator) {
         Gift gift = new Gift();
@@ -259,7 +260,7 @@ public class GiftServiceImpl implements GiftService {
             throw new BasicException("插入出错");
         }
         return giftBag.getId();
-    }
+    }*/
 
     //创建豪华礼品包
     @Override
@@ -385,6 +386,12 @@ public class GiftServiceImpl implements GiftService {
         }
     }
 
+    //查询礼品包详情
+    @Override
+    public void getGiftBagById(Long id) {
+
+    }
+
     //创建礼品包及礼品关系
     @Override
     public void createGiftBagRelation(Long giftBagId, Long giftId) {
@@ -433,9 +440,9 @@ public class GiftServiceImpl implements GiftService {
         Query query = new Query();
         Criteria criteria = Criteria.where("category").is(type);
         query.addCriteria(criteria);
-        List<GiftType> giftTypes = mongoTemplate.findAll(GiftType.class);
+        List<GiftType> giftTypes = mongoTemplate.find(query, GiftType.class);
         List<GiftTypeResponse> responses = new ArrayList<>();
-        for (GiftType g :giftTypes) {
+        for (GiftType g : giftTypes) {
             GiftTypeResponse giftTypeResponse = new GiftTypeResponse();
             giftTypeResponse.setId(g.getId());
             giftTypeResponse.setType(g.getType());
@@ -483,11 +490,11 @@ public class GiftServiceImpl implements GiftService {
     public PageInfo<GiftListResponse> getGiftList(GiftListRequest giftListRequest) {
         PageInfo<GiftListResponse> pageInfo = new PageInfo<>();
         Query query = new Query();
-        Criteria criteria = Criteria.where("putOn").is(giftListRequest.getPutOn());
+        Pattern pattern = Pattern.compile("^.*" + giftListRequest.getName() + ".*$", Pattern.CASE_INSENSITIVE);
+        Criteria criteria = Criteria.where("giftName").regex(pattern);
         query.addCriteria(criteria);
-        Pageable pageable = PageRequest.of(giftListRequest.getPageNum(), giftListRequest.getPageSize());
+        Pageable pageable = PageRequest.of(giftListRequest.getPageNum() - 1, giftListRequest.getPageSize());
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        long totalCount = mongoTemplate.count(query, "id");
         List<Gift> gifts = mongoTemplate.find(query.with(sort).with(pageable), Gift.class);
         List<GiftListResponse> records = new ArrayList<>();
         for (Gift g : gifts
@@ -502,6 +509,7 @@ public class GiftServiceImpl implements GiftService {
             records.add(giftListResponse);
         }
 
+        long totalCount = mongoTemplate.count(new Query(), Gift.class);
         pageInfo.setRecords(records);
         pageInfo.setTotal(totalCount);
         pageInfo.setSize((long) giftListRequest.getPageSize());
