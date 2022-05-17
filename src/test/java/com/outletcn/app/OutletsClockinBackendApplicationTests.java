@@ -295,4 +295,10 @@ class OutletsClockinBackendApplicationTests {
         List<Line> lines = lineService.findLineByDestinationName("贵州");
         System.out.println(lines);
     }
+
+    @Test
+    void testFindDestinationByNameOrPutOnForPage() {
+        PageInfo<Destination> destinationByNameOrPutOnForPage = service.findDestinationByNameOrPutOnForPage("B", 0, 1, 10);
+        System.out.println(destinationByNameOrPutOnForPage);
+    }
 }

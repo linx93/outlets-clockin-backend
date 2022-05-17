@@ -11,6 +11,7 @@ import com.outletcn.app.repository.DestinationGroupMongoRepository;
 import com.outletcn.app.service.chain.DestinationGroupService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -302,6 +303,23 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         pageInfo.setCurrent(current);
         PageInfo<DestinationGroup> destinationGroupPageInfo = destinationGroupMongoRepository.findObjForPage(
                 new Query(), pageInfo);
+        return destinationGroupPageInfo;
+    }
+
+    @Override
+    public PageInfo<DestinationGroup> findDestinationGroupByNameOrPutOnForPage(String name, int putOn, int current, int size) {
+        PageInfo<DestinationGroup> pageInfo = new PageInfo<>();
+        pageInfo.setSize(size);
+        pageInfo.setCurrent(current);
+
+        Query query = new Query();
+        Pattern pattern = Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
+        if (!StringUtils.isBlank(name)) {
+            query.addCriteria(Criteria.where("groupName").regex(pattern));
+        }
+        query.addCriteria(Criteria.where("putOn").is(putOn));
+
+        PageInfo<DestinationGroup> destinationGroupPageInfo = destinationGroupMongoRepository.findObjForPage(query, pageInfo);
         return destinationGroupPageInfo;
     }
 }

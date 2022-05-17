@@ -86,4 +86,14 @@ public interface DestinationGroupService {
      * @return
      */
     PageInfo<DestinationGroup> findAllForPage(int current, int size);
+
+    /**
+     * 基于名称、上下架查询
+     * @param name
+     * @param putOn
+     * @param current
+     * @param size
+     * @return
+     */
+    PageInfo<DestinationGroup> findDestinationGroupByNameOrPutOnForPage(String name, int putOn, int current, int size);
 }

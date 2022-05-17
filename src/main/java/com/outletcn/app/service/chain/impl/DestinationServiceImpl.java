@@ -12,6 +12,7 @@ import com.outletcn.app.repository.DestinationMongoRepository;
 import com.outletcn.app.service.chain.DestinationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -377,6 +378,24 @@ public class DestinationServiceImpl implements DestinationService {
         pageInfo.setSize(size);
         pageInfo.setCurrent(current);
         PageInfo<Destination> destinationPageInfo = destinationMongoRepository.findObjForPage(new Query(), pageInfo);
+        return destinationPageInfo;
+    }
+
+    @Override
+    public PageInfo<Destination> findDestinationByNameOrPutOnForPage(String name, int putOn, int current, int size) {
+
+        PageInfo<Destination> pageInfo = new PageInfo<>();
+        pageInfo.setSize(size);
+        pageInfo.setCurrent(current);
+
+        Query query = new Query();
+        Pattern pattern = Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
+        if (!StringUtils.isBlank(name)) {
+            query.addCriteria(Criteria.where("destinationName").regex(pattern));
+        }
+        query.addCriteria(Criteria.where("putOn").is(putOn));
+
+        PageInfo<Destination> destinationPageInfo = destinationMongoRepository.findObjForPage(query, pageInfo);
         return destinationPageInfo;
     }
 }
