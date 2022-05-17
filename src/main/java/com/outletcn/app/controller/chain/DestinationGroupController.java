@@ -136,4 +136,15 @@ public class DestinationGroupController {
         return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);
     }
 
+
+    /**
+     * 基于名称、上下架查询
+     */
+    @ApiOperation(value = "基于名称、上下架查询")
+    @GetMapping("/findDestinationGroupByNameOrPutOnForPage")
+    public ApiResult<PageInfo<DestinationGroup>> findDestinationGroupByNameOrPutOnForPage(@RequestParam(value = "name",required = false) String name, @RequestParam(value = "putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam(value = "size") Integer size) {
+        PageInfo<DestinationGroup> pageInfo = destinationGroupService.findDestinationGroupByNameOrPutOnForPage(name, putOn, page, size);
+        return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);
+    }
+
 }
