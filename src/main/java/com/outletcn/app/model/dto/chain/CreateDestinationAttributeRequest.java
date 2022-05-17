@@ -1,6 +1,9 @@
 package com.outletcn.app.model.dto.chain;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author tanwei
@@ -15,6 +18,8 @@ public class CreateDestinationAttributeRequest {
     /**
      * 目的地属性
      */
+    @NotBlank(message = "目的地属性不能为空")
+    @ApiModelProperty(value = "目的地属性")
     private String destinationAttribute;
 
 }

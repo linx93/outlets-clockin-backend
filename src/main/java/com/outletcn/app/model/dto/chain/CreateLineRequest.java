@@ -1,8 +1,11 @@
 package com.outletcn.app.model.dto.chain;
 
 import com.outletcn.app.model.mongo.Line;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -14,7 +17,9 @@ import java.util.List;
 @Data
 public class CreateLineRequest {
 
+    @NotNull
     private BaseInfo baseInfo;
+    @NotNull
     private DetailsInfo detailsInfo;
 
     @Data
@@ -23,63 +28,87 @@ public class CreateLineRequest {
         /**
          * 线路ID
          */
+        @NotBlank(message = "线路ID不能为空")
+        @ApiModelProperty("线路ID")
         private String lineId;
 
         /**
          * 线路名称
          */
+        @NotBlank(message = "线路名称不能为空")
+        @ApiModelProperty("线路名称")
         private String lineName;
 
         /**
          * 线路所含元素
          */
+        @NotNull(message = "线路所含元素不能为空")
+        @ApiModelProperty("线路所含元素")
         private List<Line.Attribute> lineElements;
 
         /**
          * 线路属性
          */
+        @NotNull(message = "线路属性不能为空")
+        @ApiModelProperty("线路属性")
         private List<String> lineAttrs;
+
 
         /**
          * 摘要
          */
+        @NotBlank(message = "摘要不能为空")
+        @ApiModelProperty("摘要")
         private String summary;
 
         /**
          * 是否上架
-         * 0:是/1:否
          */
+        @NotNull(message = "是否上架不能为空")
+        @ApiModelProperty("是否上架0:是/1:否")
         private Integer putOn;
 
         /**
          * 是否置顶
          * 0:是/1:否
          */
+        @NotNull(message = "是否置顶不能为空")
+        @ApiModelProperty("是否置顶0:是/1:否")
         private Integer stick;
 
         /**
          * 推荐理由
          */
+        @NotBlank(message = "推荐理由不能为空")
+        @ApiModelProperty(value = "推荐理由")
         private String recommendReason;
 
         /**
          * 主要目的地
          */
+        @NotBlank(message = "主要目的地不能为空")
+        @ApiModelProperty(value = "主要目的地")
         private String mainDestination;
 
         /**
          * 线路推荐图片（列表页长方形缩略图）
          */
+        @NotBlank(message = "线路推荐图片不能为空")
+        @ApiModelProperty(value = "线路推荐图片（列表页长方形缩略图）")
         private String lineRecommendImage;
 
         /**
          * 线路推荐图片（列表页正方形缩略图）
          */
+        @NotBlank(message = "线路推荐图片不能为空")
+        @ApiModelProperty(value = "线路推荐图片（列表页正方形缩略图）")
         private String lineRecommendSquareImage;
 
         /**
          * 线路预计游览时间
          */
+        @NotNull(message = "线路预计游览时间不能为空")
+        @ApiModelProperty(value = "线路预计游览时间")
         private Integer lineExpectTime;
 
     }

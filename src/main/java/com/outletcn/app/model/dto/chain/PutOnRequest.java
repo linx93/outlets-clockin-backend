@@ -1,6 +1,9 @@
 package com.outletcn.app.model.dto.chain;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author tanwei
@@ -11,6 +14,10 @@ import lombok.Data;
 @Data
 public class PutOnRequest {
 
+    @NotNull(message = "线路id")
+    @ApiModelProperty("线路id")
     private Long id;
-    private int putOn;
+    @NotNull(message = "线路名称")
+    @ApiModelProperty(value = "是否上架 0是1否")
+    private Integer putOn;
 }

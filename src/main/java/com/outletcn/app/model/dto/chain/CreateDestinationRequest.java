@@ -1,7 +1,10 @@
 package com.outletcn.app.model.dto.chain;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -13,7 +16,9 @@ import java.util.List;
 @Data
 public class CreateDestinationRequest {
 
+    @NotNull
     private BaseInfo baseInfo;
+    @NotNull
     private DetailsInfo detailsInfo;
 
 
@@ -22,78 +27,108 @@ public class CreateDestinationRequest {
         /**
          * 目的地名称
          */
+        @NotBlank(message = "目的地名称不能为空")
+        @ApiModelProperty(value = "目的地名称", required = true)
         private String destinationName;
 
         /**
          * 目的地属性集
          */
+        @NotBlank(message = "目的地属性集不能为空")
+        @ApiModelProperty(value = "目的地属性集")
         private List<String> destinationAttrs;
 
 
         /**
          * 目的地推荐图片（列表页长方形缩略图）
          */
+        @NotBlank(message = "目的地推荐图片不能为空")
+        @ApiModelProperty(value = "目的地推荐图片（列表页长方形缩略图）")
         private String destinationRecommendImage;
 
         /**
          * 目的地推荐图片（列表页正方形缩略图）
          */
+        @NotBlank(message = "目的地推荐图片不能为空")
+        @ApiModelProperty(value = "目的地推荐图片（列表页正方形缩略图）")
         private String destinationRecommendSquareImage;
 
         /**
          * 目的地类型
          */
+        @NotBlank(message = "目的地类型不能为空")
+        @ApiModelProperty(value = "目的地类型")
         private String destinationType;
 
         /**
          * 摘要
          */
+        @NotBlank(message = "摘要不能为空")
+        @ApiModelProperty(value = "摘要")
         private String summary;
 
         /**
          * 是否上架
          * 0:是/1:否
          */
+        @NotNull(message = "是否上架不能为空")
+        @ApiModelProperty(value = "是否上架 0:是/1:否")
         private Integer putOn;
 
         /**
          * 是否为著名地标
          */
+        @NotBlank(message = "是否为著名地标不能为空")
+        @ApiModelProperty(value = "是否为著名地标")
         private Integer majorDestination;
 
         /**
          * 地址
          */
+        @NotBlank(message = "地址不能为空")
+        @ApiModelProperty(value = "地址")
         private String address;
 
         /**
          * 经度
          */
+        @NotBlank(message = "经度不能为空")
+        @ApiModelProperty(value = "经度")
         private String longitude;
 
         /**
          * 纬度
          */
+        @NotBlank(message = "纬度不能为空")
+        @ApiModelProperty(value = "纬度")
         private String latitude;
 
         /**
          * 是否适合60岁以上老人
          */
+        @NotNull(message = "是否适合60岁以上老人不能为空")
+        @ApiModelProperty(value = "是否适合60岁以上老人")
         private Integer forOldPeople;
 
         /**
          * 是否适合4岁以下小孩
          */
+        @NotNull(message = "是否适合4岁以下小孩不能为空")
+        @ApiModelProperty(value = "是否适合4岁以下小孩")
         private Integer forChildren;
 
         /**
          * 开业时间
          */
+        @NotBlank(message = "开业时间不能为空")
+        @ApiModelProperty(value = "开业时间")
         private String openTime;
 
         /**
          * 歇业时间
          */
+        @NotBlank(message = "歇业时间不能为空")
+        @ApiModelProperty(value = "歇业时间")
         private String closeTime;
     }
 

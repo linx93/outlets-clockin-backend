@@ -1,6 +1,9 @@
 package com.outletcn.app.model.dto.chain;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author tanwei
@@ -11,5 +14,7 @@ import lombok.Data;
 @Data
 public class CreateLineAttributeRequest {
 
+    @NotBlank(message = "属性名称不能为空")
+    @ApiModelProperty(value = "线路属性")
     private String lineAttribute;
 }

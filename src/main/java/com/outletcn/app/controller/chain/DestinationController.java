@@ -1,6 +1,7 @@
 package com.outletcn.app.controller.chain;
 
-import com.outletcn.app.common.ApiResult;
+
+import net.phadata.app.common.ApiResult;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.Destination;
@@ -33,7 +34,7 @@ public class DestinationController {
     @GetMapping("findByName")
     public ApiResult<List<Destination>> findDestinationByName(@RequestParam("name") String name) {
         List<Destination> destinations = destinationService.findDestinationByName(name);
-        return ApiResult.result(ErrorCode.SUCCESS, destinations);
+        return ApiResult.thin(ErrorCode.SUCCESS, destinations);
     }
 
     /**
@@ -43,7 +44,7 @@ public class DestinationController {
     @GetMapping("findByAttribute")
     public ApiResult<List<Destination>> findDestinationByAttribute(@RequestParam("attribute") String attribute) {
         List<Destination> destinations = destinationService.findDestinationByAttr(attribute);
-        return ApiResult.result(ErrorCode.SUCCESS, destinations);
+        return ApiResult.thin(ErrorCode.SUCCESS, destinations);
     }
 
     /**
@@ -53,7 +54,7 @@ public class DestinationController {
     @PostMapping("createDestination")
     public ApiResult<Boolean> createDestination(@RequestBody @Valid CreateDestinationRequest createDestinationRequest) {
         boolean destination = destinationService.createDestination(createDestinationRequest);
-        return ApiResult.result(ErrorCode.SUCCESS,destination);
+        return ApiResult.thin(ErrorCode.SUCCESS, destination);
     }
 
     /**
@@ -63,7 +64,7 @@ public class DestinationController {
     @PostMapping("createDestinationType")
     public ApiResult<Boolean> createDestinationType(@RequestBody @Valid CreateDestinationTypeRequest createDestinationTypeRequest) {
         boolean destinationType = destinationService.createDestinationType(createDestinationTypeRequest);
-        return ApiResult.result(ErrorCode.SUCCESS,destinationType);
+        return ApiResult.thin(ErrorCode.SUCCESS, destinationType);
     }
 
     /**
@@ -73,7 +74,7 @@ public class DestinationController {
     @PostMapping("createDestinationAttribute")
     public ApiResult<Boolean> createDestinationAttribute(@RequestBody @Valid CreateDestinationAttributeRequest createDestinationAttributeRequest) {
         boolean destinationAttribute = destinationService.createDestinationAttribute(createDestinationAttributeRequest);
-        return ApiResult.result(ErrorCode.SUCCESS,destinationAttribute);
+        return ApiResult.thin(ErrorCode.SUCCESS, destinationAttribute);
     }
 
     /**
@@ -83,7 +84,7 @@ public class DestinationController {
     @PostMapping("deleteDestination")
     public ApiResult<Boolean> deleteDestination(@RequestParam("id") Long id) {
         boolean destination = destinationService.deleteDestination(id);
-        return ApiResult.result(ErrorCode.SUCCESS,destination);
+        return ApiResult.thin(ErrorCode.SUCCESS, destination);
     }
 
     /**
@@ -93,7 +94,7 @@ public class DestinationController {
     @PostMapping("modifyDestination")
     public ApiResult<Boolean> modifyDestination(@RequestBody @Valid CreateDestinationRequest createDestinationRequest, Long id) {
         boolean destination = destinationService.modifyDestination(createDestinationRequest, id);
-        return ApiResult.result(ErrorCode.SUCCESS,destination);
+        return ApiResult.thin(ErrorCode.SUCCESS, destination);
     }
 
     /**
@@ -104,10 +105,10 @@ public class DestinationController {
     public ApiResult<PutOnDestinationResponse> putOnDestination(@RequestBody @Valid PutOnRequest putOnRequest) {
         PutOnDestinationResponse putOnDestinationResponse = destinationService.putOnDestination(putOnRequest);
         if (!Objects.isNull(putOnDestinationResponse)) {
-            return ApiResult.result(ErrorCode.DATA_ALREADY_EXISTED.getCode(),
+            return new ApiResult<>(ErrorCode.DATA_ALREADY_EXISTED.getCode(),
                     "目的地存在于目的地群或线路中", putOnDestinationResponse);
         }
-        return ApiResult.result(ErrorCode.SUCCESS, null);
+        return ApiResult.thin(ErrorCode.SUCCESS, null);
     }
 
     /**
@@ -117,7 +118,7 @@ public class DestinationController {
     @GetMapping("findDestinationByNamePage")
     public ApiResult<PageInfo<Destination>> findDestinationByNamePage(@RequestParam("name") String name, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
         PageInfo<Destination> destinations = destinationService.findDestinationByNameForPage(name, page, size);
-        return ApiResult.result(ErrorCode.SUCCESS, destinations);
+        return ApiResult.thin(ErrorCode.SUCCESS, destinations);
     }
 
     /**
@@ -127,7 +128,7 @@ public class DestinationController {
     @GetMapping("findDestinationByType")
     public ApiResult<List<Destination>> findDestinationByType(@RequestParam("type") String type) {
         List<Destination> destinations = destinationService.findDestinationByType(type);
-        return ApiResult.result(ErrorCode.SUCCESS, destinations);
+        return ApiResult.thin(ErrorCode.SUCCESS, destinations);
     }
 
     /**
@@ -137,7 +138,7 @@ public class DestinationController {
     @GetMapping("findDestinationByPutOnForPage")
     public ApiResult<PageInfo<Destination>> findDestinationByPutOnForPage(@RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
         PageInfo<Destination> destinations = destinationService.findDestinationByPutOnForPage(putOn, page, size);
-        return ApiResult.result(ErrorCode.SUCCESS, destinations);
+        return ApiResult.thin(ErrorCode.SUCCESS, destinations);
     }
 
     /**
@@ -147,6 +148,6 @@ public class DestinationController {
     @GetMapping("findAll")
     public ApiResult<PageInfo<Destination>> findAll(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
         PageInfo<Destination> pageInfo = destinationService.findAllForPage(page, size);
-        return ApiResult.result(ErrorCode.SUCCESS, pageInfo);
+        return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);
     }
 }

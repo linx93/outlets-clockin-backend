@@ -1,5 +1,7 @@
 package com.outletcn.app.model.mongo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,17 +17,18 @@ import java.util.List;
  */
 @Data
 @Document(collection = "destinations")
-@ApiModel(value="目的地", description="目的地")
+@ApiModel(value = "目的地", description = "目的地")
 public class Destination implements Serializable {
 
 
     private static final long serialVersionUID = -865278034012709898L;
-
+    @JsonSerialize(using = ToStringSerializer.class)
     @ApiModelProperty(value = "目的地ID")
     private Long id;
     /**
      * 目的地ID
      */
+    @ApiModelProperty(value = "目的地ID")
     private String destinationId;
 
     /**
