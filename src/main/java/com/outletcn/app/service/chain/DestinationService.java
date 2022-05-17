@@ -1,5 +1,6 @@
 package com.outletcn.app.service.chain;
 
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.CreateDestinationAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateDestinationRequest;
 import com.outletcn.app.model.dto.chain.CreateDestinationTypeRequest;
@@ -61,6 +62,12 @@ public interface DestinationService {
     List<Destination> findDestinationByName(String name);
 
     /**
+     * 基于名称模糊查询（分页）
+     * @param name
+     */
+    PageInfo<Destination> findDestinationByNameForPage(String name, int current, int size);
+
+    /**
      * 基于属性查询
      * @param attr
      */
@@ -73,9 +80,15 @@ public interface DestinationService {
     List<Destination> findDestinationByType(String type);
 
     /**
+     * 基于上下架状态查询
+     * @param putOn
+     */
+    PageInfo<Destination> findDestinationByPutOn(int putOn, int current, int size);
+
+    /**
      * 查询所有
      * @return
      */
-//    List<Destination> findAll();
+    PageInfo<Destination> findAll(int current, int size);
 
 }

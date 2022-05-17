@@ -7,15 +7,14 @@ import com.outletcn.app.common.LineElementType;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.applet.LineElementsVO;
 import com.outletcn.app.model.dto.applet.LineVO;
-import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
-import com.outletcn.app.model.dto.chain.CreateLineRequest;
-import com.outletcn.app.model.dto.chain.DetailsInfo;
-import com.outletcn.app.model.dto.chain.PutOnRequest;
+import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.*;
 import com.outletcn.app.service.chain.LineService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -105,8 +104,41 @@ public class LineServiceImpl implements LineService {
 
 
     @Override
-    public void putOnLine(PutOnRequest putOnRequest) {
+    public boolean putOnLine(PutOnRequest putOnRequest) {
+        Line line = mongoTemplate.findById(putOnRequest.getId(), Line.class);
+        line.setPutOn(putOnRequest.getPutOn());
+        try {
+            mongoTemplate.save(line);
+            return Boolean.TRUE;
+        } catch (Exception ex) {
+            throw new BasicException("置顶线路失败：" + ex.getMessage());
+        }
+    }
 
+    @Override
+    public boolean stickLine(StickRequest stickRequest) {
+        Line line = mongoTemplate.findById(stickRequest.getId(), Line.class);
+        line.setStick(stickRequest.getStick());
+        line.setStickTime(Instant.now().getEpochSecond());
+        try {
+            mongoTemplate.save(line);
+            return Boolean.TRUE;
+        } catch (Exception ex) {
+            throw new BasicException("置顶线路失败：" + ex.getMessage());
+        }
+    }
+
+    @Override
+    public List<Line> findLineByAttr(String attr) {
+        List<Line> lines = mongoTemplate.findAll(Line.class);
+        List<Line> lineByAttr = new ArrayList<>();
+        for (Line line : lines) {
+            List<String> lineAttrs = line.getLineAttrs();
+            if (lineAttrs.contains(attr)) {
+                lineByAttr.add(line);
+            }
+        }
+        return lines;
     }
 
     @Override

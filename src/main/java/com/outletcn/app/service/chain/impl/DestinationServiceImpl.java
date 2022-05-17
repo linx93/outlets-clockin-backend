@@ -3,9 +3,12 @@ package com.outletcn.app.service.chain.impl;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.mongodb.client.result.DeleteResult;
 import com.outletcn.app.common.ClockInType;
+import com.outletcn.app.common.PageInfo;
+import com.outletcn.app.controller.chain.DestinationController;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.*;
+import com.outletcn.app.repository.DestinationMongoRepository;
 import com.outletcn.app.service.chain.DestinationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +38,8 @@ public class DestinationServiceImpl implements DestinationService {
 
     MongoTemplate mongoTemplate;
     Sequence sequence;
+
+    DestinationMongoRepository destinationMongoRepository;
 
     @Override
     public void createDestination(CreateDestinationRequest createDestinationRequest) {
@@ -265,6 +270,17 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
+    public PageInfo<Destination> findDestinationByNameForPage(String name, int current, int size) {
+        PageInfo<Destination> pageInfo = new PageInfo<>();
+        pageInfo.setSize(size);
+        pageInfo.setCurrent(current);
+        PageInfo<Destination> destinationPageInfo = destinationMongoRepository.findObjForPage(Query.query(
+                Criteria.where("name").is(name)
+        ), pageInfo);
+        return destinationPageInfo;
+    }
+
+    @Override
     public List<Destination> findDestinationByAttr(String attr) {
         List<Destination> destinations = mongoTemplate.findAll(Destination.class);
         List<Destination> destinationsByAttr = new ArrayList<>();
@@ -282,5 +298,25 @@ public class DestinationServiceImpl implements DestinationService {
         List<Destination> destinations = mongoTemplate.find(Query.query(
                 Criteria.where("destinationType").is(type)), Destination.class);
         return destinations;
+    }
+
+    @Override
+    public PageInfo<Destination> findDestinationByPutOn(int putOn, int current, int size) {
+        PageInfo<Destination> pageInfo = new PageInfo<>();
+        pageInfo.setSize(size);
+        pageInfo.setCurrent(current);
+        PageInfo<Destination> destinationPageInfo = destinationMongoRepository.findObjForPage(Query.query(
+                Criteria.where("putOn").is(putOn)
+        ), pageInfo);
+        return destinationPageInfo;
+    }
+
+    @Override
+    public PageInfo<Destination> findAll(int current, int size) {
+        PageInfo<Destination> pageInfo = new PageInfo<>();
+        pageInfo.setSize(size);
+        pageInfo.setCurrent(current);
+        PageInfo<Destination> destinationPageInfo = destinationMongoRepository.findObjForPage(new Query(), pageInfo);
+        return destinationPageInfo;
     }
 }

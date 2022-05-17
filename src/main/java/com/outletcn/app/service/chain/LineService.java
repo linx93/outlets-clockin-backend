@@ -2,11 +2,13 @@ package com.outletcn.app.service.chain;
 
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.applet.LineElementsVO;
-import com.outletcn.app.model.dto.applet.LineVO;
 import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateLineRequest;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
+import com.outletcn.app.model.dto.chain.StickRequest;
 import com.outletcn.app.model.mongo.Line;
+
+import java.util.List;
 
 /**
  * @author tanwei
@@ -32,7 +34,19 @@ public interface LineService {
      * 上/下架线路
      * @param putOnRequest
      */
-    void putOnLine(PutOnRequest putOnRequest);
+    boolean putOnLine(PutOnRequest putOnRequest);
+
+    /**
+     * 置顶线路
+     * @param stickRequest
+     */
+    boolean stickLine(StickRequest stickRequest);
+
+    /**
+     * 基于属性查询线路
+     * @param attr
+     */
+    List<Line> findLineByAttr(String attr);
 
     /**
      * 通过线路id查询线路下的目的地和目的地群
