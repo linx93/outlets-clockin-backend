@@ -1,10 +1,13 @@
 package com.outletcn.app;
 
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.DetailObjectType;
 import com.outletcn.app.model.mongo.Line;
+import com.outletcn.app.repository.DestinationMongoRepository;
+import com.outletcn.app.repository.MongoRepository;
 import com.outletcn.app.service.chain.DestinationGroupService;
 import com.outletcn.app.service.chain.DestinationService;
 import com.outletcn.app.service.chain.LineService;
@@ -12,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.*;
 
@@ -252,5 +257,18 @@ class OutletsClockinBackendApplicationTests {
         createLineRequest.setBaseInfo(baseInfo);
         createLineRequest.setDetailsInfo(detailsInfo);
         lineService.createLine(createLineRequest);
+    }
+
+    @Autowired
+    DestinationMongoRepository destinationMongoRepository;
+
+    @Test
+    void testPageQuery() {
+        PageInfo<Destination> pageInfo = new PageInfo<>();
+        pageInfo.setCurrent(1);
+        pageInfo.setSize(2);
+        Query query = new Query();
+        PageInfo<Destination> page = destinationMongoRepository.findObjForPage(query, pageInfo);
+        System.out.println(page);
     }
 }

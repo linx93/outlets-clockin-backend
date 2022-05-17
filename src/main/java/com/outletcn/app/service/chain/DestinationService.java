@@ -61,8 +61,21 @@ public interface DestinationService {
     List<Destination> findDestinationByName(String name);
 
     /**
-     * 基于属性模糊查询
+     * 基于属性查询
      * @param attr
      */
     List<Destination> findDestinationByAttr(String attr);
+
+    /**
+     * 基于类型查询
+     * @param type
+     */
+    List<Destination> findDestinationByType(String type);
+
+    /**
+     * 查询所有
+     * @return
+     */
+//    List<Destination> findAll();
+
 }

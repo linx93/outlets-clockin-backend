@@ -1,5 +1,7 @@
 package com.outletcn.app.common;
 
+import java.util.Arrays;
+
 /**
  * @author tanwei
  * @version v1.0
@@ -19,5 +21,12 @@ public enum ClockInType {
 
     public int getType() {
         return type;
+    }
+
+    public static ClockInType getClockInType(int type) {
+        return Arrays.stream(ClockInType.values())
+                .filter(rawType -> rawType.getType() == type)
+                .findFirst()
+                .orElse(null);
     }
 }

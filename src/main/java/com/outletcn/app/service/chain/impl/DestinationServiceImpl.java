@@ -276,4 +276,11 @@ public class DestinationServiceImpl implements DestinationService {
         }
         return destinationsByAttr;
     }
+
+    @Override
+    public List<Destination> findDestinationByType(String type) {
+        List<Destination> destinations = mongoTemplate.find(Query.query(
+                Criteria.where("destinationType").is(type)), Destination.class);
+        return destinations;
+    }
 }
