@@ -20,28 +20,41 @@ public class AppletInterfaceTest {
     LineService lineService;
 
     @Test
-    void lineList(){
+    void lineList() {
         LineListRequest lineListRequest = new LineListRequest();
+        lineListRequest.setDestinationName("嗨翻天");
+        lineListRequest.setLineTab("老人1");
         List<LineVO> lineVOS = lineService.lineList(lineListRequest);
-        System.out.println(lineVOS);
+        lineVOS.forEach(lineVO -> System.out.println(lineVO));
     }
 
     @Test
-    void lineTab(){
+    void lineTab() {
         List<LineTabVO> lineTabVOS = lineService.lineTab();
         System.out.println(lineTabVOS);
     }
 
     @Test
-    void lineElementsMapById(){
+    void lineElementsMapById() {
         List<DestinationMapVO> destinationMapVOS = lineService.lineElementsMapById(1526484432108683266L);
         System.out.println(destinationMapVOS);
     }
 
     @Test
-    void lineElementsById(){
+    void lineElementsById() {
         LineElementsVO lineElementsVO = lineService.lineElementsById(1526484432108683266L);
         System.out.println(lineElementsVO);
+    }
+
+
+    @Test
+    void nearby() {
+        NearbyRequest nearbyRequest = new NearbyRequest();
+        nearbyRequest.setLatitude(26.649896);
+        nearbyRequest.setLongitude(106.646353);
+        nearbyRequest.setDestinationType("打卡点");
+        List<DestinationVO> nearby = lineService.nearby(nearbyRequest);
+        nearby.forEach(item -> System.out.println(item));
     }
 
 }

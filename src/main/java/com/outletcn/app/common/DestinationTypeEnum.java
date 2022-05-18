@@ -11,7 +11,7 @@ public enum DestinationTypeEnum {
      * 打卡点
      */
     CLOCK_IN_POINT("打卡点"),
-    UN_CLOCK_IN_POINT("不可打卡点"),
+    NORMAL_POINT("普通点"),
     EXCHANGE_POINT("兑换点");
 
     String msg;

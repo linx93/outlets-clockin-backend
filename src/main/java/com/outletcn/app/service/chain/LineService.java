@@ -111,4 +111,11 @@ public interface LineService {
      * @return
      */
     List<LineAttribute> findLineAttributes();
+
+    /**
+     * 附近
+     * @param nearbyRequest req
+     * @return res
+     */
+    List<DestinationVO> nearby(NearbyRequest nearbyRequest);
 }

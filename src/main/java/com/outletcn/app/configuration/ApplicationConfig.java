@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import springfox.documentation.RequestHandler;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -20,6 +21,8 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
+
+import java.util.function.Predicate;
 
 
 /**
@@ -71,6 +74,24 @@ public class ApplicationConfig implements WebMvcConfigurer {
                 .useDefaultResponseMessages(false)
                 .select()
                 .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
+                .paths(PathSelectors.any())
+                .build().extensions(openApiExtensionResolver.buildExtensions("1.0"));
+    }
+
+    @Bean
+    public Docket createAppletApi() {
+        Predicate<RequestHandler> appletPackage = RequestHandlerSelectors.basePackage("com.outletcn.app.controller.applet");
+        return new Docket(DocumentationType.SWAGGER_2).groupName("applet")
+                .apiInfo(new ApiInfoBuilder()
+                        .title("新奥莱打卡后台")
+                        .description("新奥莱打卡小程序的Api接口文档")
+                        .termsOfServiceUrl("https://www.phadata.net")
+                        .contact(new Contact("linx", "", "xxx@phadata.com"))
+                        .version("1.0.0")
+                        .build())
+                .useDefaultResponseMessages(false)
+                .select()
+                .apis(appletPackage)
                 .paths(PathSelectors.any())
                 .build().extensions(openApiExtensionResolver.buildExtensions("1.0"));
     }

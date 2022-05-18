@@ -13,6 +13,7 @@ import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.*;
 import com.outletcn.app.repository.LineMongoRepository;
 import com.outletcn.app.service.chain.LineService;
+import com.outletcn.app.utils.GeoUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -410,5 +411,20 @@ public class LineServiceImpl implements LineService {
     @Override
     public List<LineAttribute> findLineAttributes() {
         return mongoTemplate.findAll(LineAttribute.class);
+    }
+
+
+    //todo 默认查询附近5公里
+    private static final double maxDistance = 5 * 1000;
+
+    @Override
+    public List<DestinationVO> nearby(NearbyRequest nearbyRequest) {
+        List<Destination> all = mongoTemplate.find(Query.query(Criteria.where("putOn").is(0)), Destination.class);
+        List<Destination> collect = all.stream().filter(item -> GeoUtil.getDistance(Double.parseDouble(item.getLongitude()), Double.parseDouble(item.getLatitude()), nearbyRequest.getLongitude(), nearbyRequest.getLatitude()) <= maxDistance).collect(Collectors.toList());
+        List<DestinationVO> destinationVOS = lineConverter.toDestinationVOList(collect);
+        if (StringUtils.isNotBlank(nearbyRequest.getDestinationType())){
+            destinationVOS = destinationVOS.stream().filter(item -> Objects.equals(item.getDestinationType(), nearbyRequest.getDestinationType())).collect(Collectors.toList());
+        }
+        return destinationVOS;
     }
 }

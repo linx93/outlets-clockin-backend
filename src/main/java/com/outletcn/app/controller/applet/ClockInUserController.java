@@ -1,4 +1,4 @@
-package com.outletcn.app.controller;
+package com.outletcn.app.controller.applet;
 
 
 import com.outletcn.app.common.ApiResult;

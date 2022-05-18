@@ -1,4 +1,4 @@
-package com.outletcn.app.controller;
+package com.outletcn.app.controller.applet;
 
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.applet.*;
@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -48,12 +49,19 @@ public class ClockInAppletPageController {
     }
 
 
-
     @ApiOperation(value = "路线的选项卡接口")
     @GetMapping(value = "/line-tab")
     public ApiResult<List<LineTabVO>> lineTab() {
         List<LineTabVO> lineTabVOS = lineService.lineTab();
         return ApiResult.ok(lineTabVOS);
     }
+
+    @ApiOperation(value = "附近")
+    @GetMapping(value = "/nearby")
+    public ApiResult<List<DestinationVO>> nearby(@RequestBody @Valid NearbyRequest nearbyRequest) {
+        List<DestinationVO> nearbyResponses = lineService.nearby(nearbyRequest);
+        return ApiResult.ok(nearbyResponses);
+    }
+
 
 }

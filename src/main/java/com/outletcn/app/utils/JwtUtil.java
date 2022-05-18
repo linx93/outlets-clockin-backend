@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Slf4j
 public class JwtUtil {
-    private static final int DAY_MILLIS = 24 * 60 * 60 * 1000;
+    private static final int DAY_MILLIS = 7 * 24 * 60 * 60 * 1000;
     private static final String ISSUER = "outlets";
     private static final String SECRET = "i am linx";
     private static final String INFO = "info";
