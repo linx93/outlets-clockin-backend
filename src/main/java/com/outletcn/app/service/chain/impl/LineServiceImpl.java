@@ -353,7 +353,6 @@ public class LineServiceImpl implements LineService {
                 lineAttrs.forEach(attr -> {
                     if (Objects.equals(attr, lineListRequest.getLineTab().trim())) {
                         flag.set(true);
-                        return;
                     }
                 });
                 return flag.get();
@@ -397,8 +396,7 @@ public class LineServiceImpl implements LineService {
             lineVO.setClockInSignSum(clockInSignSum.get());
         });
         //排序 按置顶排序  再按修改时间排序
-        List<LineVO> collect = result.stream().sorted(Comparator.comparingInt(LineVO::getStick)).sorted(Comparator.comparing(LineVO::getStickTime).reversed()).collect(Collectors.toList());
-        return collect;
+        return result.stream().sorted(Comparator.comparingInt(LineVO::getStick)).sorted(Comparator.comparing(LineVO::getStickTime).reversed()).collect(Collectors.toList());
     }
 
     @Override
@@ -417,7 +415,7 @@ public class LineServiceImpl implements LineService {
     /**
      * 查询线路属性列表
      *
-     * @return
+     * @return 线路属性列表
      */
     @Override
     public List<LineAttribute> findLineAttributes() {
