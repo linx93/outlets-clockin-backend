@@ -1,10 +1,12 @@
 package com.outletcn.app.controller.chain;
 
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateLineRequest;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
 import com.outletcn.app.model.dto.chain.StickRequest;
 import com.outletcn.app.model.mongo.Line;
+import com.outletcn.app.model.mongo.LineAttribute;
 import com.outletcn.app.service.chain.LineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -89,5 +91,47 @@ public class LineController {
     public ApiResult<List<Line>> findLineByDestinationName(@RequestParam(value = "destinationName") String destinationName) {
         List<Line> line = lineService.findLineByDestinationName(destinationName);
         return ApiResult.thin(ErrorCode.SUCCESS, line);
+    }
+
+    /**
+     * 查询线路属性列表
+     */
+    @ApiOperation(value = "查询线路属性列表")
+    @GetMapping("/findLineAttributes")
+    public ApiResult<List<LineAttribute>> findLineAttributes() {
+        List<LineAttribute> lineAttributes = lineService.findLineAttributes();
+        return ApiResult.thin(ErrorCode.SUCCESS, lineAttributes);
+    }
+
+    /**
+     * 修改线路
+     */
+    @ApiOperation(value = "修改线路")
+    @PostMapping("/modifyLine")
+    public ApiResult<Boolean> modifyLine(@RequestBody @Valid CreateLineRequest createLineRequest, Long id) {
+        boolean line = lineService.modifyLine(createLineRequest, id);
+        return ApiResult.thin(ErrorCode.SUCCESS, line);
+    }
+
+    /**
+     * 删除线路
+     */
+    @ApiOperation(value = "删除线路")
+    @PostMapping("/deleteLine")
+    public ApiResult<Boolean> deleteLine(Long id) {
+        boolean line = lineService.deleteLine(id);
+        return ApiResult.thin(ErrorCode.SUCCESS, line);
+    }
+
+    /**
+     * 基于名称、上下架查询
+     */
+    @ApiOperation(value = "基于名称、上下架查询")
+    @GetMapping("/findLineByNameOrPutOnForPage")
+    public ApiResult<PageInfo<Line>> findLineByNameOrPutOnForPage(@RequestParam(name = "name", required = false) String name,
+                                                                  @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page,
+                                                                  @RequestParam("size") Integer size) {
+        PageInfo<Line> pageInfo = lineService.findLineByNameOrPutOnForPage(name, putOn, page, size);
+        return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);
     }
 }

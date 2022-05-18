@@ -1,12 +1,13 @@
 package com.outletcn.app.service.chain;
 
-import com.outletcn.app.common.ApiResult;
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateLineRequest;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
 import com.outletcn.app.model.dto.chain.StickRequest;
 import com.outletcn.app.model.mongo.Line;
+import com.outletcn.app.model.mongo.LineAttribute;
 
 import java.util.List;
 
@@ -23,6 +24,20 @@ public interface LineService {
      * @param createLineRequest
      */
     boolean createLine(CreateLineRequest createLineRequest);
+
+    /**
+     * 修改线路
+     * @param createLineRequest
+     * @param id
+     * @return
+     */
+    boolean modifyLine(CreateLineRequest createLineRequest, Long id);
+
+    /**
+     * 删除线路
+     * @param id
+     */
+    boolean deleteLine(Long id);
 
     /**
      * 创建线路属性
@@ -55,6 +70,16 @@ public interface LineService {
     List<Line> findLineByDestinationName(String destinationName);
 
     /**
+     * 基于名称、上下架查询
+     * @param name
+     * @param putOn
+     * @param current
+     * @param size
+     * @return
+     */
+    PageInfo<Line> findLineByNameOrPutOnForPage(String name, int putOn, int current, int size);
+
+    /**
      * 通过线路id查询线路下的目的地和目的地群
      * @param id 线路id
      * @return
@@ -80,4 +105,10 @@ public interface LineService {
      * @return LineTabVO
      */
     List<LineTabVO> lineTab();
+
+    /**
+     * 查询线路属性列表
+     * @return
+     */
+    List<LineAttribute> findLineAttributes();
 }

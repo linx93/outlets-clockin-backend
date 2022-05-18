@@ -1,6 +1,8 @@
 package com.outletcn.app.controller.chain;
 
 
+import com.outletcn.app.model.mongo.DestinationAttribute;
+import com.outletcn.app.model.mongo.DestinationType;
 import net.phadata.app.common.ApiResult;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
@@ -104,11 +106,7 @@ public class DestinationController {
     @PostMapping("putOnDestination")
     public ApiResult<PutOnDestinationResponse> putOnDestination(@RequestBody @Valid PutOnRequest putOnRequest) {
         PutOnDestinationResponse putOnDestinationResponse = destinationService.putOnDestination(putOnRequest);
-        if (!Objects.isNull(putOnDestinationResponse)) {
-            return new ApiResult<>(ErrorCode.DATA_ALREADY_EXISTED.getCode(),
-                    "目的地存在于目的地群或线路中", putOnDestinationResponse);
-        }
-        return ApiResult.thin(ErrorCode.SUCCESS, null);
+        return ApiResult.thin(ErrorCode.SUCCESS, putOnDestinationResponse);
     }
 
     /**
@@ -156,9 +154,29 @@ public class DestinationController {
      */
     @ApiOperation(value = "基于名称、上下架查询")
     @GetMapping("findDestinationByNameOrPutOnForPage")
-    public ApiResult<PageInfo<Destination>> findDestinationByNameOrPutOnForPage(@RequestParam(value = "name",required = false) String name, @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+    public ApiResult<PageInfo<Destination>> findDestinationByNameOrPutOnForPage(@RequestParam(value = "name", required = false) String name, @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
         PageInfo<Destination> destinations = destinationService.findDestinationByNameOrPutOnForPage(name, putOn, page, size);
         return ApiResult.thin(ErrorCode.SUCCESS, destinations);
+    }
+
+    /**
+     * 查询目的地属性列表
+     */
+    @ApiOperation(value = "查询目的地属性列表")
+    @GetMapping("findDestinationAttributes")
+    public ApiResult<List<DestinationAttribute>> findDestinationAttributes() {
+        List<DestinationAttribute> destinationProperties = destinationService.findDestinationAttributes();
+        return ApiResult.thin(ErrorCode.SUCCESS, destinationProperties);
+    }
+
+    /**
+     * 查询目的地类型列表
+     */
+    @ApiOperation(value = "查询目的地类型列表")
+    @GetMapping("findDestinationTypes")
+    public ApiResult<List<DestinationType>> findDestinationTypes() {
+        List<DestinationType> destinationTypes = destinationService.findDestinationTypes();
+        return ApiResult.thin(ErrorCode.SUCCESS, destinationTypes);
     }
 
 }

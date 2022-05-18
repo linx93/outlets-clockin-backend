@@ -1,14 +1,17 @@
 package com.outletcn.app.service.chain.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
+import com.mongodb.client.result.DeleteResult;
 import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.common.DestinationTypeEnum;
 import com.outletcn.app.common.LineElementType;
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.converter.LineConverter;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.*;
+import com.outletcn.app.repository.LineMongoRepository;
 import com.outletcn.app.service.chain.LineService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +41,7 @@ public class LineServiceImpl implements LineService {
 
     MongoTemplate mongoTemplate;
     Sequence sequence;
+    LineMongoRepository lineMongoRepository;
     private final LineConverter lineConverter;
 
     @Override
@@ -94,6 +98,73 @@ public class LineServiceImpl implements LineService {
             }
         }
         return Boolean.TRUE;
+    }
+
+    @Override
+    public boolean modifyLine(CreateLineRequest createLineRequest, Long id) {
+
+        Line line = mongoTemplate.findById(id, Line.class);
+        if (Objects.isNull(line)) {
+            throw new BasicException("更新失败：线路不存在");
+        }
+        Line lineBackup = line;
+
+        CreateLineRequest.BaseInfo baseInfo = createLineRequest.getBaseInfo();
+        line.setLineName(baseInfo.getLineName());
+        line.setLineElements(baseInfo.getLineElements());
+        line.setLineAttrs(baseInfo.getLineAttrs());
+        line.setSummary(baseInfo.getSummary());
+
+        line.setRecommendReason(baseInfo.getRecommendReason());
+        line.setMainDestination(baseInfo.getMainDestination());
+        line.setLineRecommendImage(baseInfo.getLineRecommendImage());
+        line.setLineRecommendSquareImage(baseInfo.getLineRecommendSquareImage());
+        line.setLineExpectTime(baseInfo.getLineExpectTime());
+
+        long epochSecond = Instant.now().getEpochSecond();
+        line.setUpdateTime(epochSecond);
+
+        try {
+            mongoTemplate.save(line);
+        } catch (Exception ex) {
+            log.error("更新线路失败：" + ex.getMessage());
+            throw new BasicException(ex.getMessage());
+        }
+
+        DetailsInfo detailsInfo = createLineRequest.getDetailsInfo();
+        if (!Objects.isNull(detailsInfo)) {
+            DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(
+                    Criteria.where("objectId").is(id).and("objectType").is(ClockInType.Line.getType())), DetailObjectType.class);
+            detailObjectType.setRecommendVideo(detailsInfo.getRecommendVideo());
+            detailObjectType.setRecommendAudio(detailsInfo.getRecommendAudio());
+            detailObjectType.setDescriptions(detailsInfo.getDescriptions());
+            detailObjectType.setUpdateTime(epochSecond);
+            try {
+                mongoTemplate.save(detailObjectType);
+            } catch (Exception ex) {
+                log.error("更新线路详情失败：" + ex.getMessage());
+                mongoTemplate.save(lineBackup);
+                throw new BasicException("更新线路详情失败：" + ex.getMessage());
+            }
+        }
+        return Boolean.TRUE;
+    }
+
+    @Override
+    public boolean deleteLine(Long id) {
+        Line line = mongoTemplate.findById(id, Line.class);
+        if (Objects.isNull(line)) {
+            throw new BasicException("线路不存在");
+        }
+        try {
+            DeleteResult deleteResult = mongoTemplate.remove(line);
+            if (deleteResult.getDeletedCount() == 1) {
+                return Boolean.TRUE;
+            }
+        } catch (Exception ex) {
+            throw new BasicException("删除路线失败：" + ex.getMessage());
+        }
+        return Boolean.FALSE;
     }
 
     @Override
@@ -181,6 +252,23 @@ public class LineServiceImpl implements LineService {
             }
         }
         return mongoTemplate.find(Query.query(Criteria.where("id").in(hasLineIds)), Line.class);
+    }
+
+    @Override
+    public PageInfo<Line> findLineByNameOrPutOnForPage(String name, int putOn, int current, int size) {
+        PageInfo<Line> pageInfo = new PageInfo<>();
+        pageInfo.setSize(size);
+        pageInfo.setCurrent(current);
+
+        Query query = new Query();
+        Pattern pattern = Pattern.compile("^.*" + name + ".*$", Pattern.CASE_INSENSITIVE);
+        if (!StringUtils.isBlank(name)) {
+            query.addCriteria(Criteria.where("lineName").regex(pattern));
+        }
+        query.addCriteria(Criteria.where("putOn").is(putOn));
+
+        PageInfo<Line> linePageInfo = lineMongoRepository.findObjForPage(query, pageInfo);
+        return linePageInfo;
     }
 
     @Override
@@ -312,5 +400,15 @@ public class LineServiceImpl implements LineService {
             lineTabVOS.add(lineTabVO);
         });
         return lineTabVOS;
+    }
+
+    /**
+     * 查询线路属性列表
+     *
+     * @return
+     */
+    @Override
+    public List<LineAttribute> findLineAttributes() {
+        return mongoTemplate.findAll(LineAttribute.class);
     }
 }

@@ -308,15 +308,15 @@ public class DestinationServiceImpl implements DestinationService {
                 putOnDestinationResponse.setGroups(destinationGroupItems);
                 putOnDestinationResponse.setLines(lineItems);
             }
-        } else {
-            Long id = putOnRequest.getId();
-            Destination destination = mongoTemplate.findById(id, Destination.class);
-            destination.setPutOn(putOn);
-            try {
-                mongoTemplate.save(destination);
-            } catch (Exception ex) {
-                throw new BasicException("上下架目的地失败：" + ex.getMessage());
-            }
+        }
+
+        Long id = putOnRequest.getId();
+        Destination destination = mongoTemplate.findById(id, Destination.class);
+        destination.setPutOn(putOn);
+        try {
+            mongoTemplate.save(destination);
+        } catch (Exception ex) {
+            throw new BasicException("上下架目的地失败：" + ex.getMessage());
         }
         return putOnDestinationResponse;
     }
@@ -324,7 +324,7 @@ public class DestinationServiceImpl implements DestinationService {
     @Override
     public List<Destination> findDestinationByName(String name) {
         Query query = new Query();
-        Pattern pattern = Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^.*" + name + ".*$", Pattern.CASE_INSENSITIVE);
         query.addCriteria(Criteria.where("destinationName").regex(pattern));
         List<Destination> destinations = mongoTemplate.find(query, Destination.class);
         return destinations;
@@ -389,7 +389,7 @@ public class DestinationServiceImpl implements DestinationService {
         pageInfo.setCurrent(current);
 
         Query query = new Query();
-        Pattern pattern = Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^.*" + name + ".*$", Pattern.CASE_INSENSITIVE);
         if (!StringUtils.isBlank(name)) {
             query.addCriteria(Criteria.where("destinationName").regex(pattern));
         }
@@ -397,5 +397,27 @@ public class DestinationServiceImpl implements DestinationService {
 
         PageInfo<Destination> destinationPageInfo = destinationMongoRepository.findObjForPage(query, pageInfo);
         return destinationPageInfo;
+    }
+
+    /**
+     * 查询目的地属性列表
+     *
+     * @return
+     */
+    @Override
+    public List<DestinationAttribute> findDestinationAttributes() {
+        List<DestinationAttribute> destinationAttributes = mongoTemplate.findAll(DestinationAttribute.class);
+        return destinationAttributes;
+    }
+
+    /**
+     * 查询目的地类型列表
+     *
+     * @return
+     */
+    @Override
+    public List<DestinationType> findDestinationTypes() {
+        List<DestinationType> destinationTypes = mongoTemplate.findAll(DestinationType.class);
+        return destinationTypes;
     }
 }

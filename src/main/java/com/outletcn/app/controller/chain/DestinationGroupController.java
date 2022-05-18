@@ -6,6 +6,7 @@ import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
 import com.outletcn.app.model.dto.chain.PutOnDestinationResponse;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
 import com.outletcn.app.model.mongo.DestinationGroup;
+import com.outletcn.app.model.mongo.DestinationGroupAttribute;
 import com.outletcn.app.service.chain.DestinationGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -72,18 +73,14 @@ public class DestinationGroupController {
     }
 
     /**
-     * 上/下架线路
+     * 上/下架目的地群
      */
-    @ApiOperation(value = "上/下架线路")
+    @ApiOperation(value = "上/下架目的地群")
     @PostMapping("/putOnDestinationGroup")
     public ApiResult<List<PutOnDestinationResponse.LineItem>> putOnDestinationGroup(@RequestBody @Valid PutOnRequest putOnRequest) {
         List<PutOnDestinationResponse.LineItem> lineItems =
                 destinationGroupService.putOnDestinationGroup(putOnRequest);
-        if (!lineItems.isEmpty()) {
-            return new ApiResult<>(ErrorCode.DATA_ALREADY_EXISTED.getCode(),
-                    "目的地群存在于线路中", lineItems);
-        }
-        return ApiResult.thin(ErrorCode.SUCCESS, null);
+        return ApiResult.thin(ErrorCode.SUCCESS, lineItems);
     }
 
     /**
@@ -145,6 +142,16 @@ public class DestinationGroupController {
     public ApiResult<PageInfo<DestinationGroup>> findDestinationGroupByNameOrPutOnForPage(@RequestParam(value = "name",required = false) String name, @RequestParam(value = "putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam(value = "size") Integer size) {
         PageInfo<DestinationGroup> pageInfo = destinationGroupService.findDestinationGroupByNameOrPutOnForPage(name, putOn, page, size);
         return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);
+    }
+
+    /**
+     * 查询目的地群属性列表
+     */
+    @ApiOperation(value = "查询目的地群属性列表")
+    @GetMapping("/findDestinationGroupAttributes")
+    public ApiResult<List<DestinationGroupAttribute>> findDestinationGroupAttributes() {
+        List<DestinationGroupAttribute> destinationGroupAttributes = destinationGroupService.findDestinationGroupAttributes();
+        return ApiResult.thin(ErrorCode.SUCCESS, destinationGroupAttributes);
     }
 
 }
