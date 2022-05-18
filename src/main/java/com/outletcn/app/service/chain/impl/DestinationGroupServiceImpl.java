@@ -240,14 +240,13 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
                     }
                 }
             }
-        } else {
-            DestinationGroup destinationGroup = mongoTemplate.findById(putOnRequest.getId(), DestinationGroup.class);
-            destinationGroup.setPutOn(putOnRequest.getPutOn());
-            try {
-                mongoTemplate.save(destinationGroup);
-            } catch (Exception ex) {
-                throw new BasicException("上下架目的地群失败：" + ex.getMessage());
-            }
+        }
+        DestinationGroup destinationGroup = mongoTemplate.findById(putOnRequest.getId(), DestinationGroup.class);
+        destinationGroup.setPutOn(putOnRequest.getPutOn());
+        try {
+            mongoTemplate.save(destinationGroup);
+        } catch (Exception ex) {
+            throw new BasicException("上下架目的地群失败：" + ex.getMessage());
         }
         return lineItems;
     }

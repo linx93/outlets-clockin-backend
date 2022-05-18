@@ -308,15 +308,15 @@ public class DestinationServiceImpl implements DestinationService {
                 putOnDestinationResponse.setGroups(destinationGroupItems);
                 putOnDestinationResponse.setLines(lineItems);
             }
-        } else {
-            Long id = putOnRequest.getId();
-            Destination destination = mongoTemplate.findById(id, Destination.class);
-            destination.setPutOn(putOn);
-            try {
-                mongoTemplate.save(destination);
-            } catch (Exception ex) {
-                throw new BasicException("上下架目的地失败：" + ex.getMessage());
-            }
+        }
+
+        Long id = putOnRequest.getId();
+        Destination destination = mongoTemplate.findById(id, Destination.class);
+        destination.setPutOn(putOn);
+        try {
+            mongoTemplate.save(destination);
+        } catch (Exception ex) {
+            throw new BasicException("上下架目的地失败：" + ex.getMessage());
         }
         return putOnDestinationResponse;
     }
