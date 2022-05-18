@@ -19,5 +19,5 @@ public interface PunchLogService extends IService<PunchLog> {
      *
      * @return 我的总签章
      */
-    Integer myScore();
+    Long myScore();
 }
