@@ -137,6 +137,12 @@ public class GiftController {
         return ApiResult.ok(giftService.getGiftList(giftListRequest));
     }
 
+    @GetMapping("/getGiftListByName")
+    @ApiOperation(value = "根据礼品名字获取礼品列表")
+    public ApiResult<List<GiftListResponse>> getGiftListByName(@RequestParam String  name) {
+        return ApiResult.ok(giftService.getGiftListByName(name));
+    }
+
     @GetMapping("/createGiftBrand")
     @ApiOperation(value = "创建礼品品牌")
     public ApiResult createGiftBrand(@RequestParam String name) {

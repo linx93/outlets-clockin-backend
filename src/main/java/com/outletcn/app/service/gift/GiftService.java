@@ -41,6 +41,8 @@ public interface GiftService {
 
     PageInfo<GiftListResponse> getGiftList(GiftListRequest giftListRequest);
 
+    List<GiftListResponse> getGiftListByName(String name);
+
     void createGiftBrand(String name);
 
     void updateGiftBrand(GiftBrandCreator giftBrandCreator);

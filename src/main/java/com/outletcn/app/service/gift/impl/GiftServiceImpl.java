@@ -457,7 +457,10 @@ public class GiftServiceImpl implements GiftService {
     public PageInfo<GiftBagListResponse> getGiftBagList(GiftBagListRequest giftBagListRequest) {
         PageInfo<GiftBagListResponse> pageInfo = new PageInfo<>();
         Query query = new Query();
-        Criteria criteria = Criteria.where("putOn").is(giftBagListRequest.getPutOn());
+        Criteria criteria = Criteria.where("putOn").is(giftBagListRequest.getPutOn())
+                .and("type").is(giftBagListRequest.getType());
+        Pattern pattern =  Pattern.compile("^.*" + giftBagListRequest.getName() + ".*$", Pattern.CASE_INSENSITIVE);
+        criteria.regex(pattern);
         query.addCriteria(criteria);
         Pageable pageable = PageRequest.of(giftBagListRequest.getPageNum(), giftBagListRequest.getPageSize());
         Sort sort = Sort.by(Sort.Direction.DESC, "stateUpdateTime");
@@ -517,6 +520,32 @@ public class GiftServiceImpl implements GiftService {
         pageInfo.setSize((long) giftListRequest.getPageSize());
         pageInfo.setCurrent((long) giftListRequest.getPageNum());
         return pageInfo;
+    }
+
+    @Override
+    public List<GiftListResponse> getGiftListByName(String name) {
+        Query query = new Query();
+        Pattern pattern = Pattern.compile("^.*" + name + ".*$", Pattern.CASE_INSENSITIVE);
+        Criteria criteria = Criteria.where("giftName").regex(pattern);
+        query.addCriteria(criteria);
+
+        List<Gift> gifts = mongoTemplate.find(query, Gift.class);
+        List<GiftListResponse> records = new ArrayList<>();
+        for (Gift g : gifts
+        ) {
+            GiftListResponse giftListResponse = new GiftListResponse();
+            giftListResponse.setId(g.getId());
+            giftListResponse.setGiftId(g.getGiftId());
+            giftListResponse.setGiftCost(g.getGiftCost());
+            giftListResponse.setGiftName(g.getGiftName());
+            giftListResponse.setGiftType(g.getGiftType());
+            giftListResponse.setGiftTypeName(g.getGiftTypeName());
+            giftListResponse.setCreateTime(g.getCreateTime());
+            giftListResponse.setUpdateTime(g.getUpdateTime());
+            records.add(giftListResponse);
+        }
+
+        return records;
     }
 
     //创建礼品品牌
