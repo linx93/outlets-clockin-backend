@@ -2,6 +2,7 @@ package com.outletcn.app.service.gift;
 
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.gift.*;
+import com.outletcn.app.model.mongo.GiftBag;
 import com.outletcn.app.model.mongo.GiftBrand;
 import com.outletcn.app.model.mongo.GiftType;
 
@@ -29,7 +30,7 @@ public interface GiftService {
 
     void updateOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator);
 
-    void getGiftBagById (Long id );
+    GiftBagInfoResponse getGiftBagById (Long id );
 
     void createGiftBagRelation(Long giftBagId, Long giftId);
 

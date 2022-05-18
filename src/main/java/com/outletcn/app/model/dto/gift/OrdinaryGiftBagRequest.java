@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 public class OrdinaryGiftBagRequest {
-    @NotEmpty
     @ApiModelProperty(value = "普通礼品包信息")
     private OrdinaryGiftBagCreator ordinaryGiftBagCreator;
 

@@ -32,27 +32,27 @@ public class GiftController {
     GiftService giftService;
 
     @PostMapping("/createGiftType")
-    @ApiOperation(value = "创建礼品类型")
+    @ApiOperation(value = "礼品类型-创建礼品类型")
     public ApiResult createGiftType(@Valid @RequestBody GiftTypeCreator giftTypeCreator) {
         giftService.createGiftType(giftTypeCreator);
         return ApiResult.ok(null);
     }
 
     @GetMapping("/getGiftTypeList")
-    @ApiOperation(value = "查询礼品类型列表")
+    @ApiOperation(value = "礼品类型-查询礼品类型列表")
     public ApiResult<List<GiftTypeResponse>> getGiftTypeList(@RequestParam Integer category) {
         return ApiResult.ok(giftService.getGiftTypeList(category));
     }
 
     @PostMapping("/createGift")
-    @ApiOperation(value = "创建礼品(可创建两种类型礼品)")
+    @ApiOperation(value = "礼品-创建礼品(可创建两种类型礼品)")
     public ApiResult createGift(@Valid @RequestBody GiftCreator giftCreator) {
         giftService.createGift(giftCreator);
         return ApiResult.ok(null);
     }
 
     @PostMapping("/updateGift")
-    @ApiOperation(value = "更新礼品")
+    @ApiOperation(value = "礼品-更新礼品")
     public ApiResult updateGift(@Valid @RequestBody GiftCreator giftCreator) {
         giftService.updateGift(giftCreator);
         return ApiResult.ok(null);
@@ -84,7 +84,7 @@ public class GiftController {
     }*/
 
     @PostMapping("/createLuxuryGiftBag")
-    @ApiOperation(value = "创建豪华礼品包")
+    @ApiOperation(value = "礼品包-创建豪华礼品包")
     public ApiResult createLuxuryGiftBag(@Valid @RequestBody LuxuryGiftBagRequest luxuryGiftBagRequest) {
         Long giftBagId = giftService.createLuxuryGiftBag(luxuryGiftBagRequest.getLuxuryGiftBagCreator());
         for (Long giftId : luxuryGiftBagRequest.getGiftList()
@@ -95,14 +95,14 @@ public class GiftController {
     }
 
     @PostMapping("/updateLuxuryGiftBag")
-    @ApiOperation(value = "更新豪华礼品包")
+    @ApiOperation(value = "礼品包-更新豪华礼品包")
     public ApiResult updateRealTypeGift(@Valid @RequestBody LuxuryGiftBagRequest luxuryGiftBagRequest) {
         giftService.updateLuxuryGiftBag(luxuryGiftBagRequest.getLuxuryGiftBagCreator());
         return ApiResult.ok(null);
     }
 
     @PostMapping("/createOrdinaryGiftBag")
-    @ApiOperation(value = "创建普通礼品包")
+    @ApiOperation(value = "礼品包-创建普通礼品包")
     public ApiResult createOrdinaryGiftBag(@Valid @RequestBody OrdinaryGiftBagRequest ordinaryGiftBagRequest) {
         Long giftBagId = giftService.createOrdinaryGiftBag(ordinaryGiftBagRequest.getOrdinaryGiftBagCreator());
         for (Long giftId : ordinaryGiftBagRequest.getGiftList()
@@ -113,54 +113,60 @@ public class GiftController {
     }
 
     @PostMapping("/updateOrdinaryGiftBag")
-    @ApiOperation(value = "更新普通礼品包")
+    @ApiOperation(value = "礼品包-更新普通礼品包")
     public ApiResult updateOrdinaryGiftBag(@Valid @RequestBody OrdinaryGiftBagRequest ordinaryGiftBagRequest) {
         giftService.updateOrdinaryGiftBag(ordinaryGiftBagRequest.getOrdinaryGiftBagCreator());
         return ApiResult.ok(null);
     }
 
     @GetMapping("/getGiftInfo")
-    @ApiOperation(value = "根据id查询礼品详情")
+    @ApiOperation(value = "礼品-根据id查询礼品详情")
     public ApiResult<GiftInfoResponse> getGiftInfo(@RequestParam Long id) {
         return ApiResult.ok(giftService.getGiftInfo(id));
     }
 
     @PostMapping("/getGiftBagList")
-    @ApiOperation(value = "获取礼品包列表(已上架或未上架)")
+    @ApiOperation(value = "礼品包-获取礼品包列表(已上架或未上架)")
     public ApiResult<PageInfo<GiftBagListResponse>> getGiftBagList(@RequestBody GiftBagListRequest giftBagListRequest) {
         return ApiResult.ok(giftService.getGiftBagList(giftBagListRequest));
     }
 
     @PostMapping("/getGiftList")
-    @ApiOperation(value = "获取礼品列表")
+    @ApiOperation(value = "礼品-获取礼品列表")
     public ApiResult<PageInfo<GiftListResponse>> getGiftList(@RequestBody GiftListRequest giftListRequest) {
         return ApiResult.ok(giftService.getGiftList(giftListRequest));
     }
 
     @GetMapping("/getGiftListByName")
-    @ApiOperation(value = "根据礼品名字获取礼品列表")
+    @ApiOperation(value = "礼品-根据礼品名字获取礼品列表")
     public ApiResult<List<GiftListResponse>> getGiftListByName(@RequestParam String  name) {
         return ApiResult.ok(giftService.getGiftListByName(name));
     }
 
     @GetMapping("/createGiftBrand")
-    @ApiOperation(value = "创建礼品品牌")
+    @ApiOperation(value = "礼品品牌-创建礼品品牌")
     public ApiResult createGiftBrand(@RequestParam String name) {
         giftService.createGiftBrand(name);
         return ApiResult.ok(null);
     }
 
     @PostMapping("/updateGiftBrand")
-    @ApiOperation(value = "修改礼品品牌")
+    @ApiOperation(value = "礼品品牌-修改礼品品牌")
     public ApiResult updateGiftBrand(@RequestBody GiftBrandCreator giftBrandCreator) {
         giftService.updateGiftBrand(giftBrandCreator);
         return ApiResult.ok(null);
     }
 
     @GetMapping("/getGiftBrandList")
-    @ApiOperation(value = "获取礼品品牌列表")
+    @ApiOperation(value = "礼品品牌-获取礼品品牌列表")
     public ApiResult<List<GiftBrandCreator>> getGiftBrandList() {
         return ApiResult.ok(giftService.getGiftBrandList());
+    }
+
+    @GetMapping("/getGiftBagInfo")
+    @ApiOperation(value = "礼品包-根据id查询礼品包详情")
+    public ApiResult<GiftBagInfoResponse> getGiftBagInfo(@RequestParam Long id) {
+        return ApiResult.ok(giftService.getGiftBagById(id));
     }
 
 }

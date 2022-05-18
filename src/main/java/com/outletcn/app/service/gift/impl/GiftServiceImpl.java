@@ -1,6 +1,7 @@
 package com.outletcn.app.service.gift.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.exception.BasicException;
@@ -13,16 +14,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 
 
@@ -280,6 +279,7 @@ public class GiftServiceImpl implements GiftService {
 
         giftBag.setPlaceCount(luxuryGiftBagCreator.getPlaceCount());
         giftBag.setPlaceElement(luxuryGiftBagCreator.getPlaceElement());
+        giftBag.setPutOn(luxuryGiftBagCreator.getPutOn());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
@@ -317,6 +317,7 @@ public class GiftServiceImpl implements GiftService {
 
         giftBag.setPlaceCount(luxuryGiftBagCreator.getPlaceCount());
         giftBag.setPlaceElement(luxuryGiftBagCreator.getPlaceElement());
+        giftBag.setPutOn(luxuryGiftBagCreator.getPutOn());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setUpdateTime(time);
@@ -342,6 +343,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setExchangeLimit(ordinaryGiftBagCreator.getExchangeLimit());
         giftBag.setImage(ordinaryGiftBagCreator.getImage());
         giftBag.setRecommendImage(ordinaryGiftBagCreator.getRecommendImage());
+        giftBag.setPutOn(ordinaryGiftBagCreator.getPutOn());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
@@ -376,6 +378,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setExchangeLimit(ordinaryGiftBagCreator.getExchangeLimit());
         giftBag.setImage(ordinaryGiftBagCreator.getImage());
         giftBag.setRecommendImage(ordinaryGiftBagCreator.getRecommendImage());
+        giftBag.setPutOn(ordinaryGiftBagCreator.getPutOn());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setUpdateTime(time);
@@ -388,8 +391,57 @@ public class GiftServiceImpl implements GiftService {
 
     //查询礼品包详情
     @Override
-    public void getGiftBagById(Long id) {
+    public GiftBagInfoResponse getGiftBagById(Long id) {
+        GiftBagInfoResponse giftBagInfoResponse = new GiftBagInfoResponse();
+        Query query = new Query();
+        Criteria criteria = Criteria.where("id").is(id);
+        query.addCriteria(criteria);
+        GiftBag giftBag = mongoTemplate.findOne(query, GiftBag.class);
+        if (Objects.isNull(giftBag)) {
+            throw new BasicException("记录不存在");
+        }
+        giftBagInfoResponse.setGiftBag(giftBag);
 
+        if (giftBag.getType() == 2) {
+            if (Objects.isNull(giftBag.getPlaceElement())) {
+                throw new BasicException("不存在打卡点");
+            }
+            List<Destination> destinations = new ArrayList<>();
+            for (Integer destinationId : giftBag.getPlaceElement()) {
+                Destination destination = mongoTemplate.findOne(Query.query(Criteria.where("id").is(destinationId)), Destination.class);
+                if (Objects.isNull(destination)) {
+                    throw new BasicException("目的地记录不存在");
+                }
+                destinations.add(destination);
+            }
+            giftBagInfoResponse.setDestinations(destinations);
+        }
+
+        LookupOperation lookup = LookupOperation.newLookup()
+                //从表（关联的表）
+                .from("gift")
+                //主表中与从表相关联的字段
+                .localField("giftId")
+                //从表与主表相关联的字段
+                .foreignField("_id")
+                //查询出的从表集合 命名
+                .as("gift");
+        ProjectionOperation projection = new ProjectionOperation()
+                .andInclude("giftId")
+                .andInclude("giftBagId")
+                .andInclude("gift.giftName")
+                .andExclude("_id");
+        MatchOperation match = Aggregation.match(Criteria.where("giftBagId").is(id));
+
+        Aggregation agg = Aggregation.newAggregation(lookup, match, projection, Aggregation.unwind("giftName"));
+        try {
+            AggregationResults<JSONObject> aggregation = mongoTemplate.aggregate(agg, "gift_bag_relation", JSONObject.class);
+            giftBagInfoResponse.setGiftInfo(aggregation.getMappedResults());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return giftBagInfoResponse;
     }
 
     //创建礼品包及礼品关系
@@ -457,12 +509,17 @@ public class GiftServiceImpl implements GiftService {
     public PageInfo<GiftBagListResponse> getGiftBagList(GiftBagListRequest giftBagListRequest) {
         PageInfo<GiftBagListResponse> pageInfo = new PageInfo<>();
         Query query = new Query();
-        Criteria criteria = Criteria.where("putOn").is(giftBagListRequest.getPutOn())
-                .and("type").is(giftBagListRequest.getType());
-        Pattern pattern =  Pattern.compile("^.*" + giftBagListRequest.getName() + ".*$", Pattern.CASE_INSENSITIVE);
-        criteria.regex(pattern);
-        query.addCriteria(criteria);
-        Pageable pageable = PageRequest.of(giftBagListRequest.getPageNum(), giftBagListRequest.getPageSize());
+        Criteria criteria = new Criteria();
+        if (giftBagListRequest.getPutOn() != null) {
+            criteria = Criteria.where("putOn").is(giftBagListRequest.getPutOn());
+        }
+        if (giftBagListRequest.getType() != null) {
+            criteria = criteria.and("type").is(giftBagListRequest.getType());
+        }
+        Pattern pattern = Pattern.compile("^.*" + giftBagListRequest.getName() + ".*$", Pattern.CASE_INSENSITIVE);
+        Criteria criteria1 = Criteria.where("name").regex(pattern);
+        query.addCriteria(criteria).addCriteria(criteria1);
+        Pageable pageable = PageRequest.of(giftBagListRequest.getPageNum() - 1, giftBagListRequest.getPageSize());
         Sort sort = Sort.by(Sort.Direction.DESC, "stateUpdateTime");
         long totalCount = mongoTemplate.count(query, "id");
         List<GiftBag> giftBags = mongoTemplate.find(query.with(sort).with(pageable), GiftBag.class);
@@ -522,6 +579,7 @@ public class GiftServiceImpl implements GiftService {
         return pageInfo;
     }
 
+    //模糊搜索礼品列表
     @Override
     public List<GiftListResponse> getGiftListByName(String name) {
         Query query = new Query();

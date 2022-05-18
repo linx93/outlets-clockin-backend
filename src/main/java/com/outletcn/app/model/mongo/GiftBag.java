@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 礼品包表
@@ -97,7 +98,7 @@ public class GiftBag implements Serializable {
     /**
      * 打卡地所含元素
      */
-    private String placeElement;
+    private List<Integer> placeElement;
 
 
 

@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 //豪华礼品包创建
 @Data
@@ -71,7 +72,7 @@ public class LuxuryGiftBagCreator {
      */
     @NotBlank
     @ApiModelProperty(value = "打卡地所含元素")
-    private String placeElement;
+    private List<Integer> placeElement;
 
 
 
