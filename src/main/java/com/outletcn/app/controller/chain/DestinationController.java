@@ -106,11 +106,7 @@ public class DestinationController {
     @PostMapping("putOnDestination")
     public ApiResult<PutOnDestinationResponse> putOnDestination(@RequestBody @Valid PutOnRequest putOnRequest) {
         PutOnDestinationResponse putOnDestinationResponse = destinationService.putOnDestination(putOnRequest);
-        if (!Objects.isNull(putOnDestinationResponse)) {
-            return new ApiResult<>(ErrorCode.DATA_ALREADY_EXISTED.getCode(),
-                    "目的地存在于目的地群或线路中", putOnDestinationResponse);
-        }
-        return ApiResult.thin(ErrorCode.SUCCESS, null);
+        return ApiResult.thin(ErrorCode.SUCCESS, putOnDestinationResponse);
     }
 
     /**

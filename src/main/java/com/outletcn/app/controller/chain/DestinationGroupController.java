@@ -80,11 +80,7 @@ public class DestinationGroupController {
     public ApiResult<List<PutOnDestinationResponse.LineItem>> putOnDestinationGroup(@RequestBody @Valid PutOnRequest putOnRequest) {
         List<PutOnDestinationResponse.LineItem> lineItems =
                 destinationGroupService.putOnDestinationGroup(putOnRequest);
-        if (!lineItems.isEmpty()) {
-            return new ApiResult<>(ErrorCode.DATA_ALREADY_EXISTED.getCode(),
-                    "目的地群存在于线路中", lineItems);
-        }
-        return ApiResult.thin(ErrorCode.SUCCESS, null);
+        return ApiResult.thin(ErrorCode.SUCCESS, lineItems);
     }
 
     /**
