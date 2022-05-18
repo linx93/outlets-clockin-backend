@@ -54,6 +54,9 @@ public class GiftVoucher implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long giftId;
 
+    @ApiModelProperty(value = "礼品包名")
+    private Long giftName;
+
     @ApiModelProperty(value = "兑换说明")
     private String exchangeInstructions;
 
