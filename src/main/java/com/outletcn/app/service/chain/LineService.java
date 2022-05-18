@@ -1,5 +1,6 @@
 package com.outletcn.app.service.chain;
 
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateLineRequest;
@@ -67,6 +68,16 @@ public interface LineService {
      * @param destinationName
      */
     List<Line> findLineByDestinationName(String destinationName);
+
+    /**
+     * 基于名称、上下架查询
+     * @param name
+     * @param putOn
+     * @param current
+     * @param size
+     * @return
+     */
+    PageInfo<Line> findLineByNameOrPutOnForPage(String name, int putOn, int current, int size);
 
     /**
      * 通过线路id查询线路下的目的地和目的地群

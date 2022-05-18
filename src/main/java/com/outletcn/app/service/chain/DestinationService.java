@@ -62,7 +62,7 @@ public interface DestinationService {
     List<Destination> findDestinationByName(String name);
 
     /**
-     * 基于名称模糊查询（分页
+     * 基于名称模糊查询（分页）
      * @param name
      * @param current
      * @param size

@@ -5,11 +5,13 @@ import com.mongodb.client.result.DeleteResult;
 import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.common.DestinationTypeEnum;
 import com.outletcn.app.common.LineElementType;
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.converter.LineConverter;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.*;
+import com.outletcn.app.repository.LineMongoRepository;
 import com.outletcn.app.service.chain.LineService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,7 @@ public class LineServiceImpl implements LineService {
 
     MongoTemplate mongoTemplate;
     Sequence sequence;
+    LineMongoRepository lineMongoRepository;
     private final LineConverter lineConverter;
 
     @Override
@@ -249,6 +252,23 @@ public class LineServiceImpl implements LineService {
             }
         }
         return mongoTemplate.find(Query.query(Criteria.where("id").in(hasLineIds)), Line.class);
+    }
+
+    @Override
+    public PageInfo<Line> findLineByNameOrPutOnForPage(String name, int putOn, int current, int size) {
+        PageInfo<Line> pageInfo = new PageInfo<>();
+        pageInfo.setSize(size);
+        pageInfo.setCurrent(current);
+
+        Query query = new Query();
+        Pattern pattern = Pattern.compile("^.*" + name + ".*$", Pattern.CASE_INSENSITIVE);
+        if (!StringUtils.isBlank(name)) {
+            query.addCriteria(Criteria.where("lineName").regex(pattern));
+        }
+        query.addCriteria(Criteria.where("putOn").is(putOn));
+
+        PageInfo<Line> linePageInfo = lineMongoRepository.findObjForPage(query, pageInfo);
+        return linePageInfo;
     }
 
     @Override
