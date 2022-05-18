@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.util.*;
@@ -292,7 +293,7 @@ public class LineServiceImpl implements LineService {
             if (LineElementType.DESTINATION.getCode() == item.getType()) {
                 Destination destination = mongoTemplate.findById(id_, Destination.class);
                 //过滤上下架
-                if (destination.getPutOn() != null && destination.getPutOn() == 0) {
+                if (destination != null && destination.getPutOn() != null && destination.getPutOn() == 0) {
                     destinations.add(lineConverter.toDestinationVO(destination));
                 }
             } else if (LineElementType.DESTINATION_GROUP.getCode() == item.getType()) {
@@ -322,7 +323,7 @@ public class LineServiceImpl implements LineService {
             if (LineElementType.DESTINATION.getCode() == item.getType()) {
                 Destination destination = mongoTemplate.findById(id_, Destination.class);
                 //过滤上下架
-                if (destination.getPutOn() != null && destination.getPutOn() == 0) {
+                if (destination != null && destination.getPutOn() != null && destination.getPutOn() == 0) {
                     DestinationMapVO destinationMapVO = lineConverter.toLineMapVO(destination);
                     destinationMapVOS.add(destinationMapVO);
                 }
@@ -371,9 +372,8 @@ public class LineServiceImpl implements LineService {
                 Long id_ = item.getId();
                 if (LineElementType.DESTINATION.getCode() == item.getType()) {
                     Destination destination = mongoTemplate.findById(id_, Destination.class);
-                    assert destination != null;
                     //过滤上下架
-                    if (destination.getPutOn() != null && destination.getPutOn() == 0) {
+                    if (destination != null && destination.getPutOn() != null && destination.getPutOn() == 0) {
                         if (Objects.equals(DestinationTypeEnum.CLOCK_IN_POINT.getMsg(), destination.getDestinationType())) {
                             clockInDestinationSum.updateAndGet(v -> v + 1);
                             clockInSignSum.updateAndGet(v -> v + destination.getScore());
@@ -383,9 +383,8 @@ public class LineServiceImpl implements LineService {
                     List<Long> destinations = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id_)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
                     destinations.forEach(element -> {
                         Destination destination = mongoTemplate.findById(element, Destination.class);
-                        assert destination != null;
                         //过滤上下架
-                        if (destination.getPutOn() != null && destination.getPutOn() == 0) {
+                        if (destination != null && destination.getPutOn() != null && destination.getPutOn() == 0) {
                             if (Objects.equals(DestinationTypeEnum.CLOCK_IN_POINT.getMsg(), destination.getDestinationType())) {
                                 clockInDestinationSum.updateAndGet(v -> v + 1);
                                 clockInSignSum.updateAndGet(v -> v + destination.getScore());
