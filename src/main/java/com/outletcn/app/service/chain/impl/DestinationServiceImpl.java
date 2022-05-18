@@ -405,7 +405,7 @@ public class DestinationServiceImpl implements DestinationService {
      * @return
      */
     @Override
-    public List<DestinationAttribute> findDestinationAttribute() {
+    public List<DestinationAttribute> findDestinationAttributes() {
         List<DestinationAttribute> destinationAttributes = mongoTemplate.findAll(DestinationAttribute.class);
         return destinationAttributes;
     }
@@ -416,7 +416,7 @@ public class DestinationServiceImpl implements DestinationService {
      * @return
      */
     @Override
-    public List<DestinationType> findDestinationType() {
+    public List<DestinationType> findDestinationTypes() {
         List<DestinationType> destinationTypes = mongoTemplate.findAll(DestinationType.class);
         return destinationTypes;
     }

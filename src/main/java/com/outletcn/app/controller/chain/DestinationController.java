@@ -167,9 +167,9 @@ public class DestinationController {
      * 查询目的地属性列表
      */
     @ApiOperation(value = "查询目的地属性列表")
-    @GetMapping("findDestinationAttribute")
-    public ApiResult<List<DestinationAttribute>> findDestinationAttribute() {
-        List<DestinationAttribute> destinationProperties = destinationService.findDestinationAttribute();
+    @GetMapping("findDestinationAttributes")
+    public ApiResult<List<DestinationAttribute>> findDestinationAttributes() {
+        List<DestinationAttribute> destinationProperties = destinationService.findDestinationAttributes();
         return ApiResult.thin(ErrorCode.SUCCESS, destinationProperties);
     }
 
@@ -177,9 +177,9 @@ public class DestinationController {
      * 查询目的地类型列表
      */
     @ApiOperation(value = "查询目的地类型列表")
-    @GetMapping("findDestinationType")
-    public ApiResult<List<DestinationType>> findDestinationType() {
-        List<DestinationType> destinationTypes = destinationService.findDestinationType();
+    @GetMapping("findDestinationTypes")
+    public ApiResult<List<DestinationType>> findDestinationTypes() {
+        List<DestinationType> destinationTypes = destinationService.findDestinationTypes();
         return ApiResult.thin(ErrorCode.SUCCESS, destinationTypes);
     }
 

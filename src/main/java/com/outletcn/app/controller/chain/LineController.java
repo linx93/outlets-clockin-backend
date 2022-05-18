@@ -5,6 +5,7 @@ import com.outletcn.app.model.dto.chain.CreateLineRequest;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
 import com.outletcn.app.model.dto.chain.StickRequest;
 import com.outletcn.app.model.mongo.Line;
+import com.outletcn.app.model.mongo.LineAttribute;
 import com.outletcn.app.service.chain.LineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -89,5 +90,15 @@ public class LineController {
     public ApiResult<List<Line>> findLineByDestinationName(@RequestParam(value = "destinationName") String destinationName) {
         List<Line> line = lineService.findLineByDestinationName(destinationName);
         return ApiResult.thin(ErrorCode.SUCCESS, line);
+    }
+
+    /**
+     * 查询线路属性列表
+     */
+    @ApiOperation(value = "查询线路属性列表")
+    @GetMapping("/findLineAttributes")
+    public ApiResult<List<LineAttribute>> findLineAttributes() {
+        List<LineAttribute> lineAttributes = lineService.findLineAttributes();
+        return ApiResult.thin(ErrorCode.SUCCESS, lineAttributes);
     }
 }

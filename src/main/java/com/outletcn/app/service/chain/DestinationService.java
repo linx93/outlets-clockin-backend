@@ -114,11 +114,11 @@ public interface DestinationService {
      * 查询目的地属性列表
      * @return
      */
-    List<DestinationAttribute> findDestinationAttribute();
+    List<DestinationAttribute> findDestinationAttributes();
 
     /**
      * 查询目的地类型列表
      * @return
      */
-    List<DestinationType> findDestinationType();
+    List<DestinationType> findDestinationTypes();
 }

@@ -6,6 +6,7 @@ import com.outletcn.app.model.dto.chain.CreateLineRequest;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
 import com.outletcn.app.model.dto.chain.StickRequest;
 import com.outletcn.app.model.mongo.Line;
+import com.outletcn.app.model.mongo.LineAttribute;
 
 import java.util.List;
 
@@ -93,4 +94,10 @@ public interface LineService {
      * @return LineTabVO
      */
     List<LineTabVO> lineTab();
+
+    /**
+     * 查询线路属性列表
+     * @return
+     */
+    List<LineAttribute> findLineAttributes();
 }

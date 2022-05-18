@@ -322,4 +322,16 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         PageInfo<DestinationGroup> destinationGroupPageInfo = destinationGroupMongoRepository.findObjForPage(query, pageInfo);
         return destinationGroupPageInfo;
     }
+
+    /**
+     * 查询目的地群属性列表
+     *
+     * @return
+     */
+    @Override
+    public List<DestinationGroupAttribute> findDestinationGroupAttributes() {
+
+        List<DestinationGroupAttribute> destinationGroupAttributes = mongoTemplate.findAll(DestinationGroupAttribute.class);
+        return destinationGroupAttributes;
+    }
 }

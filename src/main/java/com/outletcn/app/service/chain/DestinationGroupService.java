@@ -6,6 +6,7 @@ import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
 import com.outletcn.app.model.dto.chain.PutOnDestinationResponse;
 import com.outletcn.app.model.dto.chain.PutOnRequest;
 import com.outletcn.app.model.mongo.DestinationGroup;
+import com.outletcn.app.model.mongo.DestinationGroupAttribute;
 
 import java.util.List;
 
@@ -96,4 +97,10 @@ public interface DestinationGroupService {
      * @return
      */
     PageInfo<DestinationGroup> findDestinationGroupByNameOrPutOnForPage(String name, int putOn, int current, int size);
+
+    /**
+     * 查询目的地群属性列表
+     * @return
+     */
+    List<DestinationGroupAttribute> findDestinationGroupAttributes();
 }

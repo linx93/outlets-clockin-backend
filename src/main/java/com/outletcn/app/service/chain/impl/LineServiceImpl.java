@@ -381,4 +381,14 @@ public class LineServiceImpl implements LineService {
         });
         return lineTabVOS;
     }
+
+    /**
+     * 查询线路属性列表
+     *
+     * @return
+     */
+    @Override
+    public List<LineAttribute> findLineAttributes() {
+        return mongoTemplate.findAll(LineAttribute.class);
+    }
 }
