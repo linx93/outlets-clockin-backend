@@ -291,11 +291,14 @@ public class LineServiceImpl implements LineService {
             Long id_ = item.getId();
             if (LineElementType.DESTINATION.getCode() == item.getType()) {
                 Destination destination = mongoTemplate.findById(id_, Destination.class);
-                destinations.add(lineConverter.toDestinationVO(destination));
+                //过滤上下架
+                if (destination.getPutOn() != null && destination.getPutOn() == 0) {
+                    destinations.add(lineConverter.toDestinationVO(destination));
+                }
             } else if (LineElementType.DESTINATION_GROUP.getCode() == item.getType()) {
                 DestinationGroup destinationGroup = mongoTemplate.findById(id_, DestinationGroup.class);
                 List<Long> destinationIds = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id_)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
-                List<Destination> destinationList = mongoTemplate.find(Query.query(Criteria.where("id").in(destinationIds)), Destination.class);
+                List<Destination> destinationList = mongoTemplate.find(Query.query(Criteria.where("id").in(destinationIds).and("putOn").is(0)), Destination.class);
                 DestinationGroupVO destinationGroupVO = lineConverter.toDestinationGroupVO(destinationGroup);
                 destinationGroupVO.setDestinationList(lineConverter.toDestinationVOList(destinationList));
                 destinationGroups.add(destinationGroupVO);
@@ -318,11 +321,14 @@ public class LineServiceImpl implements LineService {
             Long id_ = item.getId();
             if (LineElementType.DESTINATION.getCode() == item.getType()) {
                 Destination destination = mongoTemplate.findById(id_, Destination.class);
-                DestinationMapVO destinationMapVO = lineConverter.toLineMapVO(destination);
-                destinationMapVOS.add(destinationMapVO);
+                //过滤上下架
+                if (destination.getPutOn() != null && destination.getPutOn() == 0) {
+                    DestinationMapVO destinationMapVO = lineConverter.toLineMapVO(destination);
+                    destinationMapVOS.add(destinationMapVO);
+                }
             } else if (LineElementType.DESTINATION_GROUP.getCode() == item.getType()) {
                 List<Long> destinationIds = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id_)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
-                List<Destination> destinationList = mongoTemplate.find(Query.query(Criteria.where("id").in(destinationIds)), Destination.class);
+                List<Destination> destinationList = mongoTemplate.find(Query.query(Criteria.where("id").in(destinationIds).and("putOn").is(0)), Destination.class);
                 destinationMapVOS.addAll(lineConverter.toLineMapVOList(destinationList));
             }
         }
@@ -366,18 +372,24 @@ public class LineServiceImpl implements LineService {
                 if (LineElementType.DESTINATION.getCode() == item.getType()) {
                     Destination destination = mongoTemplate.findById(id_, Destination.class);
                     assert destination != null;
-                    if (Objects.equals(DestinationTypeEnum.CLOCK_IN_POINT.getMsg(), destination.getDestinationType())) {
-                        clockInDestinationSum.updateAndGet(v -> v + 1);
-                        clockInSignSum.updateAndGet(v -> v + destination.getScore());
+                    //过滤上下架
+                    if (destination.getPutOn() != null && destination.getPutOn() == 0) {
+                        if (Objects.equals(DestinationTypeEnum.CLOCK_IN_POINT.getMsg(), destination.getDestinationType())) {
+                            clockInDestinationSum.updateAndGet(v -> v + 1);
+                            clockInSignSum.updateAndGet(v -> v + destination.getScore());
+                        }
                     }
                 } else if (LineElementType.DESTINATION_GROUP.getCode() == item.getType()) {
                     List<Long> destinations = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id_)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
                     destinations.forEach(element -> {
                         Destination destination = mongoTemplate.findById(element, Destination.class);
                         assert destination != null;
-                        if (Objects.equals(DestinationTypeEnum.CLOCK_IN_POINT.getMsg(), destination.getDestinationType())) {
-                            clockInDestinationSum.updateAndGet(v -> v + 1);
-                            clockInSignSum.updateAndGet(v -> v + destination.getScore());
+                        //过滤上下架
+                        if (destination.getPutOn() != null && destination.getPutOn() == 0) {
+                            if (Objects.equals(DestinationTypeEnum.CLOCK_IN_POINT.getMsg(), destination.getDestinationType())) {
+                                clockInDestinationSum.updateAndGet(v -> v + 1);
+                                clockInSignSum.updateAndGet(v -> v + destination.getScore());
+                            }
                         }
                     });
                 }
@@ -422,7 +434,7 @@ public class LineServiceImpl implements LineService {
         List<Destination> all = mongoTemplate.find(Query.query(Criteria.where("putOn").is(0)), Destination.class);
         List<Destination> collect = all.stream().filter(item -> GeoUtil.getDistance(Double.parseDouble(item.getLongitude()), Double.parseDouble(item.getLatitude()), nearbyRequest.getLongitude(), nearbyRequest.getLatitude()) <= maxDistance).collect(Collectors.toList());
         List<DestinationVO> destinationVOS = lineConverter.toDestinationVOList(collect);
-        if (StringUtils.isNotBlank(nearbyRequest.getDestinationType())){
+        if (StringUtils.isNotBlank(nearbyRequest.getDestinationType())) {
             destinationVOS = destinationVOS.stream().filter(item -> Objects.equals(item.getDestinationType(), nearbyRequest.getDestinationType())).collect(Collectors.toList());
         }
         return destinationVOS;
