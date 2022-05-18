@@ -1,6 +1,7 @@
 package com.outletcn.app.service.chain.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
+import com.mongodb.client.result.DeleteResult;
 import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.common.DestinationTypeEnum;
 import com.outletcn.app.common.LineElementType;
@@ -94,6 +95,73 @@ public class LineServiceImpl implements LineService {
             }
         }
         return Boolean.TRUE;
+    }
+
+    @Override
+    public boolean modifyLine(CreateLineRequest createLineRequest, Long id) {
+
+        Line line = mongoTemplate.findById(id, Line.class);
+        if (Objects.isNull(line)) {
+            throw new BasicException("更新失败：线路不存在");
+        }
+        Line lineBackup = line;
+
+        CreateLineRequest.BaseInfo baseInfo = createLineRequest.getBaseInfo();
+        line.setLineName(baseInfo.getLineName());
+        line.setLineElements(baseInfo.getLineElements());
+        line.setLineAttrs(baseInfo.getLineAttrs());
+        line.setSummary(baseInfo.getSummary());
+
+        line.setRecommendReason(baseInfo.getRecommendReason());
+        line.setMainDestination(baseInfo.getMainDestination());
+        line.setLineRecommendImage(baseInfo.getLineRecommendImage());
+        line.setLineRecommendSquareImage(baseInfo.getLineRecommendSquareImage());
+        line.setLineExpectTime(baseInfo.getLineExpectTime());
+
+        long epochSecond = Instant.now().getEpochSecond();
+        line.setUpdateTime(epochSecond);
+
+        try {
+            mongoTemplate.save(line);
+        } catch (Exception ex) {
+            log.error("更新线路失败：" + ex.getMessage());
+            throw new BasicException(ex.getMessage());
+        }
+
+        DetailsInfo detailsInfo = createLineRequest.getDetailsInfo();
+        if (!Objects.isNull(detailsInfo)) {
+            DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(
+                    Criteria.where("objectId").is(id).and("objectType").is(ClockInType.Line.getType())), DetailObjectType.class);
+            detailObjectType.setRecommendVideo(detailsInfo.getRecommendVideo());
+            detailObjectType.setRecommendAudio(detailsInfo.getRecommendAudio());
+            detailObjectType.setDescriptions(detailsInfo.getDescriptions());
+            detailObjectType.setUpdateTime(epochSecond);
+            try {
+                mongoTemplate.save(detailObjectType);
+            } catch (Exception ex) {
+                log.error("更新线路详情失败：" + ex.getMessage());
+                mongoTemplate.save(lineBackup);
+                throw new BasicException("更新线路详情失败：" + ex.getMessage());
+            }
+        }
+        return Boolean.TRUE;
+    }
+
+    @Override
+    public boolean deleteLine(Long id) {
+        Line line = mongoTemplate.findById(id, Line.class);
+        if (Objects.isNull(line)) {
+            throw new BasicException("线路不存在");
+        }
+        try {
+            DeleteResult deleteResult = mongoTemplate.remove(line);
+            if (deleteResult.getDeletedCount() == 1) {
+                return Boolean.TRUE;
+            }
+        } catch (Exception ex) {
+            throw new BasicException("删除路线失败：" + ex.getMessage());
+        }
+        return Boolean.FALSE;
     }
 
     @Override

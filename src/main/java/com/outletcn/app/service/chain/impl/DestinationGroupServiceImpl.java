@@ -185,7 +185,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         DetailsInfo detailsInfo = createDestinationGroupRequest.getDetailsInfo();
         if (!Objects.isNull(detailsInfo)) {
             DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(
-                    Criteria.where("objectId").is(id).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+                    Criteria.where("objectId").is(id).and("objectType").is(ClockInType.DestinationGroup.getType())), DetailObjectType.class);
             detailObjectType.setRecommendVideo(detailsInfo.getRecommendVideo());
             detailObjectType.setRecommendAudio(detailsInfo.getRecommendAudio());
             detailObjectType.setDescriptions(detailsInfo.getDescriptions());

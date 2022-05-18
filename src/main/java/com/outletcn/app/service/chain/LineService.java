@@ -1,6 +1,5 @@
 package com.outletcn.app.service.chain;
 
-import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
 import com.outletcn.app.model.dto.chain.CreateLineRequest;
@@ -23,6 +22,20 @@ public interface LineService {
      * @param createLineRequest
      */
     boolean createLine(CreateLineRequest createLineRequest);
+
+    /**
+     * 修改线路
+     * @param createLineRequest
+     * @param id
+     * @return
+     */
+    boolean modifyLine(CreateLineRequest createLineRequest, Long id);
+
+    /**
+     * 删除线路
+     * @param id
+     */
+    boolean deleteLine(Long id);
 
     /**
      * 创建线路属性
