@@ -2,12 +2,16 @@ package com.outletcn.app.model.dto.applet;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.outletcn.app.common.DestinationAttrsEnum;
 import com.outletcn.app.model.mongo.Line;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * 线路展示对象
@@ -116,4 +120,34 @@ public class LineVO {
     @ApiModelProperty(value = "打卡签章数量和")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long clockInSignSum;
+
+    @ApiModelProperty(value = "此条路线包含的所有目的地的属性，吃、住、景、购")
+    private Set<String> destinationAttr;
+
+    public void parse(Set<String> set) {
+        if (set.isEmpty()) {
+            return;
+        }
+        Set<String> destinationAttr = new HashSet<>();
+        set.forEach(item -> {
+            if (Objects.equals(item, DestinationAttrsEnum.VIEW_POINT.getMsg())) {
+                destinationAttr.add(DestinationAttrsEnum.VIEW_POINT.getParse());
+            } else if (Objects.equals(item, DestinationAttrsEnum.REPAST.getMsg())) {
+                destinationAttr.add(DestinationAttrsEnum.REPAST.getParse());
+            } else if (Objects.equals(item, DestinationAttrsEnum.ENTERTAINMENT.getMsg())) {
+                destinationAttr.add(DestinationAttrsEnum.ENTERTAINMENT.getParse());
+            } else if (Objects.equals(item, DestinationAttrsEnum.PUBLIC_HOUSE.getMsg())) {
+                destinationAttr.add(DestinationAttrsEnum.PUBLIC_HOUSE.getParse());
+            } else if (Objects.equals(item, DestinationAttrsEnum.HOME_STAY.getMsg())) {
+                destinationAttr.add(DestinationAttrsEnum.HOME_STAY.getParse());
+            } else if (Objects.equals(item, DestinationAttrsEnum.SHOPPING.getMsg())) {
+                destinationAttr.add(DestinationAttrsEnum.SHOPPING.getParse());
+            } else if (Objects.equals(item, DestinationAttrsEnum.PUBLIC_UTILITIES.getMsg())) {
+                destinationAttr.add(DestinationAttrsEnum.PUBLIC_UTILITIES.getParse());
+            } else {
+                //暂无处理
+            }
+        });
+        this.destinationAttr = destinationAttr;
+    }
 }

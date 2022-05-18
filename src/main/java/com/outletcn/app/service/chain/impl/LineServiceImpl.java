@@ -412,6 +412,8 @@ public class LineServiceImpl implements LineService {
         }
         List<LineVO> result = new ArrayList<>();
         lines.forEach(line -> result.add(lineConverter.toLineVO(line)));
+        //路线包含的所有目的地的属性
+        Set<String> tempDestinationAttr = new HashSet<>();
         //计算每条线路 包含打卡目的地的总数，同时累加每个打卡点的积分值
         //打卡签章数量
         AtomicReference<Long> clockInSignSum = new AtomicReference<>(0L);
@@ -429,6 +431,7 @@ public class LineServiceImpl implements LineService {
                             clockInDestinationSum.updateAndGet(v -> v + 1);
                             clockInSignSum.updateAndGet(v -> v + destination.getScore());
                         }
+                        tempDestinationAttr.addAll(destination.getDestinationAttrs());
                     }
                 } else if (LineElementType.DESTINATION_GROUP.getCode() == item.getType()) {
                     List<Long> destinations = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id_)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
@@ -440,12 +443,14 @@ public class LineServiceImpl implements LineService {
                                 clockInDestinationSum.updateAndGet(v -> v + 1);
                                 clockInSignSum.updateAndGet(v -> v + destination.getScore());
                             }
+                            tempDestinationAttr.addAll(destination.getDestinationAttrs());
                         }
                     });
                 }
             });
             lineVO.setClockInDestinationSum(clockInDestinationSum.get());
             lineVO.setClockInSignSum(clockInSignSum.get());
+            lineVO.parse(tempDestinationAttr);
         });
         //排序 按置顶排序  再按修改时间排序
         return result.stream().sorted(Comparator.comparingInt(LineVO::getStick)).sorted(Comparator.comparing(LineVO::getStickTime).reversed()).collect(Collectors.toList());

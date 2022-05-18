@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 /**
  * <p>
  * 打卡日志
- 服务类
+ * 服务类
  * </p>
  *
  * @author linx
@@ -14,4 +14,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface PunchLogService extends IService<PunchLog> {
 
+    /**
+     * 查询我的总签章
+     *
+     * @return 我的总签章
+     */
+    Integer myScore();
 }

@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ import java.util.List;
 @Api(tags = "打卡小程序页面的相关查询接口")
 @AllArgsConstructor
 @RestController
-@RequestMapping("/clock-in-page")
+@RequestMapping("/v1/api/applet/clock-in-page")
 public class ClockInAppletPageController {
     private final LineService lineService;
 
@@ -46,6 +47,21 @@ public class ClockInAppletPageController {
     public ApiResult<List<LineVO>> lineList(@RequestBody LineListRequest lineListRequest) {
         List<LineVO> apiResult = lineService.lineList(lineListRequest);
         return ApiResult.ok(apiResult);
+    }
+
+
+    @ApiOperation(value = "首页路线列表数据和地图数据的聚合")
+    @PostMapping(value = "/line-list-map")
+    public ApiResult<LineAndMapVO> lineListMap(@RequestBody LineListRequest lineListRequest) {
+        List<LineVO> lineVOS = lineService.lineList(lineListRequest);
+        LineAndMapVO lineAndMapVO = new LineAndMapVO();
+        lineAndMapVO.setLines(lineVOS);
+        List<DestinationMapVO> destinationMapVOS = new ArrayList<>();
+        if (!lineVOS.isEmpty()) {
+            destinationMapVOS = lineService.lineElementsMapById(lineVOS.get(0).getId());
+        }
+        lineAndMapVO.setDestinationMaps(destinationMapVOS);
+        return ApiResult.ok(lineAndMapVO);
     }
 
 

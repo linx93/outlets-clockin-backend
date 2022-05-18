@@ -23,9 +23,9 @@ public class AppletInterfaceTest {
     void lineList() {
         LineListRequest lineListRequest = new LineListRequest();
         lineListRequest.setDestinationName("嗨翻天");
-        lineListRequest.setLineTab("老人1");
+        lineListRequest.setLineTab("老人");
         List<LineVO> lineVOS = lineService.lineList(lineListRequest);
-        lineVOS.forEach(lineVO -> System.out.println(lineVO));
+        lineVOS.forEach(System.out::println);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class AppletInterfaceTest {
         nearbyRequest.setLongitude(106.646353);
         nearbyRequest.setDestinationType("打卡点");
         List<DestinationVO> nearby = lineService.nearby(nearbyRequest);
-        nearby.forEach(item -> System.out.println(item));
+        nearby.forEach(System.out::println);
     }
 
 }

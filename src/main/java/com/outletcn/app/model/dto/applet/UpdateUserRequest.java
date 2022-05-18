@@ -30,10 +30,6 @@ public class UpdateUserRequest {
     @ApiModelProperty(value = "昵称")
     private String nickName;
 
-    @ApiModelProperty(value = "openId")
-    @NotBlank(message = "openId不能为空")
-    private String openId;
-
     @ApiModelProperty(value = "联系地址")
     private String contactAddress;
 
