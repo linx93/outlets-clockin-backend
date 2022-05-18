@@ -1,17 +1,18 @@
 package com.outletcn.app.service.chain.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
-import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.ClockInType;
+import com.outletcn.app.common.DestinationTypeEnum;
 import com.outletcn.app.common.LineElementType;
+import com.outletcn.app.converter.LineConverter;
 import com.outletcn.app.exception.BasicException;
-import com.outletcn.app.model.dto.applet.LineElementsVO;
-import com.outletcn.app.model.dto.applet.LineVO;
+import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.*;
 import com.outletcn.app.service.chain.LineService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -19,6 +20,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
 /**
@@ -34,6 +38,7 @@ public class LineServiceImpl implements LineService {
 
     MongoTemplate mongoTemplate;
     Sequence sequence;
+    private final LineConverter lineConverter;
 
     @Override
     public boolean createLine(CreateLineRequest createLineRequest) {
@@ -164,7 +169,7 @@ public class LineServiceImpl implements LineService {
 
         List<Long> hasLineIds = new ArrayList<>();
 
-        Pattern pattern = Pattern.compile("^.*"+destinationName+".*$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^.*" + destinationName + ".*$", Pattern.CASE_INSENSITIVE);
         Iterator<Long> iterator = lineAndDestinationMap.keySet().iterator();
         while (iterator.hasNext()) {
             Long lineId = iterator.next();
@@ -179,32 +184,133 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
-    public ApiResult<LineElementsVO> lineElementsById(Long id) {
+    public LineElementsVO lineElementsById(Long id) {
         LineElementsVO lineElementsVO = new LineElementsVO();
         Line byId = mongoTemplate.findById(id, Line.class);
         if (byId == null) {
             throw new BasicException("线路不存在");
         }
-        List<Destination> destinations = new ArrayList<>(8);
-        List<DestinationGroup> destinationGroups = new ArrayList<>(8);
+        List<DestinationVO> destinations = new ArrayList<>(8);
+        List<DestinationGroupVO> destinationGroups = new ArrayList<>(8);
         List<Line.Attribute> lineElements = byId.getLineElements();
         if (lineElements.isEmpty()) {
             lineElementsVO.setDestination(destinations);
             lineElementsVO.setDestinationGroup(destinationGroups);
-            return ApiResult.ok(lineElementsVO);
+            return lineElementsVO;
         }
         lineElements.forEach(item -> {
             Long id_ = item.getId();
             if (LineElementType.DESTINATION.getCode() == item.getType()) {
                 Destination destination = mongoTemplate.findById(id_, Destination.class);
-                destinations.add(destination);
+                destinations.add(lineConverter.toDestinationVO(destination));
             } else if (LineElementType.DESTINATION_GROUP.getCode() == item.getType()) {
                 DestinationGroup destinationGroup = mongoTemplate.findById(id_, DestinationGroup.class);
-                destinationGroups.add(destinationGroup);
+                List<Long> destinationIds = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id_)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
+                List<Destination> destinationList = mongoTemplate.find(Query.query(Criteria.where("id").in(destinationIds)), Destination.class);
+                DestinationGroupVO destinationGroupVO = lineConverter.toDestinationGroupVO(destinationGroup);
+                destinationGroupVO.setDestinationList(lineConverter.toDestinationVOList(destinationList));
+                destinationGroups.add(destinationGroupVO);
             }
         });
         lineElementsVO.setDestination(destinations);
         lineElementsVO.setDestinationGroup(destinationGroups);
-        return ApiResult.ok(lineElementsVO);
+        return lineElementsVO;
+    }
+
+    @Override
+    public List<DestinationMapVO> lineElementsMapById(Long id) {
+        List<DestinationMapVO> destinationMapVOS = new ArrayList<>();
+        Line byId = mongoTemplate.findById(id, Line.class);
+        if (byId == null) {
+            throw new BasicException("线路不存在");
+        }
+        List<Line.Attribute> lineElements = byId.getLineElements();
+        for (Line.Attribute item : lineElements) {
+            Long id_ = item.getId();
+            if (LineElementType.DESTINATION.getCode() == item.getType()) {
+                Destination destination = mongoTemplate.findById(id_, Destination.class);
+                DestinationMapVO destinationMapVO = lineConverter.toLineMapVO(destination);
+                destinationMapVOS.add(destinationMapVO);
+            } else if (LineElementType.DESTINATION_GROUP.getCode() == item.getType()) {
+                List<Long> destinationIds = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id_)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
+                List<Destination> destinationList = mongoTemplate.find(Query.query(Criteria.where("id").in(destinationIds)), Destination.class);
+                destinationMapVOS.addAll(lineConverter.toLineMapVOList(destinationList));
+            }
+        }
+        return destinationMapVOS;
+    }
+
+    @Override
+    public List<LineVO> lineList(LineListRequest lineListRequest) {
+        if (lineListRequest == null) {
+            throw new BasicException("参数lineListRequest不能为空");
+        }
+        //查询上架的路线
+        List<Line> lines = mongoTemplate.find(Query.query(Criteria.where("putOn").is(0)), Line.class);
+        if (StringUtils.isNotBlank(lineListRequest.getDestinationName())) {
+            lines = lines.stream().filter(item -> item.getLineName().contains(lineListRequest.getDestinationName())).collect(Collectors.toList());
+        }
+        if (StringUtils.isNotBlank(lineListRequest.getLineTab())) {
+            lines = lines.stream().filter(item -> {
+                List<String> lineAttrs = item.getLineAttrs();
+                AtomicBoolean flag = new AtomicBoolean(false);
+                lineAttrs.forEach(attr -> {
+                    if (Objects.equals(attr, lineListRequest.getLineTab().trim())) {
+                        flag.set(true);
+                        return;
+                    }
+                });
+                return flag.get();
+            }).collect(Collectors.toList());
+        }
+        List<LineVO> result = new ArrayList<>();
+        lines.forEach(line -> result.add(lineConverter.toLineVO(line)));
+        //计算每条线路 包含打卡目的地的总数，同时累加每个打卡点的积分值
+        //打卡签章数量
+        AtomicReference<Long> clockInSignSum = new AtomicReference<>(0L);
+        //打卡点数量
+        AtomicReference<Integer> clockInDestinationSum = new AtomicReference<>(0);
+        result.forEach(lineVO -> {
+            List<Line.Attribute> lineElements = lineVO.getLineElements();
+            lineElements.forEach(item -> {
+                Long id_ = item.getId();
+                if (LineElementType.DESTINATION.getCode() == item.getType()) {
+                    Destination destination = mongoTemplate.findById(id_, Destination.class);
+                    assert destination != null;
+                    if (Objects.equals(DestinationTypeEnum.CLOCK_IN_POINT.getMsg(), destination.getDestinationType())) {
+                        clockInDestinationSum.updateAndGet(v -> v + 1);
+                        clockInSignSum.updateAndGet(v -> v + destination.getScore());
+                    }
+                } else if (LineElementType.DESTINATION_GROUP.getCode() == item.getType()) {
+                    List<Long> destinations = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id_)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
+                    destinations.forEach(element -> {
+                        Destination destination = mongoTemplate.findById(element, Destination.class);
+                        assert destination != null;
+                        if (Objects.equals(DestinationTypeEnum.CLOCK_IN_POINT.getMsg(), destination.getDestinationType())) {
+                            clockInDestinationSum.updateAndGet(v -> v + 1);
+                            clockInSignSum.updateAndGet(v -> v + destination.getScore());
+                        }
+                    });
+                }
+            });
+            lineVO.setClockInDestinationSum(clockInDestinationSum.get());
+            lineVO.setClockInSignSum(clockInSignSum.get());
+        });
+        //排序 按置顶排序  再按修改时间排序
+        List<LineVO> collect = result.stream().sorted(Comparator.comparingInt(LineVO::getStick)).sorted(Comparator.comparing(LineVO::getStickTime).reversed()).collect(Collectors.toList());
+        return collect;
+    }
+
+    @Override
+    public List<LineTabVO> lineTab() {
+        List<LineAttribute> all = mongoTemplate.findAll(LineAttribute.class);
+        List<LineTabVO> lineTabVOS = new ArrayList<>();
+        all.forEach(item -> {
+            LineTabVO lineTabVO = new LineTabVO();
+            lineTabVO.setAttribute(item.getAttribute());
+            lineTabVO.setId(item.getId());
+            lineTabVOS.add(lineTabVO);
+        });
+        return lineTabVOS;
     }
 }
