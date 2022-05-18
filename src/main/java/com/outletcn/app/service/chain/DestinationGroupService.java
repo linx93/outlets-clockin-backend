@@ -1,10 +1,7 @@
 package com.outletcn.app.service.chain;
 
 import com.outletcn.app.common.PageInfo;
-import com.outletcn.app.model.dto.chain.CreateDestinationGroupAttributeRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
-import com.outletcn.app.model.dto.chain.PutOnDestinationResponse;
-import com.outletcn.app.model.dto.chain.PutOnRequest;
+import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.model.mongo.DestinationGroupAttribute;
 
@@ -37,6 +34,13 @@ public interface DestinationGroupService {
      * @param id
      */
     boolean modifyDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest, Long id);
+
+    /**
+     * 基于ID查询目的地群
+     * @param id
+     * @return
+     */
+    QueryOneResponse<DestinationGroup> findDestinationGroupById(Long id);
 
     /**
      * 创建目的地群属性
@@ -96,7 +100,14 @@ public interface DestinationGroupService {
      * @param size
      * @return
      */
-    PageInfo<DestinationGroup> findDestinationGroupByNameOrPutOnForPage(String name, int putOn, int current, int size);
+    PageInfo<QueryDestinationGroupResponse> findDestinationGroupByNameOrPutOnForPage(String name, int putOn, int current, int size);
+
+    /**
+     * 根据组ID获取打开分值
+     * @param groupId
+     * @return
+     */
+    int getDestinationForPoint(Long groupId);
 
     /**
      * 查询目的地群属性列表

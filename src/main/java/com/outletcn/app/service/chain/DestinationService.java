@@ -49,6 +49,13 @@ public interface DestinationService {
     boolean modifyDestination(CreateDestinationRequest createDestinationRequest, Long id);
 
     /**
+     * 基于ID查询目的地
+     * @param id
+     * @return
+     */
+    QueryOneResponse<Destination> findDestinationById(Long id);
+
+    /**
      * 上/下架目的地
      * @param putOnRequest
      * @return
@@ -108,7 +115,7 @@ public interface DestinationService {
      * @param size
      * @return
      */
-    PageInfo<Destination> findDestinationByNameOrPutOnForPage(String name, int putOn, int current, int size);
+    PageInfo<QueryDestinationResponse> findDestinationByNameOrPutOnForPage(String name, int putOn, int current, int size);
 
     /**
      * 查询目的地属性列表

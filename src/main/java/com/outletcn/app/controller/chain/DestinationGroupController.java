@@ -1,10 +1,8 @@
 package com.outletcn.app.controller.chain;
 
 import com.outletcn.app.common.PageInfo;
-import com.outletcn.app.model.dto.chain.CreateDestinationGroupAttributeRequest;
-import com.outletcn.app.model.dto.chain.CreateDestinationGroupRequest;
-import com.outletcn.app.model.dto.chain.PutOnDestinationResponse;
-import com.outletcn.app.model.dto.chain.PutOnRequest;
+import com.outletcn.app.model.dto.chain.*;
+import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.model.mongo.DestinationGroupAttribute;
 import com.outletcn.app.service.chain.DestinationGroupService;
@@ -60,6 +58,16 @@ public class DestinationGroupController {
     public ApiResult<Boolean> modifyDestinationGroup(@RequestBody @Valid CreateDestinationGroupRequest createDestinationGroupRequest, Long id) {
         boolean group = destinationGroupService.modifyDestinationGroup(createDestinationGroupRequest, id);
         return ApiResult.thin(ErrorCode.SUCCESS, group);
+    }
+
+    /**
+     * 根据ID查询目的地群
+     */
+    @ApiOperation(value = "根据ID查询目的地群")
+    @PostMapping("findDestinationGroupById")
+    public ApiResult<QueryOneResponse<DestinationGroup>> findDestinationGroupById(@RequestBody @Valid Long id) {
+        QueryOneResponse<DestinationGroup> queryOneResponse = destinationGroupService.findDestinationGroupById(id);
+        return ApiResult.thin(ErrorCode.SUCCESS, queryOneResponse);
     }
 
     /**
@@ -139,8 +147,8 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "基于名称、上下架查询")
     @GetMapping("/findDestinationGroupByNameOrPutOnForPage")
-    public ApiResult<PageInfo<DestinationGroup>> findDestinationGroupByNameOrPutOnForPage(@RequestParam(value = "name",required = false) String name, @RequestParam(value = "putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam(value = "size") Integer size) {
-        PageInfo<DestinationGroup> pageInfo = destinationGroupService.findDestinationGroupByNameOrPutOnForPage(name, putOn, page, size);
+    public ApiResult<PageInfo<QueryDestinationGroupResponse>> findDestinationGroupByNameOrPutOnForPage(@RequestParam(value = "name",required = false) String name, @RequestParam(value = "putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam(value = "size") Integer size) {
+        PageInfo<QueryDestinationGroupResponse> pageInfo = destinationGroupService.findDestinationGroupByNameOrPutOnForPage(name, putOn, page, size);
         return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);
     }
 

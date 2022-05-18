@@ -100,6 +100,16 @@ public class DestinationController {
     }
 
     /**
+     * 根据ID查询目的地
+     */
+    @ApiOperation(value = "根据ID查询目的地")
+    @PostMapping("findDestinationById")
+    public ApiResult<QueryOneResponse<Destination>> findDestinationById(@RequestBody @Valid Long id) {
+        QueryOneResponse<Destination> queryOneResponse = destinationService.findDestinationById(id);
+        return ApiResult.thin(ErrorCode.SUCCESS, queryOneResponse);
+    }
+
+    /**
      * 上/下架目的地
      */
     @ApiOperation(value = "上/下架目的地")
@@ -154,9 +164,9 @@ public class DestinationController {
      */
     @ApiOperation(value = "基于名称、上下架查询")
     @GetMapping("findDestinationByNameOrPutOnForPage")
-    public ApiResult<PageInfo<Destination>> findDestinationByNameOrPutOnForPage(@RequestParam(value = "name", required = false) String name, @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
-        PageInfo<Destination> destinations = destinationService.findDestinationByNameOrPutOnForPage(name, putOn, page, size);
-        return ApiResult.thin(ErrorCode.SUCCESS, destinations);
+    public ApiResult<PageInfo<QueryDestinationResponse>> findDestinationByNameOrPutOnForPage(@RequestParam(value = "name", required = false) String name, @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+        PageInfo<QueryDestinationResponse> queryDestinationResponsePageInfo = destinationService.findDestinationByNameOrPutOnForPage(name, putOn, page, size);
+        return ApiResult.thin(ErrorCode.SUCCESS, queryDestinationResponsePageInfo);
     }
 
     /**

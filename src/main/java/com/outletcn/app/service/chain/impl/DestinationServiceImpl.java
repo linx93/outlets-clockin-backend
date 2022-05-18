@@ -256,6 +256,20 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
+    public QueryOneResponse<Destination> findDestinationById(Long id) {
+        QueryOneResponse<Destination> queryOneResponse = new QueryOneResponse<>();
+        Destination destination = mongoTemplate.findById(id, Destination.class);
+        if (Objects.isNull(destination)) {
+            throw new BasicException("目的地不存在");
+        }
+        DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(Criteria.where(
+                "objectId").is(id).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+        queryOneResponse.setBaseInfo(destination);
+        queryOneResponse.setDetail(detailObjectType);
+        return queryOneResponse;
+    }
+
+    @Override
     public PutOnDestinationResponse putOnDestination(PutOnRequest putOnRequest) {
 
         PutOnDestinationResponse putOnDestinationResponse = null;
@@ -382,7 +396,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
-    public PageInfo<Destination> findDestinationByNameOrPutOnForPage(String name, int putOn, int current, int size) {
+    public PageInfo<QueryDestinationResponse> findDestinationByNameOrPutOnForPage(String name, int putOn, int current, int size) {
 
         PageInfo<Destination> pageInfo = new PageInfo<>();
         pageInfo.setSize(size);
@@ -396,7 +410,28 @@ public class DestinationServiceImpl implements DestinationService {
         query.addCriteria(Criteria.where("putOn").is(putOn));
 
         PageInfo<Destination> destinationPageInfo = destinationMongoRepository.findObjForPage(query, pageInfo);
-        return destinationPageInfo;
+
+
+        PageInfo<QueryDestinationResponse> destinationResponsePageInfo = new PageInfo<>();
+        destinationResponsePageInfo.setCurrent(destinationPageInfo.getCurrent());
+        destinationResponsePageInfo.setSize(destinationPageInfo.getSize());
+        destinationResponsePageInfo.setTotal(destinationPageInfo.getTotal());
+
+        List<QueryDestinationResponse> queryDestinationResponses = new ArrayList<>();
+        List<Destination> records = destinationPageInfo.getRecords();
+        for (Destination destination : records) {
+            QueryDestinationResponse queryDestinationResponse = QueryDestinationResponse.builder().id(destination.getId())
+                    .destinationName(destination.getDestinationName())
+                    .destinationType(destination.getDestinationType())
+                    .score(destination.getScore())
+                    .destinationAttrs(destination.getDestinationAttrs())
+                    .createTime(destination.getCreateTime())
+                    .updateTime(destination.getUpdateTime()).build();
+            queryDestinationResponses.add(queryDestinationResponse);
+        }
+        destinationResponsePageInfo.setRecords(queryDestinationResponses);
+
+        return destinationResponsePageInfo;
     }
 
     /**

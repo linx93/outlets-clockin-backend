@@ -2,10 +2,7 @@ package com.outletcn.app.service.chain;
 
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.applet.*;
-import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
-import com.outletcn.app.model.dto.chain.CreateLineRequest;
-import com.outletcn.app.model.dto.chain.PutOnRequest;
-import com.outletcn.app.model.dto.chain.StickRequest;
+import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.Line;
 import com.outletcn.app.model.mongo.LineAttribute;
 
@@ -38,6 +35,13 @@ public interface LineService {
      * @param id
      */
     boolean deleteLine(Long id);
+
+    /**
+     * 基于ID查询线路信息
+     * @param id
+     * @return
+     */
+    QueryOneResponse<Line> findLineById(Long id);
 
     /**
      * 创建线路属性
@@ -77,7 +81,7 @@ public interface LineService {
      * @param size
      * @return
      */
-    PageInfo<Line> findLineByNameOrPutOnForPage(String name, int putOn, int current, int size);
+    PageInfo<QueryLineResponse> findLineByNameOrPutOnForPage(String name, int putOn, int current, int size);
 
     /**
      * 通过线路id查询线路下的目的地和目的地群

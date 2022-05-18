@@ -299,13 +299,19 @@ class OutletsClockinBackendApplicationTests {
 
     @Test
     void testFindDestinationByNameOrPutOnForPage() {
-        PageInfo<Destination> destinationByNameOrPutOnForPage = service.findDestinationByNameOrPutOnForPage("", 0, 1, 10);
+        PageInfo<QueryDestinationResponse> destinationByNameOrPutOnForPage = service.findDestinationByNameOrPutOnForPage("", 0, 1, 10);
         System.out.println(destinationByNameOrPutOnForPage);
     }
 
     @Test
     void testFindDestinationGroupByNameOrPutOnForPage() {
-        PageInfo<DestinationGroup> destinationGroupByNameOrPutOnForPage = destinationGroupService.findDestinationGroupByNameOrPutOnForPage("", 0, 1, 10);
+        PageInfo<QueryDestinationGroupResponse> destinationGroupByNameOrPutOnForPage = destinationGroupService.findDestinationGroupByNameOrPutOnForPage("", 0, 1, 10);
+        System.out.println(destinationGroupByNameOrPutOnForPage);
+    }
+
+    @Test
+    void testFindLineByNameOrPutOnForPage() {
+        PageInfo<QueryLineResponse> destinationGroupByNameOrPutOnForPage = lineService.findLineByNameOrPutOnForPage("", 0, 1, 10);
         System.out.println(destinationGroupByNameOrPutOnForPage);
     }
 }

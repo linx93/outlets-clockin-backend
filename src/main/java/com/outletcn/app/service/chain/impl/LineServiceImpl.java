@@ -12,6 +12,7 @@ import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.*;
 import com.outletcn.app.repository.LineMongoRepository;
+import com.outletcn.app.service.chain.DestinationGroupService;
 import com.outletcn.app.service.chain.LineService;
 import com.outletcn.app.utils.GeoUtil;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.util.*;
@@ -44,6 +44,7 @@ public class LineServiceImpl implements LineService {
     MongoTemplate mongoTemplate;
     Sequence sequence;
     LineMongoRepository lineMongoRepository;
+    DestinationGroupService destinationGroupService;
     private final LineConverter lineConverter;
 
     @Override
@@ -170,6 +171,20 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
+    public QueryOneResponse<Line> findLineById(Long id) {
+        QueryOneResponse<Line> queryOneResponse = new QueryOneResponse<>();
+        Line line = mongoTemplate.findById(id, Line.class);
+        if (Objects.isNull(line)) {
+            throw new BasicException("线路不存在");
+        }
+        DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(Criteria.where(
+                "objectId").is(id).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+        queryOneResponse.setBaseInfo(line);
+        queryOneResponse.setDetail(detailObjectType);
+        return queryOneResponse;
+    }
+
+    @Override
     public boolean createLineAttribute(CreateLineAttributeRequest createLineAttributeRequest) {
         LineAttribute lineAttribute = new LineAttribute();
         lineAttribute.setId(sequence.nextId());
@@ -257,7 +272,7 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
-    public PageInfo<Line> findLineByNameOrPutOnForPage(String name, int putOn, int current, int size) {
+    public PageInfo<QueryLineResponse> findLineByNameOrPutOnForPage(String name, int putOn, int current, int size) {
         PageInfo<Line> pageInfo = new PageInfo<>();
         pageInfo.setSize(size);
         pageInfo.setCurrent(current);
@@ -270,7 +285,44 @@ public class LineServiceImpl implements LineService {
         query.addCriteria(Criteria.where("putOn").is(putOn));
 
         PageInfo<Line> linePageInfo = lineMongoRepository.findObjForPage(query, pageInfo);
-        return linePageInfo;
+        List<QueryLineResponse> queryLineResponses = new ArrayList<>();
+        List<Line> records = linePageInfo.getRecords();
+        for (Line line : records) {
+
+            int scoreSum = 0;
+            List<Line.Attribute> lineElements = line.getLineElements();
+            for (Line.Attribute attribute : lineElements) {
+                int type = attribute.getType();
+                if (type == ClockInType.Destination.getType()) {
+                    Long id = attribute.getId();
+                    Destination destination = mongoTemplate.findById(id, Destination.class);
+                    scoreSum += destination.getScore();
+                } else if (type == ClockInType.DestinationGroup.getType()) {
+                    Long id = attribute.getId();
+                    int groupScore = destinationGroupService.getDestinationForPoint(id);
+                    scoreSum += groupScore;
+                }
+            }
+            QueryLineResponse queryLineResponse = QueryLineResponse.builder()
+                    .id(line.getId())
+                    .lineName(line.getLineName())
+                    .destinationGroupCount(lineElements.size())
+                    .score(scoreSum)
+                    .lineAttrs(line.getLineAttrs())
+                    .createTime(line.getCreateTime())
+                    .updateTime(line.getUpdateTime()).build();
+            queryLineResponses.add(queryLineResponse);
+
+        }
+
+        PageInfo<QueryLineResponse> queryLineResponsePageInfo = new PageInfo<>();
+        queryLineResponsePageInfo.setSize(size);
+        queryLineResponsePageInfo.setCurrent(current);
+        queryLineResponsePageInfo.setTotal(linePageInfo.getTotal());
+        queryLineResponsePageInfo.setRecords(queryLineResponses);
+
+
+        return queryLineResponsePageInfo;
     }
 
     @Override

@@ -1,10 +1,8 @@
 package com.outletcn.app.controller.chain;
 
 import com.outletcn.app.common.PageInfo;
-import com.outletcn.app.model.dto.chain.CreateLineAttributeRequest;
-import com.outletcn.app.model.dto.chain.CreateLineRequest;
-import com.outletcn.app.model.dto.chain.PutOnRequest;
-import com.outletcn.app.model.dto.chain.StickRequest;
+import com.outletcn.app.model.dto.chain.*;
+import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.model.mongo.Line;
 import com.outletcn.app.model.mongo.LineAttribute;
 import com.outletcn.app.service.chain.LineService;
@@ -114,6 +112,16 @@ public class LineController {
     }
 
     /**
+     * 根据ID查询线路
+     */
+    @ApiOperation(value = "根据ID查询线路")
+    @PostMapping("findLineById")
+    public ApiResult<QueryOneResponse<Line>> findLineById(@RequestBody @Valid Long id) {
+        QueryOneResponse<Line> queryOneResponse = lineService.findLineById(id);
+        return ApiResult.thin(ErrorCode.SUCCESS, queryOneResponse);
+    }
+
+    /**
      * 删除线路
      */
     @ApiOperation(value = "删除线路")
@@ -128,10 +136,10 @@ public class LineController {
      */
     @ApiOperation(value = "基于名称、上下架查询")
     @GetMapping("/findLineByNameOrPutOnForPage")
-    public ApiResult<PageInfo<Line>> findLineByNameOrPutOnForPage(@RequestParam(name = "name", required = false) String name,
+    public ApiResult<PageInfo<QueryLineResponse>> findLineByNameOrPutOnForPage(@RequestParam(name = "name", required = false) String name,
                                                                   @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page,
                                                                   @RequestParam("size") Integer size) {
-        PageInfo<Line> pageInfo = lineService.findLineByNameOrPutOnForPage(name, putOn, page, size);
+        PageInfo<QueryLineResponse> pageInfo = lineService.findLineByNameOrPutOnForPage(name, putOn, page, size);
         return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);
     }
 }

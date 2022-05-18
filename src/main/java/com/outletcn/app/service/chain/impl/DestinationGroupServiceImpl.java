@@ -3,6 +3,7 @@ package com.outletcn.app.service.chain.impl;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.mongodb.client.result.DeleteResult;
 import com.outletcn.app.common.ClockInType;
+import com.outletcn.app.common.DestinationTypeEnum;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.chain.*;
@@ -202,6 +203,20 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
     }
 
     @Override
+    public QueryOneResponse<DestinationGroup> findDestinationGroupById(Long id) {
+        QueryOneResponse<DestinationGroup> queryOneResponse = new QueryOneResponse<>();
+        DestinationGroup destinationGroup = mongoTemplate.findById(id, DestinationGroup.class);
+        if (Objects.isNull(destinationGroup)) {
+            throw new BasicException("目的地群不存在");
+        }
+        DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(Criteria.where(
+                "objectId").is(id).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+        queryOneResponse.setBaseInfo(destinationGroup);
+        queryOneResponse.setDetail(detailObjectType);
+        return queryOneResponse;
+    }
+
+    @Override
     public boolean createDestinationGroupAttribute(CreateDestinationGroupAttributeRequest createDestinationGroupAttributeRequest) {
 
         DestinationGroupAttribute destinationGroupAttribute = new DestinationGroupAttribute();
@@ -306,7 +321,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
     }
 
     @Override
-    public PageInfo<DestinationGroup> findDestinationGroupByNameOrPutOnForPage(String name, int putOn, int current, int size) {
+    public PageInfo<QueryDestinationGroupResponse> findDestinationGroupByNameOrPutOnForPage(String name, int putOn, int current, int size) {
         PageInfo<DestinationGroup> pageInfo = new PageInfo<>();
         pageInfo.setSize(size);
         pageInfo.setCurrent(current);
@@ -319,7 +334,48 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         query.addCriteria(Criteria.where("putOn").is(putOn));
 
         PageInfo<DestinationGroup> destinationGroupPageInfo = destinationGroupMongoRepository.findObjForPage(query, pageInfo);
-        return destinationGroupPageInfo;
+
+        PageInfo<QueryDestinationGroupResponse> queryDestinationGroupResponsePageInfo = new PageInfo<>();
+        queryDestinationGroupResponsePageInfo.setSize(size);
+        queryDestinationGroupResponsePageInfo.setCurrent(current);
+        queryDestinationGroupResponsePageInfo.setTotal(destinationGroupPageInfo.getTotal());
+
+        List<QueryDestinationGroupResponse> queryDestinationGroupResponses = new ArrayList<>();
+        List<DestinationGroup> records = destinationGroupPageInfo.getRecords();
+        for (DestinationGroup destinationGroup : records) {
+            Long id = destinationGroup.getId();
+            int scoreSum = getDestinationForPoint(id);
+            long destinationCount = mongoTemplate.count(Query.query(
+                    Criteria.where("groupId").is(id)), DestinationGroupRelation.class);
+            QueryDestinationGroupResponse queryDestinationGroupResponse = QueryDestinationGroupResponse.builder()
+                    .id(id)
+                    .groupName(destinationGroup.getGroupName())
+                    .destinationCount(destinationCount)
+                    .score(scoreSum)
+                    .groupAttrs(destinationGroup.getGroupAttrs())
+                    .createTime(destinationGroup.getCreateTime())
+                    .updateTime(destinationGroup.getUpdateTime()).build();
+            queryDestinationGroupResponses.add(queryDestinationGroupResponse);
+        }
+
+        queryDestinationGroupResponsePageInfo.setRecords(queryDestinationGroupResponses);
+        return queryDestinationGroupResponsePageInfo;
+    }
+
+    @Override
+    public int getDestinationForPoint(Long groupId) {
+        int scoreSum = 0;
+        List<DestinationGroupRelation> destinationGroupRelations = mongoTemplate.find(Query.query(
+                Criteria.where("groupId").is(groupId)), DestinationGroupRelation.class);
+        for (DestinationGroupRelation destinationGroupRelation : destinationGroupRelations) {
+            Long destinationId = destinationGroupRelation.getDestinationId();
+            Destination destination = mongoTemplate.findById(destinationId, Destination.class);
+            if (destination.getDestinationType().equals(DestinationTypeEnum.CLOCK_IN_POINT.getMsg())) {
+                Integer score = destination.getScore();
+                scoreSum += score;
+            }
+        }
+        return scoreSum;
     }
 
     /**
