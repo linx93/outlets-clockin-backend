@@ -50,9 +50,9 @@ public class ClockInUserController {
 
     @ApiOperation(value = "我的总签章")
     @GetMapping(value = "/my-score")
-    public ApiResult<Integer> myScore() {
-        Integer score = punchLogService.myScore();
-        return ApiResult.ok(score);
+    public ApiResult<String> myScore() {
+        Long score = punchLogService.myScore();
+        return ApiResult.ok(String.valueOf(score));
     }
 }
 
