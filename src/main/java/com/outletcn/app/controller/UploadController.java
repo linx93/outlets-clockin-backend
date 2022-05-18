@@ -44,10 +44,11 @@ public class UploadController {
             return ApiResult.thin(ErrorCode.PARAMS_IS_NULL, null);
         }
         String key = TencentCosUtil.getFileName(file);
+        LogRecordContext.putVariable("key", key);
         String url;
         try {
             url = TencentCosUtil.simpleUpload(file.getInputStream(), key);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("上传失败 :{}", e.getMessage(), e);
             LogRecordContext.putVariable("fail", "上传失败:" + e.getMessage());
             throw new BasicException(ErrorCode.FAILED);
@@ -55,7 +56,6 @@ public class UploadController {
         Map<String, String> map = new HashMap<>(2);
         map.put("url", url);
         LogRecordContext.putVariable("url", url);
-        LogRecordContext.putVariable("key", key);
         return ApiResult.thin(ErrorCode.SUCCESS, map);
     }
 
