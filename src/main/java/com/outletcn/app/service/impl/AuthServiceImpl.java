@@ -93,7 +93,7 @@ public class AuthServiceImpl extends ServiceImpl<AuthMapper, Auth> implements Au
 
     @Override
     public ApiResult<LoginResponse> clockInLogin(AppletLoginRequest appletLoginRequest) {
-        Code2Session code2Session = weChatApi.jscode2session(UserTypeEnum.WRITE_OFF, appletLoginRequest.getJsCode());
+        Code2Session code2Session = weChatApi.jscode2session(UserTypeEnum.CLOCK_IN, appletLoginRequest.getJsCode());
         String openid = code2Session.getOpenid();
         if (StringUtils.isBlank(openid)) {
             throw new BasicException("微信接口返回的openid为空");

@@ -21,7 +21,7 @@ public class Code2Session {
     String unionid;
 
     @JsonProperty("errcode")
-    Integer errCode;
+    int errCode;
 
     @JsonProperty("errmsg")
     String errMsg;

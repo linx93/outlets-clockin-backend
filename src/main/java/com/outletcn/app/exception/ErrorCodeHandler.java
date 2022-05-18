@@ -85,7 +85,7 @@ public class ErrorCodeHandler {
     public ApiResult<?> exceptionHandler(Exception exception) {
         log.error("服务器错误: {}", exception.getMessage());
         log.error("服务器错误:", exception);
-        return ApiResult.result(ErrorCode.FAILED);
+        return ApiResult.result(ErrorCode.FAILED.getCode(), exception.getMessage());
     }
 
 }

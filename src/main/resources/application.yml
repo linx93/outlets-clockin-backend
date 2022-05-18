@@ -80,8 +80,8 @@ logging:
 #小程序配置
 applet:
   clock-in:
-    app-id: xxxxx
-    secret: yyyyy
+    app-id: wx7b5e361ee17fccbd
+    secret: 3774fe5a7dd6fd58e25ee2f35a03bce8
   write-off:
     app-id: aaaaa
     secret: bbbbb

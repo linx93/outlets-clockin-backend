@@ -25,7 +25,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class WeChatApiImpl implements BaseApi, WeChatApi {
-    private static final String JSCODE_TO_SESSION = "cgi-bin/token?grant_type=client_credential";
+    private static final String JSCODE_TO_SESSION = "sns/jscode2session?grant_type=authorization_code";
 
     private final AppletConfig appletConfig;
 
@@ -46,6 +46,8 @@ public class WeChatApiImpl implements BaseApi, WeChatApi {
             log.info("微信服务连接失败");
             throw new BasicException("微信服务连接失败");
         }
+        String body = execute.body();
+        log.info("body:{}", body);
         Code2Session code2Session = JSON.parseObject(execute.body(), Code2Session.class);
         if (code2Session.getErrCode() != 0 || StringUtils.isBlank(code2Session.getOpenid())) {
             String errMsg = code2Session.getErrMsg();
