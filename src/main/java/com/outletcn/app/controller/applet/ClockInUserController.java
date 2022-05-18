@@ -29,7 +29,7 @@ import javax.validation.Valid;
 @Api(tags = "打卡小程序用户")
 @AllArgsConstructor
 @RestController
-@RequestMapping("/clock-in")
+@RequestMapping("/v1/api/applet/clock-in")
 public class ClockInUserController {
 
     private final ClockInUserService clockInUserService;
@@ -44,7 +44,7 @@ public class ClockInUserController {
     }
 
     @ApiOperation(value = "打卡小程序登录")
-    @PostMapping(value = "/applet-login")
+    @PostMapping(value = "/login")
     public ApiResult<LoginResponse> clockInLogin(@RequestBody @Valid AppletLoginRequest appletLoginRequest) {
         ApiResult<LoginResponse> apiResult = authService.clockInLogin(appletLoginRequest);
         return apiResult;

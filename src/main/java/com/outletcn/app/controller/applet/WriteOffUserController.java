@@ -28,7 +28,7 @@ import javax.validation.Valid;
 @Api(tags = "核销小程序用户")
 @AllArgsConstructor
 @RestController
-@RequestMapping("/write-off")
+@RequestMapping("/v1/api/applet/write-off")
 public class WriteOffUserController {
     private final AuthService authService;
 
@@ -41,7 +41,7 @@ public class WriteOffUserController {
 
 
     @ApiOperation(value = "核销小程序登录")
-    @PostMapping(value = "/applet-login")
+    @PostMapping(value = "/login")
     public ApiResult<LoginResponse> operatorLogin(@RequestBody @Valid AppletLoginRequest appletLoginRequest) {
         ApiResult<LoginResponse> apiResult = authService.writeOffLogin(appletLoginRequest);
         return apiResult;
