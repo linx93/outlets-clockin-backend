@@ -1,6 +1,8 @@
 package com.outletcn.app.controller.chain;
 
 
+import com.outletcn.app.model.mongo.DestinationAttribute;
+import com.outletcn.app.model.mongo.DestinationType;
 import net.phadata.app.common.ApiResult;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
@@ -156,9 +158,29 @@ public class DestinationController {
      */
     @ApiOperation(value = "基于名称、上下架查询")
     @GetMapping("findDestinationByNameOrPutOnForPage")
-    public ApiResult<PageInfo<Destination>> findDestinationByNameOrPutOnForPage(@RequestParam(value = "name",required = false) String name, @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+    public ApiResult<PageInfo<Destination>> findDestinationByNameOrPutOnForPage(@RequestParam(value = "name", required = false) String name, @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
         PageInfo<Destination> destinations = destinationService.findDestinationByNameOrPutOnForPage(name, putOn, page, size);
         return ApiResult.thin(ErrorCode.SUCCESS, destinations);
+    }
+
+    /**
+     * 查询目的地属性列表
+     */
+    @ApiOperation(value = "查询目的地属性列表")
+    @GetMapping("findDestinationAttribute")
+    public ApiResult<List<DestinationAttribute>> findDestinationAttribute() {
+        List<DestinationAttribute> destinationProperties = destinationService.findDestinationAttribute();
+        return ApiResult.thin(ErrorCode.SUCCESS, destinationProperties);
+    }
+
+    /**
+     * 查询目的地类型列表
+     */
+    @ApiOperation(value = "查询目的地类型列表")
+    @GetMapping("findDestinationType")
+    public ApiResult<List<DestinationType>> findDestinationType() {
+        List<DestinationType> destinationTypes = destinationService.findDestinationType();
+        return ApiResult.thin(ErrorCode.SUCCESS, destinationTypes);
     }
 
 }

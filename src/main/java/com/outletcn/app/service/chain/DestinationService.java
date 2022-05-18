@@ -3,6 +3,8 @@ package com.outletcn.app.service.chain;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.Destination;
+import com.outletcn.app.model.mongo.DestinationAttribute;
+import com.outletcn.app.model.mongo.DestinationType;
 
 import java.util.List;
 
@@ -108,4 +110,15 @@ public interface DestinationService {
      */
     PageInfo<Destination> findDestinationByNameOrPutOnForPage(String name, int putOn, int current, int size);
 
+    /**
+     * 查询目的地属性列表
+     * @return
+     */
+    List<DestinationAttribute> findDestinationAttribute();
+
+    /**
+     * 查询目的地类型列表
+     * @return
+     */
+    List<DestinationType> findDestinationType();
 }
