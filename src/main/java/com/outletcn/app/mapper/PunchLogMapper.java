@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -32,7 +33,7 @@ public interface PunchLogMapper extends BaseMapper<PunchLog> {
             "days " +
             "ORDER BY " +
             "days ASC")
-    JSONObject punchTimesStatistics(@Param("begin") Long begin, @Param("end") Long end);
+    List<JSONObject> punchTimesStatistics(@Param("begin") Long begin, @Param("end") Long end);
 
     //活跃用户人数统计（时间）
     @Select("SELECT " +
@@ -46,7 +47,7 @@ public interface PunchLogMapper extends BaseMapper<PunchLog> {
             "days " +
             "ORDER BY " +
             "days ASC")
-    JSONObject activePeopleStatistics(@Param("begin") Long begin, @Param("end") Long end);
+    List<JSONObject> activePeopleStatistics(@Param("begin") Long begin, @Param("end") Long end);
 
     //打卡点排行
     @Select("SELECT " +
@@ -59,7 +60,7 @@ public interface PunchLogMapper extends BaseMapper<PunchLog> {
             "ORDER BY " +
             "num DESC " +
             "LIMIT 10")
-    JSONObject topDestinationStatistics();
+    List<JSONObject> topDestinationStatistics();
 
     //礼品包排行
     @Select("SELECT " +
@@ -72,7 +73,7 @@ public interface PunchLogMapper extends BaseMapper<PunchLog> {
             "ORDER BY " +
             "num DESC " +
             "LIMIT 10")
-    JSONObject topGiftStatistics();
+    List<JSONObject> topGiftStatistics();
 
     //新增用户统计
     @Select("SELECT " +
@@ -102,5 +103,5 @@ public interface PunchLogMapper extends BaseMapper<PunchLog> {
             "WHERE create_time BETWEEN #{begin} AND #{end}")
     JSONObject countGiftVoucher(@Param("begin") Long begin, @Param("end") Long end);
 
-
+    List<JSONObject> heatMap();
 }

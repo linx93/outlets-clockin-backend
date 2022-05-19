@@ -30,6 +30,8 @@ public interface GiftService {
 
     void updateOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator);
 
+    void changeGiftBagState(GiftBagStateUpdateRequest request);
+
     GiftBagInfoResponse getGiftBagById (Long id );
 
     void createGiftBagRelation(Long giftBagId, Long giftId);

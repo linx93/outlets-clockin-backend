@@ -134,7 +134,7 @@ public class GiftServiceImpl implements GiftService {
         Criteria criteria = Criteria.where("id").is(id);
         query.addCriteria(criteria);
         Gift gift = mongoTemplate.findOne(query, Gift.class);
-        if(Objects.isNull(gift)){
+        if (Objects.isNull(gift)) {
             throw new BasicException("记录不存在");
         }
 
@@ -380,6 +380,26 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setRecommendImage(ordinaryGiftBagCreator.getRecommendImage());
         giftBag.setPutOn(ordinaryGiftBagCreator.getPutOn());
 
+        long time = Instant.now().getEpochSecond();
+        giftBag.setUpdateTime(time);
+        try {
+            mongoTemplate.save(giftBag);
+        } catch (Exception e) {
+            throw new BasicException("更新出错");
+        }
+    }
+
+    //更改上架状态
+    @Override
+    public void changeGiftBagState(GiftBagStateUpdateRequest request) {
+        Query query = new Query();
+        Criteria criteria = Criteria.where("id").is(request.getId());
+        query.addCriteria(criteria);
+        GiftBag giftBag = mongoTemplate.findOne(query, GiftBag.class);
+        if (Objects.isNull(giftBag)) {
+            throw new BasicException("记录不存在");
+        }
+        giftBag.setPutOn(request.getPutOn());
         long time = Instant.now().getEpochSecond();
         giftBag.setUpdateTime(time);
         try {
