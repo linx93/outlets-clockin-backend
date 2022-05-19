@@ -169,6 +169,12 @@ public class GiftController {
         return ApiResult.ok(giftService.getGiftBagById(id));
     }
 
+    @GetMapping("/getGiftListByGiftBagId")
+    @ApiOperation(value = "礼品包-根据礼品包id查询礼品列表")
+    public ApiResult<List<GiftInfoForGiftBagDetailResponse>> getGiftListByGiftBagId(@RequestParam Long id) {
+        return ApiResult.ok(giftService.getGiftInfoByGiftBagId(id));
+    }
+
     @PostMapping("/updateGiftBagState")
     @ApiOperation(value = "礼品包-根据id修改上架状态")
     public ApiResult updateGiftBagState(@RequestBody GiftBagStateUpdateRequest request){

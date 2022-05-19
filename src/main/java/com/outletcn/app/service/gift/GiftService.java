@@ -42,6 +42,8 @@ public interface GiftService {
 
     PageInfo<GiftBagListResponse> getGiftBagList(GiftBagListRequest giftBagListRequest);
 
+    List<GiftInfoForGiftBagDetailResponse> getGiftInfoByGiftBagId(Long id);
+
     PageInfo<GiftListResponse> getGiftList(GiftListRequest giftListRequest);
 
     List<GiftListResponse> getGiftListByName(String name);

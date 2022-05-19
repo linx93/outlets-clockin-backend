@@ -378,7 +378,6 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setImage(ordinaryGiftBagCreator.getImage());
         giftBag.setRecommendImage(ordinaryGiftBagCreator.getRecommendImage());
 
-
         long time = Instant.now().getEpochSecond();
         giftBag.setUpdateTime(time);
         try {
@@ -401,6 +400,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setPutOn(request.getPutOn());
         long time = Instant.now().getEpochSecond();
         giftBag.setUpdateTime(time);
+        giftBag.setStateUpdateTime(time);
         try {
             mongoTemplate.save(giftBag);
         } catch (Exception e) {
@@ -562,6 +562,32 @@ public class GiftServiceImpl implements GiftService {
         pageInfo.setSize((long) giftBagListRequest.getPageSize());
         pageInfo.setCurrent((long) giftBagListRequest.getPageNum());
         return pageInfo;
+    }
+
+    //根据礼品包id获取礼品信息
+    @Override
+    public List<GiftInfoForGiftBagDetailResponse> getGiftInfoByGiftBagId(Long id) {
+        List<GiftInfoForGiftBagDetailResponse> responses = new ArrayList<>();
+        LookupOperation lookupOperation = LookupOperation.newLookup()
+                .from("gift")
+                .localField("giftId")
+                .foreignField("_id")
+                .as("giftInfo");
+        ProjectionOperation projection = new ProjectionOperation()
+                .andInclude("giftId")
+                .andInclude("giftBagId")
+                .andInclude("giftInfo.giftName")
+                .andExclude("_id");
+        MatchOperation match = Aggregation.match(Criteria.where("giftBagId").is(id));
+        Aggregation agg = Aggregation.newAggregation(lookupOperation, match, projection, Aggregation.unwind("giftName"));
+        try {
+            AggregationResults<GiftInfoForGiftBagDetailResponse> aggregation =
+                    mongoTemplate.aggregate(agg, "gift_bag_relation", GiftInfoForGiftBagDetailResponse.class);
+            responses =  aggregation.getMappedResults();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return responses;
     }
 
     //获取礼品列表
