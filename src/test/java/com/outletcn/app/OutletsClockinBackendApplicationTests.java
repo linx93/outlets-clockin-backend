@@ -278,7 +278,7 @@ class OutletsClockinBackendApplicationTests {
         PutOnRequest putOnRequest = new PutOnRequest();
         putOnRequest.setPutOn(1);
         putOnRequest.setId(1526109603924832258L);
-        PutOnDestinationResponse putOnDestinationResponse = service.putOnDestination(putOnRequest);
+        boolean putOnDestinationResponse = service.putOnDestination(putOnRequest);
         System.out.println(putOnDestinationResponse);
     }
 
@@ -287,14 +287,32 @@ class OutletsClockinBackendApplicationTests {
         PutOnRequest putOnRequest = new PutOnRequest();
         putOnRequest.setPutOn(1);
         putOnRequest.setId(1526129253316354049L);
-        List<PutOnDestinationResponse.LineItem> lineItems = destinationGroupService.putOnDestinationGroup(putOnRequest);
+        boolean lineItems = destinationGroupService.putOnDestinationGroup(putOnRequest);
         System.out.println(lineItems);
+    }
+
+    @Test
+    void testGetRelates() {
+        PutOnDestinationResponse relates = service.getRelates(1526129253316354049L);
+        System.out.println(relates);
     }
 
     @Test
     void testFindLineForDestination() {
         List<Line> lines = lineService.findLineByDestinationName("贵州");
         System.out.println(lines);
+    }
+
+    @Test
+    void testFindLineById() {
+        QueryLineOneResponse queryLineOneResponse = lineService.findLineById(1527105580668366850L);
+        System.out.println(queryLineOneResponse);
+    }
+
+    @Test
+    void testFindGroupById() {
+        QueryDestinationGroupOneResponse destinationGroupQueryOneResponse = destinationGroupService.findDestinationGroupById(1527104232002498561L);
+        System.out.println(destinationGroupQueryOneResponse);
     }
 
     @Test

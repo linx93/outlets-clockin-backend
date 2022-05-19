@@ -3,6 +3,7 @@ package com.outletcn.app.model.dto.chain;
 import com.outletcn.app.model.mongo.DetailObjectType;
 import lombok.Data;
 
+
 /**
  * @author tanwei
  * @version v1.0
@@ -14,4 +15,5 @@ public class QueryOneResponse<T> {
 
     private T baseInfo;
     private DetailObjectType detail;
+
 }

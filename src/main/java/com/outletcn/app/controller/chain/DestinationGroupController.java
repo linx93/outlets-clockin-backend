@@ -2,7 +2,6 @@ package com.outletcn.app.controller.chain;
 
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
-import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.model.mongo.DestinationGroupAttribute;
 import com.outletcn.app.service.chain.DestinationGroupService;
@@ -65,8 +64,8 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "根据ID查询目的地群")
     @GetMapping("findDestinationGroupById")
-    public ApiResult<QueryOneResponse<DestinationGroup>> findDestinationGroupById(Long id) {
-        QueryOneResponse<DestinationGroup> queryOneResponse = destinationGroupService.findDestinationGroupById(id);
+    public ApiResult<QueryDestinationGroupOneResponse> findDestinationGroupById(Long id) {
+        QueryDestinationGroupOneResponse queryOneResponse = destinationGroupService.findDestinationGroupById(id);
         return ApiResult.thin(ErrorCode.SUCCESS, queryOneResponse);
     }
 
@@ -85,10 +84,19 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "上/下架目的地群")
     @PostMapping("/putOnDestinationGroup")
-    public ApiResult<List<PutOnDestinationResponse.LineItem>> putOnDestinationGroup(@RequestBody @Valid PutOnRequest putOnRequest) {
-        List<PutOnDestinationResponse.LineItem> lineItems =
-                destinationGroupService.putOnDestinationGroup(putOnRequest);
-        return ApiResult.thin(ErrorCode.SUCCESS, lineItems);
+    public ApiResult<Boolean> putOnDestinationGroup(@RequestBody @Valid PutOnRequest putOnRequest) {
+        Boolean result = destinationGroupService.putOnDestinationGroup(putOnRequest);
+        return ApiResult.thin(ErrorCode.SUCCESS, result);
+    }
+
+    /**
+     * 查询目的地群与线路绑定关系
+     */
+    @ApiOperation(value = "查询目的地群与线路绑定关系")
+    @GetMapping("getRelates")
+    public ApiResult<List<PutOnDestinationResponse.LineItem>> getRelates(Long id) {
+        List<PutOnDestinationResponse.LineItem> items = destinationGroupService.getRelates(id);
+        return ApiResult.thin(ErrorCode.SUCCESS, items);
     }
 
     /**

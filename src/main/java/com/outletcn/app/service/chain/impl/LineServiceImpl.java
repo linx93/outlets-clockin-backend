@@ -184,17 +184,42 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
-    public QueryOneResponse<Line> findLineById(Long id) {
-        QueryOneResponse<Line> queryOneResponse = new QueryOneResponse<>();
+    public QueryLineOneResponse findLineById(Long id) {
+        QueryLineOneResponse queryLineOneResponse = new QueryLineOneResponse();
         Line line = mongoTemplate.findById(id, Line.class);
         if (Objects.isNull(line)) {
             throw new BasicException("线路不存在");
         }
+        List<QueryLineOneResponse.Item> items = new ArrayList<>();
+        List<Line.Attribute> lineElements = line.getLineElements();
+        for (Line.Attribute attribute : lineElements) {
+            int type = attribute.getType();
+            Long attributeId = attribute.getId();
+            if (ClockInType.Destination.getType() == type) { // 目的地
+                Destination destination = mongoTemplate.findById(attributeId, Destination.class);
+                QueryLineOneResponse.Item item = new QueryLineOneResponse.Item();
+                item.setType("目的地");
+                item.setName(destination.getDestinationName());
+                item.setScore(destination.getScore());
+                item.setAttr(destination.getDestinationAttrs());
+                items.add(item);
+            } else if (ClockInType.DestinationGroup.getType() == type) {
+                DestinationGroup destinationGroup = mongoTemplate.findById(attributeId, DestinationGroup.class);
+                QueryLineOneResponse.Item item = new QueryLineOneResponse.Item();
+                item.setType("目的地群");
+                item.setName(destinationGroup.getGroupName());
+                int score = destinationGroupService.getDestinationForPoint(attributeId);
+                item.setScore(score);
+                item.setAttr(destinationGroup.getGroupAttrs());
+                items.add(item);
+            }
+        }
         DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(Criteria.where(
-                "objectId").is(id).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
-        queryOneResponse.setBaseInfo(line);
-        queryOneResponse.setDetail(detailObjectType);
-        return queryOneResponse;
+                "objectId").is(id).and("objectType").is(ClockInType.Line.getType())), DetailObjectType.class);
+        queryLineOneResponse.setBaseInfo(line);
+        queryLineOneResponse.setDetail(detailObjectType);
+        queryLineOneResponse.setItems(items);
+        return queryLineOneResponse;
     }
 
     @LogRecord(type = "线路", success = "创建线路属性成功,【{{#createLineAttributeRequest.lineAttribute}}】", bizNo = "{{#id}}", fail = "创建线路属性失败，失败原因：{{#fail}}")

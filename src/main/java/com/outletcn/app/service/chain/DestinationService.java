@@ -60,7 +60,14 @@ public interface DestinationService {
      * @param putOnRequest
      * @return
      */
-    PutOnDestinationResponse putOnDestination(PutOnRequest putOnRequest);
+    boolean putOnDestination(PutOnRequest putOnRequest);
+
+    /**
+     * 查询目的地与群、线路绑定关系
+     * @param id
+     * @return
+     */
+    PutOnDestinationResponse getRelates(Long id);
 
     /**
      * 基于名称模糊查询

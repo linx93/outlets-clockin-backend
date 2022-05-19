@@ -2,7 +2,6 @@ package com.outletcn.app.controller.chain;
 
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
-import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.model.mongo.Line;
 import com.outletcn.app.model.mongo.LineAttribute;
 import com.outletcn.app.service.chain.LineService;
@@ -116,8 +115,8 @@ public class LineController {
      */
     @ApiOperation(value = "根据ID查询线路")
     @GetMapping("findLineById")
-    public ApiResult<QueryOneResponse<Line>> findLineById(Long id) {
-        QueryOneResponse<Line> queryOneResponse = lineService.findLineById(id);
+    public ApiResult<QueryLineOneResponse> findLineById(Long id) {
+        QueryLineOneResponse queryOneResponse = lineService.findLineById(id);
         return ApiResult.thin(ErrorCode.SUCCESS, queryOneResponse);
     }
 

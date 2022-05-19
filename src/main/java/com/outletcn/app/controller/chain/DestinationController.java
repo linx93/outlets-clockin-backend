@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author tanwei
@@ -114,8 +113,18 @@ public class DestinationController {
      */
     @ApiOperation(value = "上/下架目的地")
     @PostMapping("putOnDestination")
-    public ApiResult<PutOnDestinationResponse> putOnDestination(@RequestBody @Valid PutOnRequest putOnRequest) {
-        PutOnDestinationResponse putOnDestinationResponse = destinationService.putOnDestination(putOnRequest);
+    public ApiResult<Boolean> putOnDestination(@RequestBody @Valid PutOnRequest putOnRequest) {
+        Boolean putOnResult = destinationService.putOnDestination(putOnRequest);
+        return ApiResult.thin(ErrorCode.SUCCESS, putOnResult);
+    }
+
+    /**
+     * 查询目的地与群、线路绑定关系
+     */
+    @ApiOperation(value = "查询目的地与群、线路绑定关系")
+    @GetMapping("getRelates")
+    public ApiResult<PutOnDestinationResponse> getRelates(Long id) {
+        PutOnDestinationResponse putOnDestinationResponse = destinationService.getRelates(id);
         return ApiResult.thin(ErrorCode.SUCCESS, putOnDestinationResponse);
     }
 

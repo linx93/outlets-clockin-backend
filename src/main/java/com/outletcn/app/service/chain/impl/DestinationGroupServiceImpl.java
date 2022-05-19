@@ -216,16 +216,28 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
     }
 
     @Override
-    public QueryOneResponse<DestinationGroup> findDestinationGroupById(Long id) {
-        QueryOneResponse<DestinationGroup> queryOneResponse = new QueryOneResponse<>();
+    public QueryDestinationGroupOneResponse findDestinationGroupById(Long id) {
+        QueryDestinationGroupOneResponse queryOneResponse = new QueryDestinationGroupOneResponse();
         DestinationGroup destinationGroup = mongoTemplate.findById(id, DestinationGroup.class);
         if (Objects.isNull(destinationGroup)) {
             throw new BasicException("目的地群不存在");
         }
+
+        List<Destination> destinations = new ArrayList<>();
+
+        List<DestinationGroupRelation> groupRelationList = mongoTemplate.find(Query.query(
+                Criteria.where("groupId").is(id)), DestinationGroupRelation.class);
+        for (DestinationGroupRelation destinationGroupRelation : groupRelationList) {
+            Long destinationId = destinationGroupRelation.getDestinationId();
+            Destination destination = mongoTemplate.findById(destinationId, Destination.class);
+            destinations.add(destination);
+        }
+
         DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(Criteria.where(
-                "objectId").is(id).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+                "objectId").is(id).and("objectType").is(ClockInType.DestinationGroup.getType())), DetailObjectType.class);
         queryOneResponse.setBaseInfo(destinationGroup);
         queryOneResponse.setDetail(detailObjectType);
+        queryOneResponse.setDestinations(destinations);
         return queryOneResponse;
     }
 
@@ -251,37 +263,39 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
 
     @LogRecord(type = "目的地群", success = "{{#putOnRequest.putOn==0?'上架目的地群成功':'下架目的地群成功'}}", bizNo = "{{#putOnRequest.id}}", fail = "{{#putOnRequest.putOn==0?'上架目的地群失败':'下架目的地群失败'}}，失败原因：{{#fail}}", extra = "{{#lineItems.toString()}}")
     @Override
-    public List<PutOnDestinationResponse.LineItem> putOnDestinationGroup(PutOnRequest putOnRequest) {
-
-        // 查询是否在线路中
-        List<PutOnDestinationResponse.LineItem> lineItems = new ArrayList<>();
-        if (putOnRequest.getPutOn() == 1) {
-            List<Line> lines = mongoTemplate.findAll(Line.class);
-            for (Line line : lines) {
-                List<Line.Attribute> lineElements = line.getLineElements();
-                for (Line.Attribute element : lineElements) {
-                    int type = element.getType();
-                    if (ClockInType.DestinationGroup.getType() == type) {
-                        Long id = element.getId();
-                        if (putOnRequest.getId().equals(id)) { // 存在于线路中
-                            PutOnDestinationResponse.LineItem lineItem = new PutOnDestinationResponse.LineItem();
-                            lineItem.setId(line.getId());
-                            lineItem.setLineName(line.getLineName());
-                            lineItems.add(lineItem);
-                        }
-                    }
-                }
-            }
-        }
+    public boolean putOnDestinationGroup(PutOnRequest putOnRequest) {
         DestinationGroup destinationGroup = mongoTemplate.findById(putOnRequest.getId(), DestinationGroup.class);
         destinationGroup.setPutOn(putOnRequest.getPutOn());
         try {
             mongoTemplate.save(destinationGroup);
+            return Boolean.TRUE;
         } catch (Exception ex) {
             LogRecordContext.putVariable("fail", "上下架目的地群失败: " + ex.getMessage());
             throw new BasicException("上下架目的地群失败：" + ex.getMessage());
         }
-        LogRecordContext.putVariable("lineItems", lineItems);
+    }
+
+    @Override
+    public List<PutOnDestinationResponse.LineItem> getRelates(Long destinationGroupId) {
+        // 查询是否在线路中
+        List<PutOnDestinationResponse.LineItem> lineItems = new ArrayList<>();
+
+        List<Line> lines = mongoTemplate.findAll(Line.class);
+        for (Line line : lines) {
+            List<Line.Attribute> lineElements = line.getLineElements();
+            for (Line.Attribute element : lineElements) {
+                int type = element.getType();
+                if (ClockInType.DestinationGroup.getType() == type) {
+                    Long id = element.getId();
+                    if (destinationGroupId.equals(id)) { // 存在于线路中
+                        PutOnDestinationResponse.LineItem lineItem = new PutOnDestinationResponse.LineItem();
+                        lineItem.setId(line.getId());
+                        lineItem.setLineName(line.getLineName());
+                        lineItems.add(lineItem);
+                    }
+                }
+            }
+        }
         return lineItems;
     }
 

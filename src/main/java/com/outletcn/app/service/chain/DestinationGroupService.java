@@ -40,7 +40,7 @@ public interface DestinationGroupService {
      * @param id
      * @return
      */
-    QueryOneResponse<DestinationGroup> findDestinationGroupById(Long id);
+    QueryDestinationGroupOneResponse findDestinationGroupById(Long id);
 
     /**
      * 创建目的地群属性
@@ -52,7 +52,14 @@ public interface DestinationGroupService {
      * 上/下架目的地群
      * @param putOnRequest
      */
-    List<PutOnDestinationResponse.LineItem> putOnDestinationGroup(PutOnRequest putOnRequest);
+    boolean putOnDestinationGroup(PutOnRequest putOnRequest);
+
+    /**
+     * 查询目的地群与线路绑定关系
+     * @param id
+     * @return
+     */
+    List<PutOnDestinationResponse.LineItem> getRelates(Long id);
 
     /**
      * 基于名称模糊查询

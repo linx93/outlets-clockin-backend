@@ -41,7 +41,7 @@ public interface LineService {
      * @param id
      * @return
      */
-    QueryOneResponse<Line> findLineById(Long id);
+    QueryLineOneResponse findLineById(Long id);
 
     /**
      * 创建线路属性
