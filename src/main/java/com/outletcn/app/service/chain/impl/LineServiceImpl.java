@@ -2,6 +2,8 @@ package com.outletcn.app.service.chain.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.mongodb.client.result.DeleteResult;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.common.DestinationTypeEnum;
 import com.outletcn.app.common.LineElementType;
@@ -47,6 +49,7 @@ public class LineServiceImpl implements LineService {
     DestinationGroupService destinationGroupService;
     private final LineConverter lineConverter;
 
+    @LogRecord(type = "线路", success = "创建线路成功", bizNo = "{{#id}}", fail = "创建线路失败，失败原因：{{#fail}}")
     @Override
     public boolean createLine(CreateLineRequest createLineRequest) {
 
@@ -75,9 +78,11 @@ public class LineServiceImpl implements LineService {
         line.setStickTime(epochSecond);
 
         try {
+            LogRecordContext.putVariable("id", primaryId);
             mongoTemplate.save(line);
         } catch (Exception ex) {
             log.error("保存线路失败：" + ex.getMessage());
+            LogRecordContext.putVariable("fail", "保存线路失败：" + ex.getMessage());
             throw new BasicException(ex.getMessage());
         }
 
@@ -97,17 +102,20 @@ public class LineServiceImpl implements LineService {
             } catch (Exception ex) {
                 log.error("保存线路详情失败：" + ex.getMessage());
                 mongoTemplate.remove(line);
+                LogRecordContext.putVariable("fail", "保存线路详情失败：" + ex.getMessage());
                 throw new BasicException(ex.getMessage());
             }
         }
         return Boolean.TRUE;
     }
 
+    @LogRecord(type = "线路", success = "修改线路成功", bizNo = "{{#id}}", fail = "修改线路失败，失败原因：{{#fail}}")
     @Override
     public boolean modifyLine(CreateLineRequest createLineRequest, Long id) {
 
         Line line = mongoTemplate.findById(id, Line.class);
         if (Objects.isNull(line)) {
+            LogRecordContext.putVariable("fail", "更新失败：线路不存在：");
             throw new BasicException("更新失败：线路不存在");
         }
         Line lineBackup = line;
@@ -131,6 +139,7 @@ public class LineServiceImpl implements LineService {
             mongoTemplate.save(line);
         } catch (Exception ex) {
             log.error("更新线路失败：" + ex.getMessage());
+            LogRecordContext.putVariable("fail", "更新线路失败：" + ex.getMessage());
             throw new BasicException(ex.getMessage());
         }
 
@@ -147,16 +156,19 @@ public class LineServiceImpl implements LineService {
             } catch (Exception ex) {
                 log.error("更新线路详情失败：" + ex.getMessage());
                 mongoTemplate.save(lineBackup);
+                LogRecordContext.putVariable("fail", "更新线路详情失败：" + ex.getMessage());
                 throw new BasicException("更新线路详情失败：" + ex.getMessage());
             }
         }
         return Boolean.TRUE;
     }
 
+    @LogRecord(type = "线路", success = "删除线路成功", bizNo = "{{#id}}", fail = "删除线路失败，失败原因：{{#fail}}")
     @Override
     public boolean deleteLine(Long id) {
         Line line = mongoTemplate.findById(id, Line.class);
         if (Objects.isNull(line)) {
+            LogRecordContext.putVariable("fail", "删除失败：线路不存在：");
             throw new BasicException("线路不存在");
         }
         try {
@@ -165,6 +177,7 @@ public class LineServiceImpl implements LineService {
                 return Boolean.TRUE;
             }
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "删除路线失败：" + ex.getMessage());
             throw new BasicException("删除路线失败：" + ex.getMessage());
         }
         return Boolean.FALSE;
@@ -184,6 +197,7 @@ public class LineServiceImpl implements LineService {
         return queryOneResponse;
     }
 
+    @LogRecord(type = "线路", success = "创建线路属性成功,【{{#createLineAttributeRequest.lineAttribute}}】", bizNo = "{{#id}}", fail = "创建线路属性失败，失败原因：{{#fail}}")
     @Override
     public boolean createLineAttribute(CreateLineAttributeRequest createLineAttributeRequest) {
         LineAttribute lineAttribute = new LineAttribute();
@@ -193,14 +207,17 @@ public class LineServiceImpl implements LineService {
         lineAttribute.setCreateTime(time);
         lineAttribute.setUpdateTime(time);
         try {
+            LogRecordContext.putVariable("id", lineAttribute.getId());
             mongoTemplate.save(lineAttribute);
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "创建线路属性失败：" + ex.getMessage());
             throw new BasicException("保存线路属性失败：" + ex.getMessage());
         }
         return Boolean.TRUE;
     }
 
 
+    @LogRecord(type = "线路", success = "{{#putOnRequest.putOn==0?'上架线路成功':'下架线路成功'}}", bizNo = "{{#putOnRequest.id}}", fail = "上下加架线路属性失败，失败原因：{{#fail}}")
     @Override
     public boolean putOnLine(PutOnRequest putOnRequest) {
         Line line = mongoTemplate.findById(putOnRequest.getId(), Line.class);
@@ -209,10 +226,12 @@ public class LineServiceImpl implements LineService {
             mongoTemplate.save(line);
             return Boolean.TRUE;
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "置顶线路失败：" + ex.getMessage());
             throw new BasicException("置顶线路失败：" + ex.getMessage());
         }
     }
 
+    @LogRecord(type = "线路", success = "{{#stickRequest.stick==0?'置顶线路成功':'取消置顶线路成功'}}", bizNo = "{{#stickRequest.id}}", fail = "{{#stickRequest.stick==0?'置顶线路失败':'取消置顶线路失败'}}，失败原因：{{#fail}}")
     @Override
     public boolean stickLine(StickRequest stickRequest) {
         Line line = mongoTemplate.findById(stickRequest.getId(), Line.class);
@@ -222,6 +241,7 @@ public class LineServiceImpl implements LineService {
             mongoTemplate.save(line);
             return Boolean.TRUE;
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "置顶线路失败：" + ex.getMessage());
             throw new BasicException("置顶线路失败：" + ex.getMessage());
         }
     }

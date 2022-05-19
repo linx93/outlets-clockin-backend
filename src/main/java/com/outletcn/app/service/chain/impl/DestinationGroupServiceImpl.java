@@ -2,6 +2,8 @@ package com.outletcn.app.service.chain.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.mongodb.client.result.DeleteResult;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.common.DestinationTypeEnum;
 import com.outletcn.app.common.PageInfo;
@@ -41,6 +43,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
 
     DestinationGroupMongoRepository destinationGroupMongoRepository;
 
+    @LogRecord(type = "目的地", success = "创建目的地群成功了,目的地名称【{{#createDestinationGroupRequest.baseInfo.groupName}}】,地址为【{{#createDestinationGroupRequest.baseInfo.groupMainAddress}}】,属性【{{#createDestinationGroupRequest.baseInfo.groupAttrs}}】", bizNo = "{{#key}}", fail = "创建目的地群失败，失败原因：{{#fail}}")
     @Override
     public boolean createDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest) {
 
@@ -65,9 +68,11 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         destinationGroup.setCreateTime(epochSecond);
         destinationGroup.setUpdateTime(epochSecond);
         try {
+            LogRecordContext.putVariable("key", primaryId);
             mongoTemplate.save(destinationGroup);
         } catch (Exception ex) {
             log.error("保存目的地群失败：" + ex.getMessage());
+            LogRecordContext.putVariable("fail", "保存目的地群失败: " + ex.getMessage());
             throw new BasicException("保存目的地群失败：" + ex.getMessage());
         }
 
@@ -87,6 +92,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
             } catch (Exception ex) {
                 log.error("保存目的地群详情失败：" + ex.getMessage());
                 mongoTemplate.remove(destinationGroup);
+                LogRecordContext.putVariable("fail", "保存目的地群详情失败: " + ex.getMessage());
                 throw new BasicException("保存目的地群详情失败：" + ex.getMessage());
             }
         }
@@ -105,6 +111,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
             } catch (Exception ex) {
                 mongoTemplate.remove(destinationGroup);
                 mongoTemplate.remove(detailObjectType);
+                LogRecordContext.putVariable("fail", "保存目的地群关联失败: " + ex.getMessage());
                 throw new BasicException("保存目的地群关联失败：" + ex.getMessage());
 
             }
@@ -112,6 +119,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         return Boolean.TRUE;
     }
 
+    @LogRecord(type = "目的地群", success = "删除目的地群成功了", bizNo = "{{#id}}", fail = "删除目的地群失败，失败原因：{{#fail}}")
     @Override
     public boolean deleteDestinationGroup(Long id) {
         // 判断是否在线路
@@ -135,6 +143,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
             for (Line line : hasLines) {
                 lineNames.add(line.getLineName());
             }
+            LogRecordContext.putVariable("fail", "删除失败，目的地群存在于线路中：" + lineNames);
             throw new BasicException("删除失败，目的地群存在于线路中：" + lineNames);
         }
 
@@ -155,16 +164,19 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
                 }
             }
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "删除目的地群失败: " + ex.getMessage());
             throw new BasicException("删除目的地群失败：" + ex.getMessage());
         }
         return Boolean.FALSE;
     }
 
+    @LogRecord(type = "目的地群", success = "修改目的地群成功了", bizNo = "{{#id}}", fail = "删除目的地群失败，失败原因：{{#fail}}")
     @Override
     public boolean modifyDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest, Long id) {
 
         DestinationGroup destinationGroup = mongoTemplate.findById(id, DestinationGroup.class);
         if (Objects.isNull(destinationGroup)) {
+            LogRecordContext.putVariable("fail", "修改目的地群失败，目的地群不存在");
             throw new BasicException("更新失败：目的地群不存在");
         }
         DestinationGroup destinationGroupBackup = destinationGroup;
@@ -196,6 +208,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
             } catch (Exception ex) {
                 log.error("更新目的地群详情失败：" + ex.getMessage());
                 mongoTemplate.save(destinationGroupBackup);
+                LogRecordContext.putVariable("fail", "更新目的地群详情失败: " + ex.getMessage());
                 throw new BasicException("更新目的地群详情失败：" + ex.getMessage());
             }
         }
@@ -216,6 +229,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         return queryOneResponse;
     }
 
+    @LogRecord(type = "目的地群", success = "创建目的地群属性成功了,属性【{{#createDestinationGroupAttributeRequest.destinationGroupAttribute}}】", bizNo = "{{#id}}", fail = "创建目的地群属性失败，失败原因：{{#fail}}")
     @Override
     public boolean createDestinationGroupAttribute(CreateDestinationGroupAttributeRequest createDestinationGroupAttributeRequest) {
 
@@ -226,13 +240,16 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         destinationGroupAttribute.setCreateTime(time);
         destinationGroupAttribute.setUpdateTime(time);
         try {
+            LogRecordContext.putVariable("id", destinationGroupAttribute.getId());
             mongoTemplate.save(destinationGroupAttribute);
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "创建目的地群属性失败: " + ex.getMessage());
             throw new BasicException("创建目的地群属性失败：" + ex.getMessage());
         }
         return Boolean.TRUE;
     }
 
+    @LogRecord(type = "目的地群", success = "{{#putOnRequest.putOn==0?'上架目的地群成功':'下架目的地群成功'}}", bizNo = "{{#putOnRequest.id}}", fail = "{{#putOnRequest.putOn==0?'上架目的地群失败':'下架目的地群失败'}}，失败原因：{{#fail}}", extra = "{{#lineItems.toString()}}")
     @Override
     public List<PutOnDestinationResponse.LineItem> putOnDestinationGroup(PutOnRequest putOnRequest) {
 
@@ -261,15 +278,17 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         try {
             mongoTemplate.save(destinationGroup);
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "上下架目的地群失败: " + ex.getMessage());
             throw new BasicException("上下架目的地群失败：" + ex.getMessage());
         }
+        LogRecordContext.putVariable("lineItems", lineItems);
         return lineItems;
     }
 
     @Override
     public List<DestinationGroup> findDestinationGroupByName(String name) {
         Query query = new Query();
-        Pattern pattern = Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^.*" + name + ".*$", Pattern.CASE_INSENSITIVE);
         query.addCriteria(Criteria.where("groupName").regex(pattern));
         List<DestinationGroup> destinationGroups = mongoTemplate.find(query, DestinationGroup.class);
         return destinationGroups;
@@ -327,7 +346,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         pageInfo.setCurrent(current);
 
         Query query = new Query();
-        Pattern pattern = Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^.*" + name + ".*$", Pattern.CASE_INSENSITIVE);
         if (!StringUtils.isBlank(name)) {
             query.addCriteria(Criteria.where("groupName").regex(pattern));
         }

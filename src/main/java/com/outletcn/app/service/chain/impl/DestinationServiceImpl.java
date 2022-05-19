@@ -2,9 +2,10 @@ package com.outletcn.app.service.chain.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.mongodb.client.result.DeleteResult;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.common.PageInfo;
-import com.outletcn.app.controller.chain.DestinationController;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.*;
@@ -42,6 +43,7 @@ public class DestinationServiceImpl implements DestinationService {
 
     DestinationMongoRepository destinationMongoRepository;
 
+    @LogRecord(type = "目的地", success = "创建目的地成功了,目的地名称【{{#createDestinationRequest.baseInfo.destinationName}}】,地址为【{{#createDestinationRequest.baseInfo.address}}】,属性【{{#createDestinationRequest.baseInfo.destinationAttrs}}】,类型【{{#createDestinationRequest.baseInfo.destinationType}}】", bizNo = "{{#key}}", fail = "创建目的地失败，失败原因：{{#fail}}")
     @Override
     public boolean createDestination(CreateDestinationRequest createDestinationRequest) {
 
@@ -73,9 +75,11 @@ public class DestinationServiceImpl implements DestinationService {
             destination.setCreateTime(time);
             destination.setUpdateTime(time);
             try {
+                LogRecordContext.putVariable("key", primaryId);
                 mongoTemplate.save(destination);
             } catch (Exception ex) {
                 log.error("保存目的地失败：" + ex.getMessage());
+                LogRecordContext.putVariable("fail", "保存目的地失败: " + ex.getMessage());
                 throw new BasicException(ex.getMessage());
             }
 
@@ -95,16 +99,19 @@ public class DestinationServiceImpl implements DestinationService {
                 } catch (Exception ex) {
                     log.error("保存目的地详情失败：" + ex.getMessage());
                     mongoTemplate.remove(destination);
+                    LogRecordContext.putVariable("fail", "保存目的地详情失败: " + ex.getMessage());
                     throw new BasicException(ex.getMessage());
                 }
             }
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "保存目的地详情失败: " + ex.getMessage());
             throw new BasicException("保存目的地详情失败：" + ex.getMessage());
         }
         return Boolean.TRUE;
     }
 
     @Override
+    @LogRecord(type = "目的地", success = "创建目的地类型成功了,目的地类型【{{#createDestinationTypeRequest.type}}】", bizNo = "{{#key}}", fail = "创建目的地类型失败，失败原因：{{#fail}}")
     public boolean createDestinationType(CreateDestinationTypeRequest createDestinationTypeRequest) {
         DestinationType destinationType = new DestinationType();
         destinationType.setId(sequence.nextId());
@@ -114,14 +121,17 @@ public class DestinationServiceImpl implements DestinationService {
         destinationType.setCreateTime(time);
         destinationType.setUpdateTime(time);
         try {
+            LogRecordContext.putVariable("key", destinationType.getId());
             mongoTemplate.save(destinationType);
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "创建目的地类型错误: " + ex.getMessage());
             throw new BasicException("创建目的地类型错误：" + ex.getMessage());
         }
         return Boolean.TRUE;
 
     }
 
+    @LogRecord(type = "目的地", success = "创建目的地属性成功了,目的地属性【{{#createDestinationAttributeRequest.destinationAttribute}}】", bizNo = "{{#key}}", fail = "创建目的地属性失败，失败原因：{{#fail}}")
     @Override
     public boolean createDestinationAttribute(CreateDestinationAttributeRequest createDestinationAttributeRequest) {
 
@@ -132,13 +142,16 @@ public class DestinationServiceImpl implements DestinationService {
         destinationAttribute.setCreateTime(time);
         destinationAttribute.setUpdateTime(time);
         try {
+            LogRecordContext.putVariable("key", destinationAttribute.getId());
             mongoTemplate.save(destinationAttribute);
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "创建目的地属性失败: " + ex.getMessage());
             throw new BasicException("创建目的地属性失败：" + ex.getMessage());
         }
         return Boolean.TRUE;
     }
 
+    @LogRecord(type = "目的地", success = "删除目的地成功了", bizNo = "{{#id}}", fail = "删除目的地失败，失败原因：{{#fail}}")
     @Override
     public boolean deleteDestination(Long id) {
         try {
@@ -161,6 +174,7 @@ public class DestinationServiceImpl implements DestinationService {
                     });
                 }
                 log.error("删除失败，目的地存在于目的地群中：" + groupNames);
+                LogRecordContext.putVariable("fail", "删除失败，目的地存在于目的地群中：" + groupNames);
                 throw new BasicException("目的地存在于目的地群中：" + groupNames);
             }
 
@@ -185,6 +199,7 @@ public class DestinationServiceImpl implements DestinationService {
                 for (Line line : hasLines) {
                     lineNames.add(line.getLineName());
                 }
+                LogRecordContext.putVariable("fail", "删除失败，目的地存在于线路中：" + lineNames);
                 throw new BasicException("目的地存在于线路中：" + lineNames);
             }
 
@@ -197,18 +212,20 @@ public class DestinationServiceImpl implements DestinationService {
                 return Boolean.TRUE;
             }
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "删除失败：" + ex.getMessage());
             throw new BasicException(ex.getMessage());
         }
         return Boolean.FALSE;
     }
 
     @Override
+    @LogRecord(type = "目的地", success = "修改目的地成功了", bizNo = "{{#id}}", fail = "修改目的地失败，失败原因：{{#fail}}")
     public boolean modifyDestination(CreateDestinationRequest createDestinationRequest, Long id) {
         Destination destination = mongoTemplate.findById(id, Destination.class);
         if (Objects.isNull(destination)) {
+            LogRecordContext.putVariable("fail", "修改失败，目的地不存在");
             throw new BasicException("更新失败：目的地不存在");
         }
-
         Destination destinationBackup = destination;
 
         CreateDestinationRequest.BaseInfo baseInfo = createDestinationRequest.getBaseInfo();
@@ -233,6 +250,7 @@ public class DestinationServiceImpl implements DestinationService {
             mongoTemplate.save(destination);
         } catch (Exception ex) {
             log.error("更新目的地失败：" + ex.getMessage());
+            LogRecordContext.putVariable("fail", "更新目的地失败：" + ex.getMessage());
             throw new BasicException("更新目的地失败：" + ex.getMessage());
         }
 
@@ -249,6 +267,7 @@ public class DestinationServiceImpl implements DestinationService {
             } catch (Exception ex) {
                 log.error("更新目的地详情失败：" + ex.getMessage());
                 mongoTemplate.save(destinationBackup);
+                LogRecordContext.putVariable("fail", "更新目的地详情失败：" + ex.getMessage());
                 throw new BasicException("更新目的地详情失败：" + ex.getMessage());
             }
         }
@@ -269,6 +288,7 @@ public class DestinationServiceImpl implements DestinationService {
         return queryOneResponse;
     }
 
+    @LogRecord(type = "目的地", success = "{{#putOnRequest.putOn==0?'上架目的地成功':'下架目的地成功'}}", bizNo = "{{#putOnRequest.id}}", fail = "上架目的地失败，失败原因：{{#fail}}")
     @Override
     public PutOnDestinationResponse putOnDestination(PutOnRequest putOnRequest) {
 
@@ -330,6 +350,7 @@ public class DestinationServiceImpl implements DestinationService {
         try {
             mongoTemplate.save(destination);
         } catch (Exception ex) {
+            LogRecordContext.putVariable("fail", "上下架目的地失败：" + ex.getMessage());
             throw new BasicException("上下架目的地失败：" + ex.getMessage());
         }
         return putOnDestinationResponse;

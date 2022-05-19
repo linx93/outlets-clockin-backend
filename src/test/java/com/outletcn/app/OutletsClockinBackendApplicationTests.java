@@ -48,7 +48,7 @@ class OutletsClockinBackendApplicationTests {
 
         CreateDestinationTypeRequest createDestinationTypeRequest = new CreateDestinationTypeRequest();
         createDestinationTypeRequest.setType("打卡点");
-        createDestinationTypeRequest.setScore(20);
+//        createDestinationTypeRequest.setScore(20);
         service.createDestinationType(createDestinationTypeRequest);
     }
 
