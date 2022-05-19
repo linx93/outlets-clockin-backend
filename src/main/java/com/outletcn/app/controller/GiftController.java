@@ -169,7 +169,7 @@ public class GiftController {
         return ApiResult.ok(giftService.getGiftBagById(id));
     }
 
-    @GetMapping("/updateGiftBagState")
+    @PostMapping("/updateGiftBagState")
     @ApiOperation(value = "礼品包-根据id修改上架状态")
     public ApiResult updateGiftBagState(@RequestBody GiftBagStateUpdateRequest request){
         giftService.changeGiftBagState(request);

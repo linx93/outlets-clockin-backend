@@ -11,5 +11,5 @@ import java.util.List;
 public class GiftBagInfoResponse {
     private GiftBag giftBag;
     private List<Destination> destinations;
-    private List<JSONObject> giftInfo;
+    private List<GiftInfoForGiftBagDetailResponse> giftInfo;
 }

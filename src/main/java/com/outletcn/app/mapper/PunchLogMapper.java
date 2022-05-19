@@ -103,5 +103,19 @@ public interface PunchLogMapper extends BaseMapper<PunchLog> {
             "WHERE create_time BETWEEN #{begin} AND #{end}")
     JSONObject countGiftVoucher(@Param("begin") Long begin, @Param("end") Long end);
 
-    List<JSONObject> heatMap();
+    //热力图
+    @Select("SELECT " +
+            "destination_id, " +
+            "destination_name, " +
+            "punch_longitude, " +
+            "punch_latitude, " +
+            "COUNT( " +
+            "DISTINCT ( user_id )) AS count  " +
+            "FROM " +
+            "punch_log  " +
+            "WHERE " +
+            "create_time BETWEEN #{begin} AND #{end} " +
+            "GROUP BY " +
+            "destination_id")
+    List<JSONObject> heatMap(@Param("begin") Long begin, @Param("end") Long end);
 }

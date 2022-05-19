@@ -343,7 +343,6 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setExchangeLimit(ordinaryGiftBagCreator.getExchangeLimit());
         giftBag.setImage(ordinaryGiftBagCreator.getImage());
         giftBag.setRecommendImage(ordinaryGiftBagCreator.getRecommendImage());
-        giftBag.setPutOn(ordinaryGiftBagCreator.getPutOn());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
@@ -378,7 +377,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setExchangeLimit(ordinaryGiftBagCreator.getExchangeLimit());
         giftBag.setImage(ordinaryGiftBagCreator.getImage());
         giftBag.setRecommendImage(ordinaryGiftBagCreator.getRecommendImage());
-        giftBag.setPutOn(ordinaryGiftBagCreator.getPutOn());
+
 
         long time = Instant.now().getEpochSecond();
         giftBag.setUpdateTime(time);
@@ -455,7 +454,7 @@ public class GiftServiceImpl implements GiftService {
 
         Aggregation agg = Aggregation.newAggregation(lookup, match, projection, Aggregation.unwind("giftName"));
         try {
-            AggregationResults<JSONObject> aggregation = mongoTemplate.aggregate(agg, "gift_bag_relation", JSONObject.class);
+            AggregationResults<GiftInfoForGiftBagDetailResponse> aggregation = mongoTemplate.aggregate(agg, "gift_bag_relation", GiftInfoForGiftBagDetailResponse.class);
             giftBagInfoResponse.setGiftInfo(aggregation.getMappedResults());
         } catch (Exception e) {
             e.printStackTrace();
