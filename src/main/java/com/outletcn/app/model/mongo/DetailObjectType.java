@@ -46,11 +46,6 @@ public class DetailObjectType implements Serializable {
      */
     private List<Map<String, Object>> descriptions;
 
-    /**
-     * 摘要
-     */
-    private String summary;
-
 
     /**
      * 创建时间

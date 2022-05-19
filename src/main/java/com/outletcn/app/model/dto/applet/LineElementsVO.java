@@ -1,7 +1,6 @@
 package com.outletcn.app.model.dto.applet;
 
-import com.outletcn.app.model.mongo.Destination;
-import com.outletcn.app.model.mongo.DestinationGroup;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,6 +16,9 @@ import java.util.List;
 @Data
 @ApiModel(value="线路下的目的地和目的地群", description="线路下的目的地和目的地群")
 public class LineElementsVO {
+    @ApiModelProperty(value = "路线详情")
+    private  LineDetailsVO lineDetails;
+
     @ApiModelProperty(value = "目的地的集合")
     private List<DestinationVO> destination;
 

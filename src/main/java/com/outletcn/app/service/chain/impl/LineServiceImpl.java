@@ -24,6 +24,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.util.*;
@@ -377,6 +378,9 @@ public class LineServiceImpl implements LineService {
         if (byId == null) {
             throw new BasicException("线路不存在");
         }
+        DetailObjectType detailObjectTypes = mongoTemplate.findOne(Query.query(Criteria.where("objectId").is(byId.getId()).and("objectType").is(ClockInType.Line.getType())), DetailObjectType.class);
+        LineDetailsVO lineDetailsVO = lineConverter.toLineDetailsVO(detailObjectTypes, byId);
+        lineElementsVO.setLineDetails(lineDetailsVO);
         List<DestinationVO> destinations = new ArrayList<>(8);
         List<DestinationGroupVO> destinationGroups = new ArrayList<>(8);
         List<Line.Attribute> lineElements = byId.getLineElements();
@@ -391,14 +395,30 @@ public class LineServiceImpl implements LineService {
                 Destination destination = mongoTemplate.findById(id_, Destination.class);
                 //过滤上下架
                 if (destination != null && destination.getPutOn() != null && destination.getPutOn() == 0) {
-                    destinations.add(lineConverter.toDestinationVO(destination));
+                    DestinationVO destinationVO = lineConverter.toDestinationVO(destination);
+                    DetailObjectType one = mongoTemplate.findOne(Query.query(Criteria.where("objectId").is(byId.getId()).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+                    DestinationDetailsVO destinationDetailsVO = lineConverter.toDestinationDetailsVO(one, destination);
+                    destinationVO.setDestinationDetails(destinationDetailsVO);
+                    destinations.add(destinationVO);
                 }
             } else if (LineElementType.DESTINATION_GROUP.getCode() == item.getType()) {
                 DestinationGroup destinationGroup = mongoTemplate.findById(id_, DestinationGroup.class);
                 List<Long> destinationIds = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id_)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
                 List<Destination> destinationList = mongoTemplate.find(Query.query(Criteria.where("id").in(destinationIds).and("putOn").is(0)), Destination.class);
+                List<DestinationVO> destinationVOS = lineConverter.toDestinationVOList(destinationList);
+                if (!destinationVOS.isEmpty()) {
+                    destinationVOS.forEach(destinationVO -> {
+                        DetailObjectType one = mongoTemplate.findOne(Query.query(Criteria.where("objectId").is(destinationVO.getId()).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+                        DestinationDetailsVO destinationDetailsVO = lineConverter.toDestinationDetailsVO(one, destinationVO);
+                        destinationVO.setDestinationDetails(destinationDetailsVO);
+                    });
+
+                }
                 DestinationGroupVO destinationGroupVO = lineConverter.toDestinationGroupVO(destinationGroup);
-                destinationGroupVO.setDestinationList(lineConverter.toDestinationVOList(destinationList));
+                destinationGroupVO.setDestinationList(destinationVOS);
+                DetailObjectType one = mongoTemplate.findOne(Query.query(Criteria.where("objectId").is(destinationGroup.getId()).and("objectType").is(ClockInType.DestinationGroup.getType())), DetailObjectType.class);
+                DestinationGroupDetailsVO destinationGroupDetailsVO = lineConverter.toDestinationGroupDetailsVO(one, destinationGroup);
+                destinationGroupVO.setDestinationGroupDetails(destinationGroupDetailsVO);
                 destinationGroups.add(destinationGroupVO);
             }
         });
@@ -440,8 +460,8 @@ public class LineServiceImpl implements LineService {
         }
         //查询上架的路线
         List<Line> lines = mongoTemplate.find(Query.query(Criteria.where("putOn").is(0)), Line.class);
-        if (StringUtils.isNotBlank(lineListRequest.getDestinationName())) {
-            lines = lines.stream().filter(item -> item.getLineName().contains(lineListRequest.getDestinationName())).collect(Collectors.toList());
+        if (StringUtils.isNotBlank(lineListRequest.getKeywords())) {
+            lines = lines.stream().filter(item -> item.getLineName().contains(lineListRequest.getKeywords())).collect(Collectors.toList());
         }
         if (StringUtils.isNotBlank(lineListRequest.getLineTab())) {
             lines = lines.stream().filter(item -> {
@@ -537,5 +557,52 @@ public class LineServiceImpl implements LineService {
             destinationVOS = destinationVOS.stream().filter(item -> Objects.equals(item.getDestinationType(), nearbyRequest.getDestinationType())).collect(Collectors.toList());
         }
         return destinationVOS;
+    }
+
+    @Override
+    public DestinationVO destinationDetails(Long id) {
+        Destination destination = mongoTemplate.findById(id, Destination.class);
+        DestinationVO destinationVO = new DestinationVO();
+        //过滤上下架
+        if (destination != null && destination.getPutOn() != null && destination.getPutOn() == 0) {
+            destinationVO = lineConverter.toDestinationVO(destination);
+            DetailObjectType one = mongoTemplate.findOne(Query.query(Criteria.where("objectId").is(destination.getId()).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+            DestinationDetailsVO destinationDetailsVO = lineConverter.toDestinationDetailsVO(one, destination);
+            destinationVO.setDestinationDetails(destinationDetailsVO);
+
+        }
+        return destinationVO;
+    }
+
+    @Override
+    public DestinationGroupVO destinationGroupDetails(Long id) {
+        /**
+         * 查询目的地群
+         */
+        DestinationGroup destinationGroup = mongoTemplate.findById(id, DestinationGroup.class);
+        /**
+         * 目的地群包含的目的地id集合
+         */
+        List<Long> destinationIds = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
+        /**
+         * 目的地群包含的目的地集合
+         */
+        List<Destination> destinationList = mongoTemplate.find(Query.query(Criteria.where("id").in(destinationIds).and("putOn").is(0)), Destination.class);
+        List<DestinationVO> destinationVOS = lineConverter.toDestinationVOList(destinationList);
+        if (!destinationVOS.isEmpty()) {
+            destinationVOS.forEach(destinationVO -> {
+                DetailObjectType one = mongoTemplate.findOne(Query.query(Criteria.where("objectId").is(destinationVO.getId()).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+                DestinationDetailsVO destinationDetailsVO = lineConverter.toDestinationDetailsVO(one, destinationVO);
+                destinationVO.setDestinationDetails(destinationDetailsVO);
+            });
+
+        }
+        DestinationGroupVO destinationGroupVO = lineConverter.toDestinationGroupVO(destinationGroup);
+        destinationGroupVO.setDestinationList(destinationVOS);
+        Assert.notNull(destinationVOS, "目的地群不存在");
+        DetailObjectType one = mongoTemplate.findOne(Query.query(Criteria.where("objectId").is(destinationGroup.getId()).and("objectType").is(ClockInType.DestinationGroup.getType())), DetailObjectType.class);
+        DestinationGroupDetailsVO destinationGroupDetailsVO = lineConverter.toDestinationGroupDetailsVO(one, destinationGroup);
+        destinationGroupVO.setDestinationGroupDetails(destinationGroupDetailsVO);
+        return destinationGroupVO;
     }
 }

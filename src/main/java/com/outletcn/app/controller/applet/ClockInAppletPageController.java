@@ -34,6 +34,20 @@ public class ClockInAppletPageController {
         return ApiResult.ok(apiResult);
     }
 
+    @ApiOperation(value = "通过目的地id查询目的地详情")
+    @GetMapping(value = "/destination-details")
+    public ApiResult<DestinationVO> destinationDetails(@ApiParam(value = "目的地id", name = "id") @RequestParam(value = "id") Long id) {
+        DestinationVO apiResult = lineService.destinationDetails(id);
+        return ApiResult.ok(apiResult);
+    }
+
+    @ApiOperation(value = "通过目的地群id查询目的地群详情")
+    @GetMapping(value = "/destination-group-details")
+    public ApiResult<DestinationGroupVO> destinationGroupDetails(@ApiParam(value = "目的地群id", name = "id") @RequestParam(value = "id") Long id) {
+        DestinationGroupVO apiResult = lineService.destinationGroupDetails(id);
+        return ApiResult.ok(apiResult);
+    }
+
     @ApiOperation(value = "通过线路id查询线路下所有目的地的经纬度，给首页地图渲染使用")
     @GetMapping(value = "/line-elements-map")
     public ApiResult<List<DestinationMapVO>> lineElementsMapById(@ApiParam(value = "路线id", name = "id") @RequestParam(value = "id") Long id) {

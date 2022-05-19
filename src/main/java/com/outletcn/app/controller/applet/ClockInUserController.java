@@ -4,16 +4,20 @@ package com.outletcn.app.controller.applet;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.LoginResponse;
 import com.outletcn.app.model.dto.applet.AppletLoginRequest;
+import com.outletcn.app.model.dto.applet.ClockInRequest;
+import com.outletcn.app.model.dto.applet.MyExchangeRecordResponse;
 import com.outletcn.app.model.dto.applet.UpdateUserRequest;
 import com.outletcn.app.service.AuthService;
 import com.outletcn.app.service.ClockInUserService;
 import com.outletcn.app.service.PunchLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -54,5 +58,20 @@ public class ClockInUserController {
         Long score = punchLogService.myScore();
         return ApiResult.ok(String.valueOf(score));
     }
+
+    @ApiOperation(value = "我的兑换记录")
+    @GetMapping(value = "/my-exchange-record")
+    public ApiResult<List<MyExchangeRecordResponse>> myExchangeRecord(@ApiParam(value = "0:未兑换，1:已兑换", name = "state") @RequestParam(value = "state") Integer state) {
+        List<MyExchangeRecordResponse> exchangeRecordResponses = punchLogService.myExchangeRecord(state);
+        return ApiResult.ok(exchangeRecordResponses);
+    }
+
+    @ApiOperation(value = "用户打卡")
+    @GetMapping(value = "/execute")
+    public ApiResult<Boolean> executeClockIn(@RequestBody @Valid ClockInRequest clockInRequest) {
+        Boolean result = punchLogService.executeClockIn(clockInRequest);
+        return ApiResult.ok(result);
+    }
+
 }
 

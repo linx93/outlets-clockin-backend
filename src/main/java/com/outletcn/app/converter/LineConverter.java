@@ -1,13 +1,14 @@
 package com.outletcn.app.converter;
 
-import com.outletcn.app.model.dto.applet.DestinationGroupVO;
-import com.outletcn.app.model.dto.applet.DestinationMapVO;
-import com.outletcn.app.model.dto.applet.DestinationVO;
-import com.outletcn.app.model.dto.applet.LineVO;
+import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.DestinationGroup;
+import com.outletcn.app.model.mongo.DetailObjectType;
 import com.outletcn.app.model.mongo.Line;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -32,5 +33,13 @@ public interface LineConverter {
     List<DestinationVO> toDestinationVOList(List<Destination> destination);
 
     DestinationGroupVO toDestinationGroupVO(DestinationGroup destinationGroup);
+
+    LineDetailsVO toLineDetailsVO(DetailObjectType detailObjectTypes, Line line);
+
+    DestinationDetailsVO toDestinationDetailsVO(DetailObjectType detailObjectTypes, Destination destination);
+
+    DestinationDetailsVO toDestinationDetailsVO(DetailObjectType detailObjectTypes, DestinationVO destinationVO);
+
+    DestinationGroupDetailsVO toDestinationGroupDetailsVO(DetailObjectType detailObjectTypes, DestinationGroup destinationGroup);
 
 }

@@ -88,12 +88,17 @@ public class DestinationGroupVO {
      * 创建时间
      */
     @ApiModelProperty(value = "创建时间")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createTime;
 
     /**
      * 更新时间
      */
     @ApiModelProperty(value = "更新时间")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateTime;
 
+
+    @ApiModelProperty(value = "目的地群详情信息")
+    private DestinationGroupDetailsVO destinationGroupDetails;
 }

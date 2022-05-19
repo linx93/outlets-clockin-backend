@@ -13,7 +13,7 @@ import lombok.Data;
 public class LineListRequest {
 
     @ApiModelProperty(value = "目的地名称")
-    private String destinationName;
+    private String keywords;
 
     @ApiModelProperty(value = "路线选项卡的字符串")
     private String lineTab;
