@@ -317,7 +317,7 @@ public class GiftServiceImpl implements GiftService {
 
         giftBag.setPlaceCount(luxuryGiftBagCreator.getPlaceCount());
         giftBag.setPlaceElement(luxuryGiftBagCreator.getPlaceElement());
-        giftBag.setPutOn(luxuryGiftBagCreator.getPutOn());
+
 
         long time = Instant.now().getEpochSecond();
         giftBag.setUpdateTime(time);
