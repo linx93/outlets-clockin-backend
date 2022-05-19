@@ -101,4 +101,6 @@ public interface PunchLogMapper extends BaseMapper<PunchLog> {
             "FROM gift_voucher " +
             "WHERE create_time BETWEEN #{begin} AND #{end}")
     JSONObject countGiftVoucher(@Param("begin") Long begin, @Param("end") Long end);
+
+
 }

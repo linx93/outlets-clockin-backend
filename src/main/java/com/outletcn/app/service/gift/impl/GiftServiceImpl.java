@@ -134,6 +134,9 @@ public class GiftServiceImpl implements GiftService {
         Criteria criteria = Criteria.where("id").is(id);
         query.addCriteria(criteria);
         Gift gift = mongoTemplate.findOne(query, Gift.class);
+        if(Objects.isNull(gift)){
+            throw new BasicException("记录不存在");
+        }
 
         GiftInfoResponse giftInfo = new GiftInfoResponse();
         giftInfo.setId(sequence.nextId());
@@ -158,9 +161,6 @@ public class GiftServiceImpl implements GiftService {
         giftInfo.setCreateTime(gift.getCreateTime());
         giftInfo.setUpdateTime(gift.getUpdateTime());
 
-        if (Objects.isNull(giftInfo)) {
-            throw new BasicException("记录不存在");
-        }
         return giftInfo;
     }
 
@@ -407,7 +407,7 @@ public class GiftServiceImpl implements GiftService {
                 throw new BasicException("不存在打卡点");
             }
             List<Destination> destinations = new ArrayList<>();
-            for (Integer destinationId : giftBag.getPlaceElement()) {
+            for (Long destinationId : giftBag.getPlaceElement()) {
                 Destination destination = mongoTemplate.findOne(Query.query(Criteria.where("id").is(destinationId)), Destination.class);
                 if (Objects.isNull(destination)) {
                     throw new BasicException("目的地记录不存在");

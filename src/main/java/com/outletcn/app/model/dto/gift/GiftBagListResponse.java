@@ -32,7 +32,7 @@ public class GiftBagListResponse {
     /**
      * 礼品包有效期
      */
-    private String validDate;
+    private Long validDate;
 
 
     /**

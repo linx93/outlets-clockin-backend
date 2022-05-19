@@ -1,5 +1,7 @@
 package com.outletcn.app.model.mongo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,6 +19,7 @@ public class GiftBag implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -39,7 +42,7 @@ public class GiftBag implements Serializable {
     /**
      * 礼品包有效期
      */
-    private String validDate;
+    private Long validDate;
 
     /**
      * 礼品包描述
@@ -98,7 +101,7 @@ public class GiftBag implements Serializable {
     /**
      * 打卡地所含元素
      */
-    private List<Integer> placeElement;
+    private List<Long> placeElement;
 
 
 

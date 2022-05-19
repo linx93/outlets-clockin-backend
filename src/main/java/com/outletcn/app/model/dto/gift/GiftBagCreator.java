@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 public class GiftBagCreator {
@@ -28,8 +29,8 @@ public class GiftBagCreator {
      * 礼品包有效期
      */
     @NotBlank
-    @ApiModelProperty(value = "礼品包有效期(20220501)")
-    private String validDate;
+    @ApiModelProperty(value = "礼品包有效期")
+    private Long validDate;
 
     /**
      * 礼品包描述
@@ -75,7 +76,7 @@ public class GiftBagCreator {
      * 打卡地所含元素
      */
     @ApiModelProperty(value = "打卡地所含元素")
-    private String placeElement;
+    private List<Long> placeElement;
 
     /**
      * 是否上架

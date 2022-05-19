@@ -24,7 +24,7 @@ public class OrdinaryGiftBagCreator {
      */
     @NotBlank
     @ApiModelProperty(value = "礼品包有效期(20220501)")
-    private String validDate;
+    private Long validDate;
 
     /**
      * 礼品包描述

@@ -23,8 +23,8 @@ public class LuxuryGiftBagCreator {
      * 礼品包有效期
      */
     @NotBlank
-    @ApiModelProperty(value = "礼品包有效期(20220501)")
-    private String validDate;
+    @ApiModelProperty(value = "礼品包有效期")
+    private Long validDate;
 
     /**
      * 礼品包描述
@@ -72,7 +72,7 @@ public class LuxuryGiftBagCreator {
      */
     @NotBlank
     @ApiModelProperty(value = "打卡地所含元素")
-    private List<Integer> placeElement;
+    private List<Long> placeElement;
 
 
 
