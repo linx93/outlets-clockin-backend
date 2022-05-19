@@ -64,8 +64,8 @@ public class DestinationGroupController {
      * 根据ID查询目的地群
      */
     @ApiOperation(value = "根据ID查询目的地群")
-    @PostMapping("findDestinationGroupById")
-    public ApiResult<QueryOneResponse<DestinationGroup>> findDestinationGroupById(@RequestBody @Valid Long id) {
+    @GetMapping("findDestinationGroupById")
+    public ApiResult<QueryOneResponse<DestinationGroup>> findDestinationGroupById(Long id) {
         QueryOneResponse<DestinationGroup> queryOneResponse = destinationGroupService.findDestinationGroupById(id);
         return ApiResult.thin(ErrorCode.SUCCESS, queryOneResponse);
     }
@@ -147,7 +147,7 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "基于名称、上下架查询")
     @GetMapping("/findDestinationGroupByNameOrPutOnForPage")
-    public ApiResult<PageInfo<QueryDestinationGroupResponse>> findDestinationGroupByNameOrPutOnForPage(@RequestParam(value = "name",required = false) String name, @RequestParam(value = "putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam(value = "size") Integer size) {
+    public ApiResult<PageInfo<QueryDestinationGroupResponse>> findDestinationGroupByNameOrPutOnForPage(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "putOn") Integer putOn, @RequestParam("page") Integer page, @RequestParam(value = "size") Integer size) {
         PageInfo<QueryDestinationGroupResponse> pageInfo = destinationGroupService.findDestinationGroupByNameOrPutOnForPage(name, putOn, page, size);
         return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);
     }

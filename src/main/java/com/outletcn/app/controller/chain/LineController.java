@@ -115,8 +115,8 @@ public class LineController {
      * 根据ID查询线路
      */
     @ApiOperation(value = "根据ID查询线路")
-    @PostMapping("findLineById")
-    public ApiResult<QueryOneResponse<Line>> findLineById(@RequestBody @Valid Long id) {
+    @GetMapping("findLineById")
+    public ApiResult<QueryOneResponse<Line>> findLineById(Long id) {
         QueryOneResponse<Line> queryOneResponse = lineService.findLineById(id);
         return ApiResult.thin(ErrorCode.SUCCESS, queryOneResponse);
     }
