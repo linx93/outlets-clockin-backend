@@ -103,8 +103,8 @@ public class DestinationController {
      * 根据ID查询目的地
      */
     @ApiOperation(value = "根据ID查询目的地")
-    @PostMapping("findDestinationById")
-    public ApiResult<QueryOneResponse<Destination>> findDestinationById(@RequestBody @Valid Long id) {
+    @GetMapping("findDestinationById")
+    public ApiResult<QueryOneResponse<Destination>> findDestinationById(Long id) {
         QueryOneResponse<Destination> queryOneResponse = destinationService.findDestinationById(id);
         return ApiResult.thin(ErrorCode.SUCCESS, queryOneResponse);
     }
