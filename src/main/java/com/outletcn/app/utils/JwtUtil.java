@@ -153,7 +153,7 @@ public class JwtUtil {
             throw new BasicException("token签名无效!");
         } catch (TokenExpiredException e) {
             log.error("verifyToken  error >> ex = {}", ExceptionUtils.getStackTrace(e));
-            throw new BasicException("token令牌已过期!");
+            throw new TokenExpiredException("token令牌已过期!");
         } catch (InvalidClaimException e) {
             log.error("verifyToken  error >> ex = {}", ExceptionUtils.getStackTrace(e));
             throw new BasicException("token中claim被修改，所以token认证失败");

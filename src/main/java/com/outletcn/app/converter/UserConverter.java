@@ -1,6 +1,7 @@
 package com.outletcn.app.converter;
 
 import com.outletcn.app.model.dto.UserInfo;
+import com.outletcn.app.model.dto.applet.AddWriteOffUserRequest;
 import com.outletcn.app.model.dto.applet.UpdateUserRequest;
 import com.outletcn.app.model.mysql.Auth;
 import com.outletcn.app.model.mysql.ClockInUser;
@@ -43,4 +44,10 @@ public interface UserConverter {
             @Mapping(source = "birthday", target = "birthday", dateFormat = "yyyy/MM/dd"),
     })
     ClockInUser toClockInUser(UpdateUserRequest updateUserRequest);
+
+
+    @Mappings({
+            @Mapping(target = "password", ignore = true)
+    })
+    WriteOffUser toWriteOffUser(AddWriteOffUserRequest addWriteOffUserRequest);
 }

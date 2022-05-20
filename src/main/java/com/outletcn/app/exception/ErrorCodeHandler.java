@@ -1,5 +1,6 @@
 package com.outletcn.app.exception;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
 import net.phadata.app.common.ErrorCode;
 import org.springframework.validation.BindException;
@@ -79,6 +80,13 @@ public class ErrorCodeHandler {
     public ApiResult<?> exceptionHandler(MaxUploadSizeExceededException exception) {
         log.error("上传文件过大: {}", exception.getMessage());
         return ApiResult.result(ErrorCode.FAILED.getCode(), "上传文件大于32MB");
+    }
+
+    @ExceptionHandler(value = TokenExpiredException.class)
+    public ApiResult<?> exceptionHandler(TokenExpiredException exception) {
+        log.error("token已过期: {}", exception.getMessage());
+        log.error("异常信息:", exception);
+        return ApiResult.result("400011", exception.getMessage());
     }
 
     @ExceptionHandler(value = Exception.class)
