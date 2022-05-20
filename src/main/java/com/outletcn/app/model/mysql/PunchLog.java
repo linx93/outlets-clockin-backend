@@ -44,6 +44,9 @@ public class PunchLog implements Serializable {
     @ApiModelProperty(value = "目的地名称")
     private String destinationName;
 
+    @ApiModelProperty(value = "目的地的地址")
+    private String address;
+
     @ApiModelProperty(value = "打卡时间")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long punchTime;
