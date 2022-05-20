@@ -261,7 +261,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
         return Boolean.TRUE;
     }
 
-    @LogRecord(type = "目的地群", success = "{{#putOnRequest.putOn==0?'上架目的地群成功':'下架目的地群成功'}}", bizNo = "{{#putOnRequest.id}}", fail = "{{#putOnRequest.putOn==0?'上架目的地群失败':'下架目的地群失败'}}，失败原因：{{#fail}}", extra = "{{#lineItems.toString()}}")
+    @LogRecord(type = "目的地群", success = "{{#putOnRequest.putOn==0?'上架目的地群成功':'下架目的地群成功'}}", bizNo = "{{#putOnRequest.id}}", fail = "{{#putOnRequest.putOn==0?'上架目的地群失败':'下架目的地群失败'}}，失败原因：{{#fail}}")
     @Override
     public boolean putOnDestinationGroup(PutOnRequest putOnRequest) {
         DestinationGroup destinationGroup = mongoTemplate.findById(putOnRequest.getId(), DestinationGroup.class);
