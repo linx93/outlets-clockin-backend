@@ -50,7 +50,7 @@ public class PunchSignatureController {
      * }
      */
     @ApiOperation(value = "签章兑换礼")
-    @PostMapping(value = "/exchange")
+    @GetMapping(value = "/exchange")
     public ApiResult<Boolean> exchange(@RequestParam String giftId) {
         punchSignatureService.exchange(giftId);
         return ApiResult.thin(ErrorCode.SUCCESS, true);

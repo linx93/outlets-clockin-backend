@@ -58,4 +58,6 @@ public interface GiftService {
      * 豪华礼包兑换列表
      */
     PageInfo<LuxuryGiftBagResponse> exchangeLuxuryGift(Integer page,Integer size);
+
+    PageInfo<LuxuryGiftBagResponse>  exchangeOrdinaryGift(Integer page, Integer size);
 }
