@@ -1,7 +1,10 @@
 package com.outletcn.app.service;
 
+import com.outletcn.app.model.dto.applet.ClockInRecords;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,17 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface GiftVoucherService extends IService<GiftVoucher> {
 
+    /**
+     * 已兑换(已经核销了的次数统计)
+     *
+     * @return 已兑换次数
+     */
+    Integer exchanged();
+
+    /**
+     * 未使用(未核销的次数统计)
+     *
+     * @return 未使用次数
+     */
+    Integer unused();
 }
