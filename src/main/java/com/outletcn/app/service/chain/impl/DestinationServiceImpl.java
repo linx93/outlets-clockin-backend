@@ -257,6 +257,12 @@ public class DestinationServiceImpl implements DestinationService {
         if (!Objects.isNull(detailsInfo)) {
             DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(
                     Criteria.where("objectId").is(id).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+            if (Objects.isNull(detailObjectType)) {
+                detailObjectType = new DetailObjectType();
+                detailObjectType.setId(sequence.nextId());
+                detailObjectType.setObjectId(id);
+                detailObjectType.setObjectType(ClockInType.Destination.getType());
+            }
             detailObjectType.setRecommendVideo(detailsInfo.getRecommendVideo());
             detailObjectType.setRecommendAudio(detailsInfo.getRecommendAudio());
             detailObjectType.setDescriptions(detailsInfo.getDescriptions());
