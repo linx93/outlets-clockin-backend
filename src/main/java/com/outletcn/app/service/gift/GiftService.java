@@ -54,4 +54,8 @@ public interface GiftService {
 
     List<GiftBrandCreator> getGiftBrandList();
 
+    /**
+     * 豪华礼包兑换列表
+     */
+    void exchangeLuxuryGift();
 }

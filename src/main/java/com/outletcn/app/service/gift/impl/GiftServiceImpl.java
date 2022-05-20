@@ -583,7 +583,7 @@ public class GiftServiceImpl implements GiftService {
         try {
             AggregationResults<GiftInfoForGiftBagDetailResponse> aggregation =
                     mongoTemplate.aggregate(agg, "gift_bag_relation", GiftInfoForGiftBagDetailResponse.class);
-            responses =  aggregation.getMappedResults();
+            responses = aggregation.getMappedResults();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -702,5 +702,16 @@ public class GiftServiceImpl implements GiftService {
             result.add(giftBrandCreator);
         }
         return result;
+    }
+
+    /**
+     * 豪华礼包兑换列表
+     */
+    @Override
+    public void exchangeLuxuryGift() {
+        //查询豪华礼包
+        mongoTemplate.find(Query.query(Criteria.where("type").is("2")), GiftBag.class);
+
+
     }
 }
