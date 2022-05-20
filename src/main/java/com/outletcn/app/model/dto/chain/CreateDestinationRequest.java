@@ -86,9 +86,10 @@ public class CreateDestinationRequest {
 
         /**
          * 是否为著名地标
+         * 0:是/1:否
          */
         @NotNull(message = "是否为著名地标不能为空")
-        @ApiModelProperty(value = "是否为著名地标")
+        @ApiModelProperty(value = "是否为著名地标0:是/1:否")
         private Integer majorDestination;
 
         /**
@@ -114,16 +115,18 @@ public class CreateDestinationRequest {
 
         /**
          * 是否适合60岁以上老人
+         * 0:是/1:否
          */
         @NotNull(message = "是否适合60岁以上老人不能为空")
-        @ApiModelProperty(value = "是否适合60岁以上老人")
+        @ApiModelProperty(value = "是否适合60岁以上老人 0:是/1:否")
         private Integer forOldPeople;
 
         /**
          * 是否适合4岁以下小孩
+         * 0:是/1:否
          */
         @NotNull(message = "是否适合4岁以下小孩不能为空")
-        @ApiModelProperty(value = "是否适合4岁以下小孩")
+        @ApiModelProperty(value = "是否适合4岁以下小孩 0:是/1:否")
         private Integer forChildren;
 
         /**
