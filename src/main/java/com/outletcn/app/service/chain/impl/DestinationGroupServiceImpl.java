@@ -180,20 +180,28 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
             throw new BasicException("更新失败：目的地群不存在");
         }
         DestinationGroup destinationGroupBackup = destinationGroup;
+        long epochSecond = Instant.now().getEpochSecond();
 
         CreateDestinationGroupRequest.BaseInfo baseInfo = createDestinationGroupRequest.getBaseInfo();
 
-        destinationGroup.setGroupName(baseInfo.getGroupName());
-        destinationGroup.setGroupAttrs(baseInfo.getGroupAttrs());
-        destinationGroup.setSummary(baseInfo.getSummary());
-        destinationGroup.setGroupRecommendImage(baseInfo.getGroupRecommendImage());
-        destinationGroup.setGroupRecommendSquareImage(baseInfo.getGroupRecommendSquareImage());
-        destinationGroup.setGroupMainAddress(baseInfo.getGroupMainAddress());
-        destinationGroup.setGroupMainLongitude(baseInfo.getGroupMainLongitude());
-        destinationGroup.setGroupMainLatitude(baseInfo.getGroupMainLatitude());
-
-        long epochSecond = Instant.now().getEpochSecond();
-        destinationGroup.setUpdateTime(epochSecond);
+        if (!Objects.isNull(baseInfo)) {
+            destinationGroup.setGroupName(baseInfo.getGroupName());
+            destinationGroup.setGroupAttrs(baseInfo.getGroupAttrs());
+            destinationGroup.setSummary(baseInfo.getSummary());
+            destinationGroup.setGroupRecommendImage(baseInfo.getGroupRecommendImage());
+            destinationGroup.setGroupRecommendSquareImage(baseInfo.getGroupRecommendSquareImage());
+            destinationGroup.setGroupMainAddress(baseInfo.getGroupMainAddress());
+            destinationGroup.setGroupMainLongitude(baseInfo.getGroupMainLongitude());
+            destinationGroup.setGroupMainLatitude(baseInfo.getGroupMainLatitude());
+            destinationGroup.setUpdateTime(epochSecond);
+            try {
+                mongoTemplate.save(destinationGroup);
+            } catch (Exception ex) {
+                log.error("更新目的地群失败：" + ex.getMessage());
+                LogRecordContext.putVariable("fail", "更新目的地群失败：" + ex.getMessage());
+                throw new BasicException("更新目的地群失败：" + ex.getMessage());
+            }
+        }
 
         DetailsInfo detailsInfo = createDestinationGroupRequest.getDetailsInfo();
         if (!Objects.isNull(detailsInfo)) {

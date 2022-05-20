@@ -120,28 +120,30 @@ public class LineServiceImpl implements LineService {
             throw new BasicException("更新失败：线路不存在");
         }
         Line lineBackup = line;
+        long epochSecond = Instant.now().getEpochSecond();
 
         CreateLineRequest.BaseInfo baseInfo = createLineRequest.getBaseInfo();
-        line.setLineName(baseInfo.getLineName());
-        line.setLineElements(baseInfo.getLineElements());
-        line.setLineAttrs(baseInfo.getLineAttrs());
-        line.setSummary(baseInfo.getSummary());
+        if (Objects.isNull(baseInfo)) {
+            line.setLineName(baseInfo.getLineName());
+            line.setLineElements(baseInfo.getLineElements());
+            line.setLineAttrs(baseInfo.getLineAttrs());
+            line.setSummary(baseInfo.getSummary());
 
-        line.setRecommendReason(baseInfo.getRecommendReason());
-        line.setMainDestination(baseInfo.getMainDestination());
-        line.setLineRecommendImage(baseInfo.getLineRecommendImage());
-        line.setLineRecommendSquareImage(baseInfo.getLineRecommendSquareImage());
-        line.setLineExpectTime(baseInfo.getLineExpectTime());
+            line.setRecommendReason(baseInfo.getRecommendReason());
+            line.setMainDestination(baseInfo.getMainDestination());
+            line.setLineRecommendImage(baseInfo.getLineRecommendImage());
+            line.setLineRecommendSquareImage(baseInfo.getLineRecommendSquareImage());
+            line.setLineExpectTime(baseInfo.getLineExpectTime());
 
-        long epochSecond = Instant.now().getEpochSecond();
-        line.setUpdateTime(epochSecond);
+            line.setUpdateTime(epochSecond);
 
-        try {
-            mongoTemplate.save(line);
-        } catch (Exception ex) {
-            log.error("更新线路失败：" + ex.getMessage());
-            LogRecordContext.putVariable("fail", "更新线路失败：" + ex.getMessage());
-            throw new BasicException(ex.getMessage());
+            try {
+                mongoTemplate.save(line);
+            } catch (Exception ex) {
+                log.error("更新线路失败：" + ex.getMessage());
+                LogRecordContext.putVariable("fail", "更新线路失败：" + ex.getMessage());
+                throw new BasicException(ex.getMessage());
+            }
         }
 
         DetailsInfo detailsInfo = createLineRequest.getDetailsInfo();

@@ -227,33 +227,32 @@ public class DestinationServiceImpl implements DestinationService {
             throw new BasicException("更新失败：目的地不存在");
         }
         Destination destinationBackup = destination;
-
-        CreateDestinationRequest.BaseInfo baseInfo = createDestinationRequest.getBaseInfo();
-        destination.setDestinationName(baseInfo.getDestinationName());
-        destination.setDestinationAttrs(baseInfo.getDestinationAttrs());
-        destination.setDestinationRecommendImage(baseInfo.getDestinationRecommendImage());
-        destination.setDestinationRecommendSquareImage(baseInfo.getDestinationRecommendSquareImage());
-        destination.setDestinationType(baseInfo.getDestinationType());
-        destination.setSummary(baseInfo.getSummary());
-        destination.setMajorDestination(baseInfo.getMajorDestination());
-        destination.setAddress(baseInfo.getAddress());
-        destination.setLongitude(baseInfo.getLongitude());
-        destination.setLatitude(baseInfo.getLatitude());
-        destination.setForOldPeople(baseInfo.getForOldPeople());
-        destination.setForChildren(baseInfo.getForChildren());
-        destination.setOpenTime(baseInfo.getOpenTime());
-        destination.setCloseTime(baseInfo.getCloseTime());
-
         long time = Instant.now().getEpochSecond();
-        destination.setUpdateTime(time);
-        try {
-            mongoTemplate.save(destination);
-        } catch (Exception ex) {
-            log.error("更新目的地失败：" + ex.getMessage());
-            LogRecordContext.putVariable("fail", "更新目的地失败：" + ex.getMessage());
-            throw new BasicException("更新目的地失败：" + ex.getMessage());
+        CreateDestinationRequest.BaseInfo baseInfo = createDestinationRequest.getBaseInfo();
+        if (!Objects.isNull(baseInfo)) {
+            destination.setDestinationName(baseInfo.getDestinationName());
+            destination.setDestinationAttrs(baseInfo.getDestinationAttrs());
+            destination.setDestinationRecommendImage(baseInfo.getDestinationRecommendImage());
+            destination.setDestinationRecommendSquareImage(baseInfo.getDestinationRecommendSquareImage());
+            destination.setDestinationType(baseInfo.getDestinationType());
+            destination.setSummary(baseInfo.getSummary());
+            destination.setMajorDestination(baseInfo.getMajorDestination());
+            destination.setAddress(baseInfo.getAddress());
+            destination.setLongitude(baseInfo.getLongitude());
+            destination.setLatitude(baseInfo.getLatitude());
+            destination.setForOldPeople(baseInfo.getForOldPeople());
+            destination.setForChildren(baseInfo.getForChildren());
+            destination.setOpenTime(baseInfo.getOpenTime());
+            destination.setCloseTime(baseInfo.getCloseTime());
+            destination.setUpdateTime(time);
+            try {
+                mongoTemplate.save(destination);
+            } catch (Exception ex) {
+                log.error("更新目的地失败：" + ex.getMessage());
+                LogRecordContext.putVariable("fail", "更新目的地失败：" + ex.getMessage());
+                throw new BasicException("更新目的地失败：" + ex.getMessage());
+            }
         }
-
         DetailsInfo detailsInfo = createDestinationRequest.getDetailsInfo();
         if (!Objects.isNull(detailsInfo)) {
             DetailObjectType detailObjectType = mongoTemplate.findOne(Query.query(

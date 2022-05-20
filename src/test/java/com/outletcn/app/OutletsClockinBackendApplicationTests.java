@@ -293,7 +293,8 @@ class OutletsClockinBackendApplicationTests {
 
     @Test
     void testGetRelates() {
-        PutOnDestinationResponse relates = service.getRelates(1526129253316354049L);
+        PutOnDestinationResponse relates = service.getRelates(1527102161534664705L);
+        List<PutOnDestinationResponse.LineItem> groupServiceRelates = destinationGroupService.getRelates(1527104232002498561L);
         System.out.println(relates);
     }
 
