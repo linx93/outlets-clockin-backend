@@ -1,5 +1,6 @@
 package com.outletcn.app.service;
 
+import com.outletcn.app.model.dto.applet.ClockInRecords;
 import com.outletcn.app.model.dto.applet.ClockInRequest;
 import com.outletcn.app.model.dto.applet.MyExchangeRecordResponse;
 import com.outletcn.app.model.mysql.PunchLog;
@@ -41,4 +42,12 @@ public interface PunchLogService extends IService<PunchLog> {
      * @return bool
      */
     Boolean executeClockIn(ClockInRequest clockInRequest);
+
+    /**
+     * 用户打卡记录
+     *
+     * @param flag all:查所有打卡记录 my:查自己的打卡记录
+     * @return 用户打卡记录
+     */
+    List<ClockInRecords> clockInRecords(String flag);
 }

@@ -55,7 +55,7 @@ public class ErrorCodeHandler {
     public ApiResult<?> bindExceptionHandler(BindException e) {
         log.error("参数验证失败:{}", e.getMessage());
         FieldError error = e.getFieldError();
-        String message = String.format("%s:%s", error.getField(), error.getDefaultMessage());
+        String message = String.format("%s:%s", error == null ? "" : error.getField(), error == null ? "" : error.getDefaultMessage());
         //todo Bad Request
         return ApiResult.result("100000", message);
     }
@@ -64,7 +64,7 @@ public class ErrorCodeHandler {
     public ApiResult<?> exceptionHandler(MethodArgumentNotValidException e) {
         log.error("参数验证失败:{}", e.getMessage());
         FieldError error = e.getBindingResult().getFieldError();
-        String message = String.format("%s:%s", error.getField(), error.getDefaultMessage());
+        String message = String.format("%s:%s", error == null ? "" : error.getField(), error == null ? "" : error.getDefaultMessage());
         //todo Bad Request
         return ApiResult.result("100000", message);
     }

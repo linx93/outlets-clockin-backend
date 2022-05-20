@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.outletcn.app.common.QRCodeContent;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.UserInfo;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.outletcn.app.mapper.GiftVoucherMapper;
 import com.outletcn.app.service.GiftVoucherService;
@@ -26,6 +28,15 @@ import java.util.Objects;
 @Service
 public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftVoucher> implements GiftVoucherService {
 
+    @Override
+    public Integer exchanged() {
+        return getBaseMapper().selectCount(new QueryWrapper<GiftVoucher>().lambda().eq(GiftVoucher::getUserId, JwtUtil.getInfo(UserInfo.class).getId()).eq(GiftVoucher::getState, 0));
+    }
+
+    @Override
+    public Integer unused() {
+        return getBaseMapper().selectCount(new QueryWrapper<GiftVoucher>().lambda().eq(GiftVoucher::getUserId, JwtUtil.getInfo(UserInfo.class).getId()).eq(GiftVoucher::getState, 1));
+    }
     @Override
     public void writeOffGiftVoucher(QRCodeContent codeContent) {
         GiftVoucher voucher = baseMapper.selectById(codeContent.getId());
