@@ -1,7 +1,10 @@
 package com.outletcn.app.service;
 
+import com.outletcn.app.common.QRCodeContent;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface GiftVoucherService extends IService<GiftVoucher> {
 
+    //核销礼品券
+    void writeOffGiftVoucher(QRCodeContent codeContent);
+
+    List<GiftVoucher> getListByUserId();
 }
