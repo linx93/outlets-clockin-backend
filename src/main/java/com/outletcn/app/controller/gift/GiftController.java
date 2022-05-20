@@ -9,6 +9,7 @@ import com.outletcn.app.service.gift.GiftService;
 import io.swagger.annotations.Api;
 
 import io.swagger.annotations.ApiOperation;
+import net.phadata.app.common.ErrorCode;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -139,7 +140,7 @@ public class GiftController {
 
     @GetMapping("/getGiftListByName")
     @ApiOperation(value = "礼品-根据礼品名字获取礼品列表")
-    public ApiResult<List<GiftListResponse>> getGiftListByName(@RequestParam String  name) {
+    public ApiResult<List<GiftListResponse>> getGiftListByName(@RequestParam String name) {
         return ApiResult.ok(giftService.getGiftListByName(name));
     }
 
@@ -177,9 +178,33 @@ public class GiftController {
 
     @PostMapping("/updateGiftBagState")
     @ApiOperation(value = "礼品包-根据id修改上架状态")
-    public ApiResult updateGiftBagState(@RequestBody GiftBagStateUpdateRequest request){
+    public ApiResult updateGiftBagState(@RequestBody GiftBagStateUpdateRequest request) {
         giftService.changeGiftBagState(request);
         return ApiResult.ok(null);
+    }
+
+    /**
+     * 豪礼兑换列表
+     */
+    @GetMapping("/exchangeLuxuryGiftList")
+    @ApiOperation(value = "豪礼兑换-获取豪礼兑换列表")
+    public ApiResult<PageInfo<LuxuryGiftBagResponse>> exchangeLuxuryGift(@RequestParam(required = false) Integer page,
+                                                                          @RequestParam(required = false) Integer size) {
+        PageInfo<LuxuryGiftBagResponse> pageInfo = giftService.exchangeLuxuryGift(page, size);
+
+        return ApiResult.result(ErrorCode.SUCCESS, pageInfo);
+    }
+
+
+    /**
+     * 普通礼品兑换列表
+     */
+    @GetMapping("/exchangeOrdinaryGiftList")
+    @ApiOperation(value = "普通礼品兑换-获取普通礼品兑换列表")
+    public ApiResult<PageInfo<LuxuryGiftBagResponse>> exchangeOrdinaryGift(@RequestParam(required = false) Integer page,
+                                                                           @RequestParam(required = false) Integer size) {
+
+        return ApiResult.ok(giftService.exchangeOrdinaryGift(page, size));
     }
 }
 

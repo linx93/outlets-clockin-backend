@@ -27,7 +27,7 @@ import javax.validation.Valid;
  */
 @Api(tags = "运营人员表，pc端的管理人员表")
 @RestController
-@RequestMapping("/operator")
+@RequestMapping("/v1/api/operator")
 @AllArgsConstructor
 public class OperatorController {
     private final OperatorService operatorService;

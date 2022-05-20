@@ -1,5 +1,6 @@
 package com.outletcn.app.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.common.QRCodeContent;
@@ -16,6 +17,7 @@ import com.outletcn.app.model.mysql.GiftVoucher;
 import com.outletcn.app.repository.PunchSignatureMongoRepository;
 import com.outletcn.app.service.PunchSignatureService;
 import com.outletcn.app.utils.QrcodeUtil;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -32,21 +34,17 @@ import java.util.UUID;
  */
 @Slf4j
 @Service
+@AllArgsConstructor
 public class PunchSignatureServiceImpl implements PunchSignatureService {
 
-    @Autowired
     private MongoTemplate mongoTemplate;
 
-    @Autowired
     private GiftConverter giftConverter;
 
-    @Autowired
     private GiftVoucherMapper giftVoucherMapper;
 
-    @Autowired
     private Sequence sequence;
 
-    @Autowired
     private PunchSignatureMongoRepository punchSignatureMongoRepository;
 
 
@@ -72,16 +70,21 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
 
     @Override
     public Boolean exchange(String giftId) {
+
+        GiftVoucher voucher = giftVoucherMapper.selectOne(new QueryWrapper<GiftVoucher>().lambda().eq(GiftVoucher::getGiftId, Long.parseLong(giftId)));
+        if (voucher != null) {
+            log.info("礼品券已存在 giftId: {} voucher: {}", giftId, voucher.getId());
+            return Boolean.TRUE;
+        }
+
         String content = QRCodeContent.builder()
                 .id(giftId)
                 .appId(UserTypeEnum.WRITE_OFF.name())
                 .type("1")
                 .build().toString();
+        GiftBag giftBag = mongoTemplate.findOne(Query.query(Criteria.where("id").is(Long.parseLong(giftId))), GiftBag.class);
         try {
             String qrcodeBase64 = QrcodeUtil.getQrcodeBase64(content);
-            Query query = new Query();
-            query.addCriteria(Criteria.where("id").is(giftId));
-            GiftBag giftBag = mongoTemplate.findOne(query, GiftBag.class);
             if (giftBag == null) {
                 log.info("礼品不存在 {}", giftId);
                 throw new BasicException("礼品不存在");

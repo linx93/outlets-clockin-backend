@@ -1,7 +1,5 @@
 package com.outletcn.app.service.gift.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.outletcn.app.common.GiftTypeEnum;
 import com.outletcn.app.common.PageInfo;
@@ -712,9 +710,19 @@ public class GiftServiceImpl implements GiftService {
      */
     @Override
     public PageInfo<LuxuryGiftBagResponse> exchangeLuxuryGift(Integer page, Integer size) {
+        return exchangeGift(page, size, GiftTypeEnum.LUXURY);
+    }
+
+    @Override
+    public PageInfo<LuxuryGiftBagResponse> exchangeOrdinaryGift(Integer page, Integer size) {
+
+        return exchangeGift(page, size, GiftTypeEnum.NORMAL);
+    }
+
+    private PageInfo<LuxuryGiftBagResponse> exchangeGift(Integer page, Integer size, GiftTypeEnum type) {
         //查询豪华礼包
         Query query = new Query();
-        Criteria criteria = Criteria.where("type").is(GiftTypeEnum.LUXURY.getCode()).and("putOn").is("0");
+        Criteria criteria = Criteria.where("type").is(type.getCode()).and("putOn").is(0);
         query.addCriteria(criteria);
         PageInfo<GiftBag> pageInfo = new PageInfo<>();
         pageInfo.setCurrent(page);
@@ -726,26 +734,36 @@ public class GiftServiceImpl implements GiftService {
         if (!giftBags.isEmpty()) {
             for (GiftBag giftBag : giftBags) {
                 List<Long> element = giftBag.getPlaceElement();
+                if (element == null || element.isEmpty()) {
+
+                    throw new BasicException("礼包目的地元素为空");
+                }
                 Query queryDestination = new Query();
                 Criteria criteriaDestination = Criteria.where("id").in(element);
                 queryDestination.addCriteria(criteriaDestination);
+                LuxuryGiftBagResponse luxuryGiftBagResponse = new LuxuryGiftBagResponse();
+                LuxuryGiftBagResponse.GiftBagInfo giftBagInfo = new LuxuryGiftBagResponse.GiftBagInfo();
+                luxuryGiftBagResponse.setGiftBagInfo(giftBagInfo);
+                giftBagInfo.setName(giftBag.getName());
+                giftBagInfo.setType(giftBag.getType());
+                giftBagInfo.setDescription(giftBag.getDescription());
+                giftBagInfo.setImage(giftBag.getImage());
+                giftBagInfo.setRecommendImage(giftBag.getRecommendImage());
                 List<Destination> destinations = mongoTemplate.find(queryDestination, Destination.class);
                 if (!destinations.isEmpty()) {
+                    List<LuxuryGiftBagResponse.DestinationInfo> destinationInfos = new ArrayList<>();
                     for (Destination destination : destinations) {
-                        LuxuryGiftBagResponse luxuryGiftBagResponse = new LuxuryGiftBagResponse();
-                        luxuryGiftBagResponse.setName(giftBag.getName());
-                        luxuryGiftBagResponse.setType(giftBag.getType());
-                        luxuryGiftBagResponse.setDescription(giftBag.getDescription());
-                        luxuryGiftBagResponse.setImage(giftBag.getImage());
-                        luxuryGiftBagResponse.setRecommendImage(giftBag.getRecommendImage());
-                        luxuryGiftBagResponse.setDestinationId(String.valueOf(destination.getId()));
-                        luxuryGiftBagResponse.setDestinationName(destination.getDestinationName());
-                        luxuryGiftBagResponse.setAddress(destination.getAddress());
-                        luxuryGiftBagResponse.setLatitude(destination.getLatitude());
-                        luxuryGiftBagResponse.setLongitude(destination.getLongitude());
-                        records.add(luxuryGiftBagResponse);
+                        LuxuryGiftBagResponse.DestinationInfo destinationInfo = new LuxuryGiftBagResponse.DestinationInfo();
+                        destinationInfo.setDestinationId(String.valueOf(destination.getId()));
+                        destinationInfo.setDestinationName(destination.getDestinationName());
+                        destinationInfo.setAddress(destination.getAddress());
+                        destinationInfo.setLatitude(destination.getLatitude());
+                        destinationInfo.setLongitude(destination.getLongitude());
+                        destinationInfos.add(destinationInfo);
+                        luxuryGiftBagResponse.setDestinationInfos(destinationInfos);
                     }
                 }
+                records.add(luxuryGiftBagResponse);
             }
         }
 
@@ -754,7 +772,6 @@ public class GiftServiceImpl implements GiftService {
         result.setSize(pageInfo.getSize());
         result.setTotal(pageInfo.getTotal());
         result.setRecords(records);
-
         return result;
     }
 }

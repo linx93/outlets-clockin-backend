@@ -15,35 +15,35 @@ public class ApiResult<T> {
     private String message;
     private T payload;
 
-    public ApiResult() {
+    private ApiResult() {
     }
 
     public static <T> ApiResult<T> ok(T payload) {
         return buildApiResult(ErrorCode.SUCCESS.getCode(), ErrorCode.SUCCESS.getMessage(), payload);
     }
 
-    public static <T>  ApiResult<T> fail(T payload) {
+    public static <T> ApiResult<T> fail(T payload) {
         return buildApiResult(ErrorCode.FAILED.getCode(), ErrorCode.FAILED.getMessage(), payload);
     }
 
-    public static <T>  ApiResult<T> result(ErrorCode apiCode, T payload) {
+    public static <T> ApiResult<T> result(ErrorCode apiCode, T payload) {
         return buildApiResult(apiCode.getCode(), apiCode.getMessage(), payload);
     }
 
-    public static <T>  ApiResult<T> result(ErrorCode apiCode) {
+    public static <T> ApiResult<T> result(ErrorCode apiCode) {
         return buildApiResult(apiCode.getCode(), apiCode.getMessage(), null);
     }
 
-    public static <T>  ApiResult<T> result(String code, String message, T payload) {
+    public static <T> ApiResult<T> result(String code, String message, T payload) {
         return buildApiResult(code, message, payload);
     }
 
-    public static <T>  ApiResult<T> result(String code, String message) {
+    public static <T> ApiResult<T> result(String code, String message) {
         return buildApiResult(code, message, null);
     }
 
-    private static <T>  ApiResult<T> buildApiResult(String code, String message, T payload) {
-         ApiResult<T> apiResult = new  ApiResult<T>();
+    private static <T> ApiResult<T> buildApiResult(String code, String message, T payload) {
+        ApiResult<T> apiResult = new ApiResult<T>();
         apiResult.code = code;
         apiResult.message = message;
         apiResult.payload = payload;
