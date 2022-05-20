@@ -34,9 +34,9 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "创建目的地群")
     @PostMapping("/createDestinationGroup")
-    public ApiResult<Boolean> createDestinationGroup(@RequestBody @Valid CreateDestinationGroupRequest request) {
-        boolean group = destinationGroupService.createDestinationGroup(request);
-        return ApiResult.thin(ErrorCode.SUCCESS, group);
+    public ApiResult<String> createDestinationGroup(@RequestBody @Valid CreateDestinationGroupRequest request) {
+        String id = destinationGroupService.createDestinationGroup(request);
+        return ApiResult.thin(ErrorCode.SUCCESS, id);
     }
 
     /**

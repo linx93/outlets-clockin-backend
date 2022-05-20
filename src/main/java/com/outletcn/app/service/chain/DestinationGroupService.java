@@ -19,7 +19,7 @@ public interface DestinationGroupService {
      * 创建目的地群
      * @param createDestinationGroupRequest
      */
-    boolean createDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest);
+    String createDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest);
 
     /**
      * 删除目的地群

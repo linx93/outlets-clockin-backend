@@ -34,9 +34,9 @@ public class LineController {
      */
     @ApiOperation(value = "创建线路")
     @PostMapping("/createLine")
-    public ApiResult<Boolean> createLine(@RequestBody @Valid CreateLineRequest request) {
-        boolean line = lineService.createLine(request);
-        return ApiResult.thin(ErrorCode.SUCCESS, line);
+    public ApiResult<String> createLine(@RequestBody @Valid CreateLineRequest request) {
+        String id = lineService.createLine(request);
+        return ApiResult.thin(ErrorCode.SUCCESS, id);
     }
 
 

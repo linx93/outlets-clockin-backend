@@ -21,7 +21,7 @@ public interface LineService {
      *
      * @param createLineRequest
      */
-    boolean createLine(CreateLineRequest createLineRequest);
+    String createLine(CreateLineRequest createLineRequest);
 
     /**
      * 修改线路

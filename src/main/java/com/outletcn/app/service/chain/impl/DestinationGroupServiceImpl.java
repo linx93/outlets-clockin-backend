@@ -45,7 +45,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
 
     @LogRecord(type = "目的地", success = "创建目的地群成功了,目的地名称【{{#createDestinationGroupRequest.baseInfo.groupName}}】,地址为【{{#createDestinationGroupRequest.baseInfo.groupMainAddress}}】,属性【{{#createDestinationGroupRequest.baseInfo.groupAttrs}}】", bizNo = "{{#key}}", fail = "创建目的地群失败，失败原因：{{#fail}}")
     @Override
-    public boolean createDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest) {
+    public String createDestinationGroup(CreateDestinationGroupRequest createDestinationGroupRequest) {
 
         DestinationGroup destinationGroup = new DestinationGroup();
 
@@ -116,7 +116,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
 
             }
         }
-        return Boolean.TRUE;
+        return String.valueOf(primaryId);
     }
 
     @LogRecord(type = "目的地群", success = "删除目的地群成功了", bizNo = "{{#id}}", fail = "删除目的地群失败，失败原因：{{#fail}}")

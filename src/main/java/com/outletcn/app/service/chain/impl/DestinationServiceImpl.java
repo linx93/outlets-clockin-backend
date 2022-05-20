@@ -45,13 +45,13 @@ public class DestinationServiceImpl implements DestinationService {
 
     @LogRecord(type = "目的地", success = "创建目的地成功了,目的地名称【{{#createDestinationRequest.baseInfo.destinationName}}】,地址为【{{#createDestinationRequest.baseInfo.address}}】,属性【{{#createDestinationRequest.baseInfo.destinationAttrs}}】,类型【{{#createDestinationRequest.baseInfo.destinationType}}】", bizNo = "{{#key}}", fail = "创建目的地失败，失败原因：{{#fail}}")
     @Override
-    public boolean createDestination(CreateDestinationRequest createDestinationRequest) {
+    public String createDestination(CreateDestinationRequest createDestinationRequest) {
 
+        long primaryId = sequence.nextId();
         try {
             Destination destination = new Destination();
             CreateDestinationRequest.BaseInfo baseInfo = createDestinationRequest.getBaseInfo();
 
-            long primaryId = sequence.nextId();
             destination.setId(primaryId);
             destination.setDestinationId(UUID.randomUUID().toString());
             destination.setDestinationName(baseInfo.getDestinationName());
@@ -107,7 +107,7 @@ public class DestinationServiceImpl implements DestinationService {
             LogRecordContext.putVariable("fail", "保存目的地详情失败: " + ex.getMessage());
             throw new BasicException("保存目的地详情失败：" + ex.getMessage());
         }
-        return Boolean.TRUE;
+        return String.valueOf(primaryId);
     }
 
     @Override

@@ -53,9 +53,9 @@ public class DestinationController {
      */
     @ApiOperation(value = "创建目的地")
     @PostMapping("createDestination")
-    public ApiResult<Boolean> createDestination(@RequestBody @Valid CreateDestinationRequest createDestinationRequest) {
-        boolean destination = destinationService.createDestination(createDestinationRequest);
-        return ApiResult.thin(ErrorCode.SUCCESS, destination);
+    public ApiResult<String> createDestination(@RequestBody @Valid CreateDestinationRequest createDestinationRequest) {
+        String id = destinationService.createDestination(createDestinationRequest);
+        return ApiResult.thin(ErrorCode.SUCCESS, id);
     }
 
     /**

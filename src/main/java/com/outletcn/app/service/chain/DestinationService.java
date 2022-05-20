@@ -20,7 +20,7 @@ public interface DestinationService {
      * 创建目的地
      * @param createDestinationRequest
      */
-    boolean createDestination(CreateDestinationRequest createDestinationRequest);
+    String createDestination(CreateDestinationRequest createDestinationRequest);
 
     /**
      * 创建目的地类型

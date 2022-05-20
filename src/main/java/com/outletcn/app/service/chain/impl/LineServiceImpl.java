@@ -52,7 +52,7 @@ public class LineServiceImpl implements LineService {
 
     @LogRecord(type = "线路", success = "创建线路成功", bizNo = "{{#id}}", fail = "创建线路失败，失败原因：{{#fail}}")
     @Override
-    public boolean createLine(CreateLineRequest createLineRequest) {
+    public String createLine(CreateLineRequest createLineRequest) {
 
         CreateLineRequest.BaseInfo baseInfo = createLineRequest.getBaseInfo();
 
@@ -107,7 +107,7 @@ public class LineServiceImpl implements LineService {
                 throw new BasicException(ex.getMessage());
             }
         }
-        return Boolean.TRUE;
+        return String.valueOf(primaryId);
     }
 
     @LogRecord(type = "线路", success = "修改线路成功", bizNo = "{{#id}}", fail = "修改线路失败，失败原因：{{#fail}}")
