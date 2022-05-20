@@ -87,7 +87,7 @@ public class ClockInAppletPageController {
     }
 
     @ApiOperation(value = "附近")
-    @GetMapping(value = "/nearby")
+    @PostMapping(value = "/nearby")
     public ApiResult<List<DestinationVO>> nearby(@RequestBody @Valid NearbyRequest nearbyRequest) {
         List<DestinationVO> nearbyResponses = lineService.nearby(nearbyRequest);
         return ApiResult.ok(nearbyResponses);

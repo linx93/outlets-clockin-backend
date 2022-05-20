@@ -96,3 +96,6 @@ tencent:
     region: ap-chongqing
     secret-id: AKIDwiHacNt8GBpDKAj23nGSN0MRFEwNXQ2N
     secret-key: 7xVmmW2HFxPaU8VbPwDF0UifLjriIbdP
+  pc-map:
+    app-key: GPJBZ-5K36U-KR7VG-2FMX3-O6F4O-EYF5R
+    secret-key: SzaCGuF17py33V4IsPHaf1eiX6zmr4Xf
