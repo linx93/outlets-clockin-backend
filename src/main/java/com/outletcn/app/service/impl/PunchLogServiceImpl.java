@@ -1,9 +1,11 @@
 package com.outletcn.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.outletcn.app.converter.ClockInConverter;
 import com.outletcn.app.converter.GiftConverter;
 import com.outletcn.app.mapper.GiftVoucherMapper;
 import com.outletcn.app.model.dto.UserInfo;
+import com.outletcn.app.model.dto.applet.ClockInRecords;
 import com.outletcn.app.model.dto.applet.ClockInRequest;
 import com.outletcn.app.model.dto.applet.GiftBagVO;
 import com.outletcn.app.model.dto.applet.MyExchangeRecordResponse;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -45,6 +48,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
     private final GiftVoucherMapper giftVoucherMapper;
     private final MongoTemplate mongoTemplate;
     private final GiftConverter giftConverter;
+    private final ClockInConverter clockInConverter;
 
     @Override
     public Long myScore() {
@@ -116,6 +120,19 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         punchLog.setDestinationName(byId.getDestinationName());
         int insert = getBaseMapper().insert(punchLog);
         return insert > 0;
+    }
+
+    @Override
+    public List<ClockInRecords> clockInRecords(String flag) {
+        List<PunchLog> punchLogs = Collections.emptyList();
+        if ("my".equals(flag)) {
+            punchLogs = getBaseMapper().selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, JwtUtil.getInfo(UserInfo.class).getId()));
+
+        } else {
+            punchLogs = getBaseMapper().selectList(null);
+        }
+        List<ClockInRecords> clockInRecordsList = clockInConverter.toClockInRecordsList(punchLogs);
+        return clockInRecordsList;
     }
 
 }

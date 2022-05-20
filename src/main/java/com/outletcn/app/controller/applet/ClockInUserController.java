@@ -3,10 +3,7 @@ package com.outletcn.app.controller.applet;
 
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.LoginResponse;
-import com.outletcn.app.model.dto.applet.AppletLoginRequest;
-import com.outletcn.app.model.dto.applet.ClockInRequest;
-import com.outletcn.app.model.dto.applet.MyExchangeRecordResponse;
-import com.outletcn.app.model.dto.applet.UpdateUserRequest;
+import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.service.AuthService;
 import com.outletcn.app.service.ClockInUserService;
 import com.outletcn.app.service.PunchLogService;
@@ -67,10 +64,18 @@ public class ClockInUserController {
     }
 
     @ApiOperation(value = "用户打卡")
-    @GetMapping(value = "/execute")
+    @PostMapping(value = "/execute")
     public ApiResult<Boolean> executeClockIn(@RequestBody @Valid ClockInRequest clockInRequest) {
         Boolean result = punchLogService.executeClockIn(clockInRequest);
         return ApiResult.ok(result);
+    }
+
+
+    @ApiOperation(value = "用户打卡记录")
+    @GetMapping(value = "/records")
+    public ApiResult<List<ClockInRecords>> clockInRecords(@ApiParam(value = "all:查所有打卡记录 my:查自己的打卡记录", name = "flag") @RequestParam(value = "flag", required = true, defaultValue = "my") String flag) {
+        List<ClockInRecords> clockInRecordsList = punchLogService.clockInRecords(flag);
+        return ApiResult.ok(clockInRecordsList);
     }
 
 }
