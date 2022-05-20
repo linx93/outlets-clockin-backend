@@ -93,8 +93,8 @@ public class DestinationController {
      */
     @ApiOperation(value = "修改目的地")
     @PostMapping("modifyDestination")
-    public ApiResult<Boolean> modifyDestination(@RequestBody @Valid CreateDestinationRequest createDestinationRequest, Long id) {
-        boolean destination = destinationService.modifyDestination(createDestinationRequest, id);
+    public ApiResult<Boolean> modifyDestination(@RequestBody @Valid CreateDestinationRequest createDestinationRequest) {
+        boolean destination = destinationService.modifyDestination(createDestinationRequest, createDestinationRequest.getId());
         return ApiResult.thin(ErrorCode.SUCCESS, destination);
     }
 

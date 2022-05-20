@@ -1,5 +1,7 @@
 package com.outletcn.app.common;
 
+import com.alibaba.fastjson.JSON;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -8,6 +10,7 @@ import lombok.Data;
  * @author felix
  */
 @Data
+@Builder
 public class QRCodeContent {
     /**
      * 小程序AppID
@@ -21,4 +24,9 @@ public class QRCodeContent {
      * 礼品ID
      */
     private String id;
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
+    }
 }

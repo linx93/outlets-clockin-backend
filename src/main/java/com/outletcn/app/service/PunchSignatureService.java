@@ -16,4 +16,10 @@ public interface PunchSignatureService {
      * @return 礼品兑换列表
      */
     PageInfo<GiftPunchSignatureResponse> getPunchSignatureList(Integer page , Integer size);
+
+    /**
+     * 礼品兑换
+     * @param giftId
+     */
+    Boolean exchange(String giftId);
 }

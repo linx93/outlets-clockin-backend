@@ -3,10 +3,12 @@ package com.outletcn.app.service.gift.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
+import com.outletcn.app.common.GiftTypeEnum;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.gift.*;
 import com.outletcn.app.model.mongo.*;
+import com.outletcn.app.repository.GiftBagMongoRepository;
 import com.outletcn.app.service.gift.GiftService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
@@ -32,6 +34,7 @@ public class GiftServiceImpl implements GiftService {
 
     MongoTemplate mongoTemplate;
     Sequence sequence;
+    GiftBagMongoRepository giftBagMongoRepository;
 
     //新增礼品
     @Override
@@ -708,10 +711,50 @@ public class GiftServiceImpl implements GiftService {
      * 豪华礼包兑换列表
      */
     @Override
-    public void exchangeLuxuryGift() {
+    public PageInfo<LuxuryGiftBagResponse> exchangeLuxuryGift(Integer page, Integer size) {
         //查询豪华礼包
-        mongoTemplate.find(Query.query(Criteria.where("type").is("2")), GiftBag.class);
+        Query query = new Query();
+        Criteria criteria = Criteria.where("type").is(GiftTypeEnum.LUXURY.getCode()).and("putOn").is("0");
+        query.addCriteria(criteria);
+        PageInfo<GiftBag> pageInfo = new PageInfo<>();
+        pageInfo.setCurrent(page);
+        pageInfo.setSize(size);
+        PageInfo<GiftBag> bagPageInfo = giftBagMongoRepository.findObjForPage(query, pageInfo);
+        List<GiftBag> giftBags = bagPageInfo.getRecords();
+        //查询目的地
+        List<LuxuryGiftBagResponse> records = new ArrayList<>();
+        if (!giftBags.isEmpty()) {
+            for (GiftBag giftBag : giftBags) {
+                List<Long> element = giftBag.getPlaceElement();
+                Query queryDestination = new Query();
+                Criteria criteriaDestination = Criteria.where("id").in(element);
+                queryDestination.addCriteria(criteriaDestination);
+                List<Destination> destinations = mongoTemplate.find(queryDestination, Destination.class);
+                if (!destinations.isEmpty()) {
+                    for (Destination destination : destinations) {
+                        LuxuryGiftBagResponse luxuryGiftBagResponse = new LuxuryGiftBagResponse();
+                        luxuryGiftBagResponse.setName(giftBag.getName());
+                        luxuryGiftBagResponse.setType(giftBag.getType());
+                        luxuryGiftBagResponse.setDescription(giftBag.getDescription());
+                        luxuryGiftBagResponse.setImage(giftBag.getImage());
+                        luxuryGiftBagResponse.setRecommendImage(giftBag.getRecommendImage());
+                        luxuryGiftBagResponse.setDestinationId(String.valueOf(destination.getId()));
+                        luxuryGiftBagResponse.setDestinationName(destination.getDestinationName());
+                        luxuryGiftBagResponse.setAddress(destination.getAddress());
+                        luxuryGiftBagResponse.setLatitude(destination.getLatitude());
+                        luxuryGiftBagResponse.setLongitude(destination.getLongitude());
+                        records.add(luxuryGiftBagResponse);
+                    }
+                }
+            }
+        }
 
+        PageInfo<LuxuryGiftBagResponse> result = new PageInfo<>();
+        result.setCurrent(pageInfo.getCurrent());
+        result.setSize(pageInfo.getSize());
+        result.setTotal(pageInfo.getTotal());
+        result.setRecords(records);
 
+        return result;
     }
 }

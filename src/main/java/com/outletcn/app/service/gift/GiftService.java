@@ -57,5 +57,5 @@ public interface GiftService {
     /**
      * 豪华礼包兑换列表
      */
-    void exchangeLuxuryGift();
+    PageInfo<LuxuryGiftBagResponse> exchangeLuxuryGift(Integer page,Integer size);
 }
