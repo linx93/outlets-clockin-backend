@@ -66,5 +66,5 @@ public class MyExchangeRecordResponse {
     private Long updateTime;*/
 
     @ApiModelProperty(value = "礼品包相关信息")
-    private GiftBagVO giftBagVO;
+    private GiftBagVO giftBag;
 }

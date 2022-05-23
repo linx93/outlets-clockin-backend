@@ -83,7 +83,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
             //查询礼品包
             GiftBag giftBag = mongoTemplate.findById(giftId, GiftBag.class);
             GiftBagVO giftBagVO = giftConverter.toGiftBagVO(giftBag);
-            item.setGiftBagVO(giftBagVO);
+            item.setGiftBag(giftBagVO);
             List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftId)), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
             if (!giftIds.isEmpty()) {
                 List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);

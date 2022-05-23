@@ -90,6 +90,20 @@ public class ClockInUserController {
         return ApiResult.ok(exchanged);
     }
 
+    @ApiOperation(value = "我的")
+    @GetMapping(value = "/profile")
+    public ApiResult<ProfileResponse> profile() {
+        Integer exchanged = giftVoucherService.exchanged();
+        Long score = punchLogService.myScore();
+        Integer unused = giftVoucherService.unused();
+        ProfileResponse build = ProfileResponse.builder()
+                .exchanged(exchanged)
+                .score(score)
+                .unused(unused)
+                .build();
+        return ApiResult.ok(build);
+    }
+
 
     @ApiOperation(value = "未使用")
     @GetMapping(value = "/unused")
