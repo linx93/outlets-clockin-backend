@@ -63,7 +63,10 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         pageInfo.setCurrent(page);
         pageInfo.setSize(size);
         Query query = new Query();
-        Criteria criteria = Criteria.where("type").is(GiftTypeEnum.NORMAL.getCode());
+        Criteria criteria = Criteria.where("type").
+                is(GiftTypeEnum.NORMAL.getCode()).
+                and("validDate").gt(Instant.now().getEpochSecond()).
+                and("putOn").is(0);
         query.addCriteria(criteria);
         PageInfo<GiftBag> bagPageInfo = punchSignatureMongoRepository.findObjForPage(query, pageInfo);
         List<GiftPunchSignatureResponse> signatureResponses = giftConverter.toGiftPunch(bagPageInfo.getRecords());
