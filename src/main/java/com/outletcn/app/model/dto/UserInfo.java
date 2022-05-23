@@ -1,8 +1,11 @@
 package com.outletcn.app.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.outletcn.app.common.UserTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 
 /**
@@ -28,6 +31,7 @@ public class UserInfo {
     private Integer gender;
 
     @ApiModelProperty(value = "生日 格式为年/月/")
+    @JsonFormat(pattern="yyyy/MM/dd",timezone = "GMT+8")
     private Date birthday;
 
     @ApiModelProperty(value = "头像")
