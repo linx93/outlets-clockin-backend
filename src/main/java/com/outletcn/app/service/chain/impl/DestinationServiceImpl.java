@@ -364,7 +364,7 @@ public class DestinationServiceImpl implements DestinationService {
     public List<Destination> findDestinationByName(String name) {
         Query query = new Query();
         Pattern pattern = Pattern.compile("^.*" + name + ".*$", Pattern.CASE_INSENSITIVE);
-        query.addCriteria(Criteria.where("destinationName").regex(pattern));
+        query.addCriteria(Criteria.where("destinationName").regex(pattern).and("putOn").is(0));
         List<Destination> destinations = mongoTemplate.find(query, Destination.class);
         return destinations;
     }
