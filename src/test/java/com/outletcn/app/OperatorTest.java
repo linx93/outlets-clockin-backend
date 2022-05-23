@@ -27,18 +27,6 @@ public class OperatorTest {
     AuthService authService;
 
     @Test
-    public void test() {
-        Operator operator = new Operator();
-        operator.setAccount("admin");
-        operator.setPhone("18212341234");
-        String encode = new BCryptPasswordEncoder().encode("123456");
-        operator.setPassword(encode);
-        operator.setCreateTime(new Date());
-        operator.setCreateTime(new Date());
-        operatorMapper.insert(operator);
-    }
-
-    @Test
     public void addWriteOffUserTest() {
         AddWriteOffUserRequest addWriteOffUserRequest = new AddWriteOffUserRequest();
         addWriteOffUserRequest.setAccount("linxHeXiao");
