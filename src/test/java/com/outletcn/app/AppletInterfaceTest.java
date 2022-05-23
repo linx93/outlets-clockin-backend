@@ -1,9 +1,14 @@
 package com.outletcn.app;
 
 import com.alibaba.fastjson.JSON;
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.applet.*;
+import com.outletcn.app.model.dto.gift.LuxuryGiftBagResponse;
+import com.outletcn.app.model.mongo.GiftBag;
+import com.outletcn.app.service.ClockInUserService;
 import com.outletcn.app.service.PunchLogService;
 import com.outletcn.app.service.chain.LineService;
+import com.outletcn.app.service.gift.GiftService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +27,11 @@ public class AppletInterfaceTest {
     LineService lineService;
     @Autowired
     PunchLogService punchLogService;
+    @Autowired
+    GiftService giftService;
+    @Autowired
+    ClockInUserService clockInUserService;
+
 
     @Test
     void lineList() {
@@ -96,6 +106,26 @@ public class AppletInterfaceTest {
         SearchDestinationRequest searchDestinationRequest = new SearchDestinationRequest();
         searchDestinationRequest.setKeywords("金融城");
         SearchDestinationResponse searchDestinationResponse = lineService.searchDestination(searchDestinationRequest);
-        System.out.println(JSON.toJSONString(searchDestinationResponse,true));
+        System.out.println(JSON.toJSONString(searchDestinationResponse, true));
+    }
+
+    @Test
+    void exchangeLuxuryGift() {
+        PageInfo<LuxuryGiftBagResponse> luxuryGiftBagResponsePageInfo = giftService.exchangeLuxuryGift(1, 1);
+        System.out.println(luxuryGiftBagResponsePageInfo);
+    }
+
+
+    @Test
+    void activity() {
+        ActivityRuleResponse activity = clockInUserService.activity();
+        System.out.println(JSON.toJSONString(activity, true));
+    }
+
+
+    @Test
+    void buildGiftBag() {
+        List<GiftBag> giftBags = clockInUserService.buildGiftBag();
+        System.out.println("是否存在豪华礼包:" + !giftBags.isEmpty());
     }
 }

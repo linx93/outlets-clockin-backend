@@ -1,9 +1,14 @@
 package com.outletcn.app.controller.applet;
 
 import com.outletcn.app.common.ApiResult;
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.applet.*;
+import com.outletcn.app.model.dto.gift.LuxuryGiftBagResponse;
+import com.outletcn.app.model.mongo.GiftBag;
 import com.outletcn.app.model.mongo.Line;
+import com.outletcn.app.service.ClockInUserService;
 import com.outletcn.app.service.chain.LineService;
+import com.outletcn.app.service.gift.GiftService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -26,6 +31,7 @@ import java.util.List;
 @RequestMapping("/v1/api/applet/clock-in-page")
 public class ClockInAppletPageController {
     private final LineService lineService;
+    private final ClockInUserService clockInUserService;
 
     @ApiOperation(value = "通过线路id查询线路下的目的地和目的地群")
     @GetMapping(value = "/line-elements")
@@ -99,6 +105,13 @@ public class ClockInAppletPageController {
     public ApiResult<List<DestinationVO>> nearby(@RequestBody @Valid NearbyRequest nearbyRequest) {
         List<DestinationVO> nearbyResponses = lineService.nearby(nearbyRequest);
         return ApiResult.ok(nearbyResponses);
+    }
+
+    @ApiOperation(value = "是否存在豪华礼包 存在：true 不存在：false")
+    @GetMapping(value = "/exist-luxury-gift-bag")
+    public ApiResult<Boolean> existLuxuryGiftBag() {
+        List<GiftBag> giftBags = clockInUserService.buildGiftBag();
+        return ApiResult.ok(!giftBags.isEmpty());
     }
 
 
