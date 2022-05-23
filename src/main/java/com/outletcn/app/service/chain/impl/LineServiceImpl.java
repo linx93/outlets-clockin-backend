@@ -362,6 +362,7 @@ public class LineServiceImpl implements LineService {
                     .lineName(line.getLineName())
                     .destinationGroupCount(lineElements.size())
                     .score(scoreSum)
+                    .putOn(line.getPutOn())
                     .lineAttrs(line.getLineAttrs())
                     .createTime(line.getCreateTime())
                     .updateTime(line.getUpdateTime()).build();

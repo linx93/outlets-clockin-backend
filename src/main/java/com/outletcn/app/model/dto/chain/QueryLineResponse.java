@@ -30,6 +30,8 @@ public class QueryLineResponse {
 
     @ApiModelProperty(value = "打卡分值")
     private Integer score;
+    @ApiModelProperty(value = "是否上架 0:是 1:否")
+    private Integer putOn;
 
     @ApiModelProperty(value = "线路属性")
     private List<String> lineAttrs;
