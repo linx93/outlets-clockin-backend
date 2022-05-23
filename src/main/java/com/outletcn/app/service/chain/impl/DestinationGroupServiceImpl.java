@@ -399,6 +399,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
                     .groupName(destinationGroup.getGroupName())
                     .destinationCount(destinationCount)
                     .score(scoreSum)
+                    .putOn(destinationGroup.getPutOn())
                     .groupAttrs(destinationGroup.getGroupAttrs())
                     .createTime(destinationGroup.getCreateTime())
                     .updateTime(destinationGroup.getUpdateTime()).build();

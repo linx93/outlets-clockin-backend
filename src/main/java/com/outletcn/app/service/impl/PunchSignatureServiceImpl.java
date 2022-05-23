@@ -63,7 +63,10 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         pageInfo.setCurrent(page);
         pageInfo.setSize(size);
         Query query = new Query();
-        Criteria criteria = Criteria.where("type").is(GiftTypeEnum.NORMAL.getCode());
+        Criteria criteria = Criteria.where("type").
+                is(GiftTypeEnum.NORMAL.getCode()).
+                and("validDate").gt(Instant.now().getEpochSecond()).
+                and("putOn").is(0);
         query.addCriteria(criteria);
         PageInfo<GiftBag> bagPageInfo = punchSignatureMongoRepository.findObjForPage(query, pageInfo);
         List<GiftPunchSignatureResponse> signatureResponses = giftConverter.toGiftPunch(bagPageInfo.getRecords());
@@ -103,7 +106,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         if (voucher != null) {
             if (voucher.size() >= exchangeCount) {
                 log.info("礼品已兑换次数 {},礼品限制次数 {} ", voucher.size(), exchangeCount);
-                throw new BasicException("礼品已兑换次数");
+                throw new BasicException("该礼品已兑换完毕");
             }
         }
 
@@ -113,18 +116,18 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         //4查询礼品每日单次限制兑换次数
         Integer exchangeLimit = giftBag.getExchangeLimit();
 
-        //TODO 带测试
+
         if (exchangeLimitVoucher != null) {
             log.info("礼品每日单次限制兑换次数 {},礼品限制次数 {} ", exchangeLimitVoucher.size(), exchangeLimit);
             if (exchangeLimitVoucher.size() >= exchangeLimit) {
-                throw new BasicException("礼品每日单次兑换次数已用完");
+                throw new BasicException("该礼品每日单次兑换次数已用完");
             }
         }
 
         String content = QRCodeContent.builder()
                 .id(giftId)
                 .appId(UserTypeEnum.WRITE_OFF.name())
-                .type("1")
+                .type(String.valueOf(GiftTypeEnum.NORMAL.getCode()))
                 .build().toString();
 
         try {

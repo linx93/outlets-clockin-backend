@@ -31,6 +31,9 @@ public class QueryDestinationResponse {
     @ApiModelProperty(value = "目的地积分值")
     private Integer score;
 
+    @ApiModelProperty(value = "是否上架 0:是 1:否")
+    private Integer putOn;
+
     @ApiModelProperty(value = "目的地属性")
     private List<String> destinationAttrs;
 

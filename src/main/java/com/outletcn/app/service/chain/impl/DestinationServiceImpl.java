@@ -449,6 +449,7 @@ public class DestinationServiceImpl implements DestinationService {
                     .destinationName(destination.getDestinationName())
                     .destinationType(destination.getDestinationType())
                     .score(destination.getScore())
+                    .putOn(destination.getPutOn())
                     .destinationAttrs(destination.getDestinationAttrs())
                     .createTime(destination.getCreateTime())
                     .updateTime(destination.getUpdateTime()).build();
