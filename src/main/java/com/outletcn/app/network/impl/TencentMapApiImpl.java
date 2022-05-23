@@ -29,9 +29,9 @@ public class TencentMapApiImpl implements TencentMapApi {
 
     @Override
     public MapResult geocoder(Location location) {
-        String text = String.format("/ws/geocoder/v1?key=%s&location=%s,%s%s", appKey, location.getLat(), location.getLng(), secretKey);
+        String text = String.format("/ws/geocoder/v1?key=%s&get_poi=1&location=%s,%s%s", appKey, location.getLat(), location.getLng(), secretKey);
         String sign = MD5.stringToMD5(text);
-        String url = String.format("https://apis.map.qq.com/ws/geocoder/v1?key=%s&location=%s,%s&sig=%s&get_poi=1", appKey, location.getLat(), location.getLng(), sign);
+        String url = String.format("https://apis.map.qq.com/ws/geocoder/v1?key=%s&get_poi=1&location=%s,%s&sig=%s&", appKey, location.getLat(), location.getLng(), sign);
         log.info("请求url:{}", url);
         HttpResponse execute = HttpRequest.get(url).execute();
         if (!execute.isOk()) {
