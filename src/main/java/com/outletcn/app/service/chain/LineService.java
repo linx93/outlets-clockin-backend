@@ -155,4 +155,12 @@ public interface LineService {
      * @return 目的地群详情vo
      */
     DestinationGroupVO destinationGroupDetails(Long id);
+
+    /**
+     * 搜索目的地，返回包含目的地的路线list和目的地list
+     *
+     * @param searchDestinationRequest  keywords 目的地名
+     * @return
+     */
+    SearchDestinationResponse searchDestination(SearchDestinationRequest searchDestinationRequest);
 }

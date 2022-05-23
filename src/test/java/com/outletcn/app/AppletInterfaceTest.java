@@ -39,7 +39,7 @@ public class AppletInterfaceTest {
     }
 
     @Test
-    void destinationGroupDetails(){
+    void destinationGroupDetails() {
         DestinationGroupVO destinationGroupVO = lineService.destinationGroupDetails(1526129253316354049L);
         System.out.println(JSON.toJSONString(destinationGroupVO, true));
     }
@@ -88,5 +88,14 @@ public class AppletInterfaceTest {
     void myScore() {
         Long aLong = punchLogService.myScore();
         System.out.println(aLong);
+    }
+
+
+    @Test
+    void searchDestination() {
+        SearchDestinationRequest searchDestinationRequest = new SearchDestinationRequest();
+        searchDestinationRequest.setKeywords("金融城");
+        SearchDestinationResponse searchDestinationResponse = lineService.searchDestination(searchDestinationRequest);
+        System.out.println(JSON.toJSONString(searchDestinationResponse,true));
     }
 }

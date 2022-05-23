@@ -64,6 +64,14 @@ public class ClockInAppletPageController {
     }
 
 
+    @ApiOperation(value = "搜索目的地，返回包含目的地的路线list和目的地list")
+    @PostMapping(value = "/search-destination")
+    public ApiResult<SearchDestinationResponse> searchDestination(@RequestBody SearchDestinationRequest searchDestinationRequest) {
+        SearchDestinationResponse apiResult = lineService.searchDestination(searchDestinationRequest);
+        return ApiResult.ok(apiResult);
+    }
+
+
     @ApiOperation(value = "首页路线列表数据和地图数据的聚合")
     @PostMapping(value = "/line-list-map")
     public ApiResult<LineAndMapVO> lineListMap(@RequestBody LineListRequest lineListRequest) {

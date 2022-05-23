@@ -483,7 +483,14 @@ public class LineServiceImpl implements LineService {
                 return flag.get();
             }).collect(Collectors.toList());
         }
+        return buildLineVOS(lines);
+    }
+
+    private List<LineVO> buildLineVOS(List<Line> lines) {
         List<LineVO> result = new ArrayList<>();
+        if (lines.isEmpty()) {
+            return result;
+        }
         lines.forEach(line -> result.add(lineConverter.toLineVO(line)));
         //路线包含的所有目的地的属性
         Set<String> tempDestinationAttr = new HashSet<>();
@@ -612,5 +619,16 @@ public class LineServiceImpl implements LineService {
         DestinationGroupDetailsVO destinationGroupDetailsVO = lineConverter.toDestinationGroupDetailsVO(one, destinationGroup);
         destinationGroupVO.setDestinationGroupDetails(destinationGroupDetailsVO);
         return destinationGroupVO;
+    }
+
+    @Override
+    public SearchDestinationResponse searchDestination(SearchDestinationRequest searchDestinationRequest) {
+        //线路列表
+        List<Line> lines = findLineByDestinationName(searchDestinationRequest.getKeywords());
+        //目的地列表
+        List<Destination> destinations = mongoTemplate.findAll(Destination.class);
+        List<Destination> collect = destinations.stream().filter(item -> item.getDestinationName().contains(searchDestinationRequest.getKeywords())).collect(Collectors.toList());
+        SearchDestinationResponse build = SearchDestinationResponse.builder().lines(buildLineVOS(lines)).destinations(lineConverter.toDestinationVOList(collect)).build();
+        return build;
     }
 }
