@@ -1,8 +1,12 @@
 package com.outletcn.app.controller.chain;
 
 
+import com.outletcn.app.common.ClockInType;
+import com.outletcn.app.common.DestinationQRCode;
+import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.mongo.DestinationAttribute;
 import com.outletcn.app.model.mongo.DestinationType;
+import com.outletcn.app.utils.QrcodeUtil;
 import net.phadata.app.common.ApiResult;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
@@ -14,7 +18,11 @@ import lombok.AllArgsConstructor;
 import net.phadata.app.common.ErrorCode;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 /**
@@ -198,4 +206,32 @@ public class DestinationController {
         return ApiResult.thin(ErrorCode.SUCCESS, destinationTypes);
     }
 
+    /**
+     * 目的地二维码生成
+     */
+    @ApiOperation(value = "目的地二维码生成")
+    @GetMapping(value = "destinationQRCode")
+    public void destinationQRCode(@RequestParam("id") String id, HttpServletResponse response) {
+        try {
+            destinationService.findDestinationById(Long.parseLong(id));
+
+            String content = DestinationQRCode.builder()
+                    .id(id)
+                    .app("outlets")
+                    .type(ClockInType.Destination.name())
+                    .build().toString();
+            ByteArrayOutputStream outputStream = QrcodeUtil.outputStream(content);
+
+            response.setHeader("Content-Disposition", "attachment; fileName=" + id + ".png");
+
+            ServletOutputStream out = response.getOutputStream();
+
+            out.write(outputStream.toByteArray());
+            out.close();
+        } catch (Exception e) {
+
+            throw new BasicException("目的地二维码生成失败");
+        }
+
+    }
 }
