@@ -3,6 +3,7 @@ package com.outletcn.app.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
+import com.outletcn.app.common.GiftTypeEnum;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.common.QRCodeContent;
 import com.outletcn.app.common.UserTypeEnum;
@@ -62,6 +63,8 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         pageInfo.setCurrent(page);
         pageInfo.setSize(size);
         Query query = new Query();
+        Criteria criteria = Criteria.where("type").is(GiftTypeEnum.NORMAL.getCode());
+        query.addCriteria(criteria);
         PageInfo<GiftBag> bagPageInfo = punchSignatureMongoRepository.findObjForPage(query, pageInfo);
         List<GiftPunchSignatureResponse> signatureResponses = giftConverter.toGiftPunch(bagPageInfo.getRecords());
         PageInfo<GiftPunchSignatureResponse> responsePageInfo = new PageInfo<>();

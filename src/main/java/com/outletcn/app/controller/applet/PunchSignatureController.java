@@ -5,7 +5,9 @@ import com.outletcn.app.common.QRCodeContent;
 import com.outletcn.app.common.UserTypeEnum;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.gift.GiftPunchSignatureResponse;
+import com.outletcn.app.model.dto.gift.LuxuryGiftBagResponse;
 import com.outletcn.app.service.PunchSignatureService;
+import com.outletcn.app.service.gift.GiftService;
 import com.outletcn.app.utils.QrcodeUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +31,23 @@ public class PunchSignatureController {
 
     @Autowired
     PunchSignatureService punchSignatureService;
+
+    @Autowired
+    GiftService giftService;
+
+
+    /**
+     * 豪礼兑换列表
+     */
+    @GetMapping("/exchangeLuxuryGiftList")
+    @ApiOperation(value = "豪礼兑换-获取豪礼兑换列表")
+    public com.outletcn.app.common.ApiResult<PageInfo<LuxuryGiftBagResponse>> exchangeLuxuryGift(@RequestParam() Integer page,
+                                                                                                 @RequestParam(required = false,defaultValue = "1") Integer size) {
+        PageInfo<LuxuryGiftBagResponse> pageInfo = giftService.exchangeLuxuryGift(page, size);
+
+        return com.outletcn.app.common.ApiResult.result(ErrorCode.SUCCESS, pageInfo);
+    }
+
 
     /**
      * 签章兑换礼品列表

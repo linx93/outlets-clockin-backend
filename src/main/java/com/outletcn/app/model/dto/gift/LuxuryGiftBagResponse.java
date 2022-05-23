@@ -66,6 +66,9 @@ public class LuxuryGiftBagResponse {
         @ApiModelProperty(value = "目的地名称")
         private String destinationName;
 
+        @ApiModelProperty(value = "是否打卡,0是;1否")
+        private Integer clockIn;
+
         /**
          * 地址
          */

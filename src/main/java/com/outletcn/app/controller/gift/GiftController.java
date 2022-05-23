@@ -183,28 +183,5 @@ public class GiftController {
         return ApiResult.ok(null);
     }
 
-    /**
-     * 豪礼兑换列表
-     */
-    @GetMapping("/exchangeLuxuryGiftList")
-    @ApiOperation(value = "豪礼兑换-获取豪礼兑换列表")
-    public ApiResult<PageInfo<LuxuryGiftBagResponse>> exchangeLuxuryGift(@RequestParam(required = false) Integer page,
-                                                                          @RequestParam(required = false) Integer size) {
-        PageInfo<LuxuryGiftBagResponse> pageInfo = giftService.exchangeLuxuryGift(page, size);
-
-        return ApiResult.result(ErrorCode.SUCCESS, pageInfo);
-    }
-
-
-    /**
-     * 普通礼品兑换列表
-     */
-    @GetMapping("/exchangeOrdinaryGiftList")
-    @ApiOperation(value = "普通礼品兑换-获取普通礼品兑换列表")
-    public ApiResult<PageInfo<LuxuryGiftBagResponse>> exchangeOrdinaryGift(@RequestParam(required = false) Integer page,
-                                                                           @RequestParam(required = false) Integer size) {
-
-        return ApiResult.ok(giftService.exchangeOrdinaryGift(page, size));
-    }
 }
 

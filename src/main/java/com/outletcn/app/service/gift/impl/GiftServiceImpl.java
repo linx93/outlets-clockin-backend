@@ -1,13 +1,18 @@
 package com.outletcn.app.service.gift.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.outletcn.app.common.GiftTypeEnum;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.exception.BasicException;
+import com.outletcn.app.mapper.PunchLogMapper;
+import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.gift.*;
 import com.outletcn.app.model.mongo.*;
+import com.outletcn.app.model.mysql.PunchLog;
 import com.outletcn.app.repository.GiftBagMongoRepository;
 import com.outletcn.app.service.gift.GiftService;
+import com.outletcn.app.utils.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +38,8 @@ public class GiftServiceImpl implements GiftService {
     MongoTemplate mongoTemplate;
     Sequence sequence;
     GiftBagMongoRepository giftBagMongoRepository;
+
+    PunchLogMapper punchLogMapper;
 
     //新增礼品
     @Override
@@ -720,6 +727,7 @@ public class GiftServiceImpl implements GiftService {
     }
 
     private PageInfo<LuxuryGiftBagResponse> exchangeGift(Integer page, Integer size, GiftTypeEnum type) {
+        UserInfo info = JwtUtil.getInfo(UserInfo.class);
         //查询豪华礼包
         Query query = new Query();
         Criteria criteria = Criteria.where("type").is(type.getCode()).and("putOn").is(0);
@@ -759,6 +767,14 @@ public class GiftServiceImpl implements GiftService {
                         destinationInfo.setAddress(destination.getAddress());
                         destinationInfo.setLatitude(destination.getLatitude());
                         destinationInfo.setLongitude(destination.getLongitude());
+                        //判断是否已经打卡
+                        PunchLog punchLog = punchLogMapper.selectOne(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, Long.parseLong(info.getId())).eq(PunchLog::getDestinationId, destination.getId()));
+                        //打卡日志为空说明没有打卡 0 已经打卡;1 未打卡
+                        if (punchLog == null) {
+                            destinationInfo.setClockIn(1);
+                        } else {
+                            destinationInfo.setClockIn(0);
+                        }
                         destinationInfos.add(destinationInfo);
                         luxuryGiftBagResponse.setDestinationInfos(destinationInfos);
                     }
