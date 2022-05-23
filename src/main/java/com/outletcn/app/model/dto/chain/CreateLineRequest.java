@@ -19,9 +19,9 @@ import java.util.List;
 @Data
 public class CreateLineRequest {
 
-    @Valid
+//    @Valid
     private BaseInfo baseInfo;
-    @Valid
+//    @Valid
     private DetailsInfo detailsInfo;
 
     @Data
@@ -60,7 +60,7 @@ public class CreateLineRequest {
         /**
          * 是否上架
          */
-        @NotNull(message = "是否上架不能为空")
+//        @NotNull(message = "是否上架不能为空")
         @ApiModelProperty("是否上架0:是/1:否")
         private Integer putOn;
 
@@ -68,7 +68,7 @@ public class CreateLineRequest {
          * 是否置顶
          * 0:是/1:否
          */
-        @NotNull(message = "是否置顶不能为空")
+//        @NotNull(message = "是否置顶不能为空")
         @ApiModelProperty("是否置顶0:是/1:否")
         private Integer stick;
 
