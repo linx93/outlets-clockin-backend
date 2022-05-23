@@ -2,8 +2,12 @@ package com.outletcn.app.controller.chain;
 
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
+import com.outletcn.app.model.mongo.Destination;
+import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.model.mongo.Line;
 import com.outletcn.app.model.mongo.LineAttribute;
+import com.outletcn.app.service.chain.DestinationGroupService;
+import com.outletcn.app.service.chain.DestinationService;
 import com.outletcn.app.service.chain.LineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,6 +17,7 @@ import net.phadata.app.common.ErrorCode;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +33,8 @@ import java.util.List;
 public class LineController {
 
     private LineService lineService;
+    private DestinationService destinationService;
+    private DestinationGroupService destinationGroupService;
 
     /**
      * 创建线路
@@ -136,9 +143,45 @@ public class LineController {
     @ApiOperation(value = "基于名称、上下架查询")
     @GetMapping("/findLineByNameOrPutOnForPage")
     public ApiResult<PageInfo<QueryLineResponse>> findLineByNameOrPutOnForPage(@RequestParam(name = "name", required = false) String name,
-                                                                  @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page,
-                                                                  @RequestParam("size") Integer size) {
+                                                                               @RequestParam("putOn") Integer putOn, @RequestParam("page") Integer page,
+                                                                               @RequestParam("size") Integer size) {
         PageInfo<QueryLineResponse> pageInfo = lineService.findLineByNameOrPutOnForPage(name, putOn, page, size);
         return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);
+    }
+
+    /**
+     * 根据名称查询目的地/目的地群
+     */
+    @ApiOperation(value = "根据名称查询目的地/目的地群")
+    @GetMapping("/findDestinationOrDestinationGroupByName")
+    public ApiResult<List<QueryDestinationOrDestinationGroupOneResponse>> findDestinationOrDestinationGroupByName(@RequestParam(name = "name", required = false) String name) {
+
+        List<QueryDestinationOrDestinationGroupOneResponse> destinations = new ArrayList<>();
+
+        List<Destination> destinationByName = destinationService.findDestinationByName(name);
+
+        if (destinationByName != null && destinationByName.size() > 0) {
+            for (Destination destination : destinationByName) {
+                QueryDestinationOrDestinationGroupOneResponse groupOneResponse = new QueryDestinationOrDestinationGroupOneResponse();
+                groupOneResponse.setId(destination.getId());
+                groupOneResponse.setName(destination.getDestinationName());
+                groupOneResponse.setType(0);
+                destinations.add(groupOneResponse);
+            }
+        }
+
+        List<DestinationGroup> destinationGroupByName = destinationGroupService.findDestinationGroupByName(name);
+
+        if (destinationGroupByName != null && destinationGroupByName.size() > 0) {
+            for (DestinationGroup destinationGroup : destinationGroupByName) {
+                QueryDestinationOrDestinationGroupOneResponse groupOneResponse = new QueryDestinationOrDestinationGroupOneResponse();
+                groupOneResponse.setId(destinationGroup.getId());
+                groupOneResponse.setName(destinationGroup.getGroupName());
+                groupOneResponse.setType(1);
+                destinations.add(groupOneResponse);
+            }
+        }
+
+        return ApiResult.thin(ErrorCode.SUCCESS, destinations);
     }
 }
