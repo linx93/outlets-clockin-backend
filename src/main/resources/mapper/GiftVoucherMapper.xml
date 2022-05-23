@@ -6,6 +6,6 @@
         from gift_voucher
         where gift_id = #{giftId,jdbcType=BIGINT}
           and user_id = #{userId,jdbcType=BIGINT}
-          group by create_time = #{sencond,jdbcType=BIGINT}
+          and FROM_UNIXTIME(create_time, '%Y-%m-%d') = FROM_UNIXTIME(#{sencond,jdbcType=BIGINT}, '%Y-%m-%d')
     </select>
 </mapper>
