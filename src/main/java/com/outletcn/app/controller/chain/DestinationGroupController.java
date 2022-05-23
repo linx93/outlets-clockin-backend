@@ -54,8 +54,8 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "修改目的地群")
     @PostMapping("/updateDestinationGroup")
-    public ApiResult<Boolean> modifyDestinationGroup(@RequestBody @Valid CreateDestinationGroupRequest createDestinationGroupRequest, Long id) {
-        boolean group = destinationGroupService.modifyDestinationGroup(createDestinationGroupRequest, id);
+    public ApiResult<Boolean> modifyDestinationGroup(@RequestBody @Valid CreateDestinationGroupRequest createDestinationGroupRequest) {
+        boolean group = destinationGroupService.modifyDestinationGroup(createDestinationGroupRequest, createDestinationGroupRequest.getId());
         return ApiResult.thin(ErrorCode.SUCCESS, group);
     }
 

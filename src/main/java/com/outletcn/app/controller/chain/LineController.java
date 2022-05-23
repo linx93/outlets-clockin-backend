@@ -105,8 +105,8 @@ public class LineController {
      */
     @ApiOperation(value = "修改线路")
     @PostMapping("/modifyLine")
-    public ApiResult<Boolean> modifyLine(@RequestBody @Valid CreateLineRequest createLineRequest, Long id) {
-        boolean line = lineService.modifyLine(createLineRequest, id);
+    public ApiResult<Boolean> modifyLine(@RequestBody @Valid CreateLineRequest createLineRequest) {
+        boolean line = lineService.modifyLine(createLineRequest, createLineRequest.getId());
         return ApiResult.thin(ErrorCode.SUCCESS, line);
     }
 

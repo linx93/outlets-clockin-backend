@@ -24,6 +24,9 @@ public class CreateLineRequest {
 //    @Valid
     private DetailsInfo detailsInfo;
 
+    @ApiModelProperty(value = "目的地ID/新增时不传/修改时必传", required = false)
+    private Long id;
+
     @Data
     public static class BaseInfo {
 
