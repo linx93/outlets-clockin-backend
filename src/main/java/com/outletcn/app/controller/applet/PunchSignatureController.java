@@ -41,7 +41,7 @@ public class PunchSignatureController {
      */
     @GetMapping("/exchangeLuxuryGiftList")
     @ApiOperation(value = "豪礼兑换-获取豪礼兑换列表")
-    public com.outletcn.app.common.ApiResult<PageInfo<LuxuryGiftBagResponse>> exchangeLuxuryGift(@RequestParam() Integer page,
+    public com.outletcn.app.common.ApiResult<PageInfo<LuxuryGiftBagResponse>> exchangeLuxuryGift(@RequestParam("page") Integer page,
                                                                                                  @RequestParam(required = false,defaultValue = "1") Integer size) {
         PageInfo<LuxuryGiftBagResponse> pageInfo = giftService.exchangeLuxuryGift(page, size);
 
