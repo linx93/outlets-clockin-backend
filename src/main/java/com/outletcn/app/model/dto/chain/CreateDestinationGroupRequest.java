@@ -18,14 +18,16 @@ import java.util.List;
 @Data
 public class CreateDestinationGroupRequest {
 
-    @Valid
+//    @Valid
     private BaseInfo baseInfo;
-    @Valid
+//    @Valid
     private DetailsInfo detailsInfo;
+
+    @ApiModelProperty(value = "目的地ID/新增时不传/修改时必传", required = false)
+    private Long id;
 
     @Data
     public static class BaseInfo {
-
 
 
         /**
@@ -59,7 +61,7 @@ public class CreateDestinationGroupRequest {
         /**
          * 是否上架
          */
-        @NotNull(message = "是否上架不能为空")
+        // @NotNull(message = "是否上架不能为空")
         @ApiModelProperty(value = "是否上架 0:是/1:否")
         private Integer putOn;
 
