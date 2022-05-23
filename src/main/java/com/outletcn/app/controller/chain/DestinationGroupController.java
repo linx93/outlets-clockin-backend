@@ -104,7 +104,7 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "基于名称模糊查询")
     @GetMapping("/findDestinationGroupByName")
-    public ApiResult<List<DestinationGroup>> findDestinationGroupByName(@RequestParam(value = "name") String name) {
+    public ApiResult<List<DestinationGroup>> findDestinationGroupByName(@RequestParam(value = "name",required = false) String name) {
         List<DestinationGroup> destinationGroups = destinationGroupService.findDestinationGroupByName(name);
         return ApiResult.thin(ErrorCode.SUCCESS, destinationGroups);
     }
