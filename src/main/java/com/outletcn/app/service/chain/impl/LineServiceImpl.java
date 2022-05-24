@@ -207,6 +207,7 @@ public class LineServiceImpl implements LineService {
             if (ClockInType.Destination.getType() == type) { // 目的地
                 Destination destination = mongoTemplate.findById(attributeId, Destination.class);
                 QueryLineOneResponse.Item item = new QueryLineOneResponse.Item();
+                item.setId(destination.getId());
                 item.setType("目的地");
                 item.setName(destination.getDestinationName());
                 item.setScore(destination.getScore());
@@ -215,6 +216,7 @@ public class LineServiceImpl implements LineService {
             } else if (ClockInType.DestinationGroup.getType() == type) {
                 DestinationGroup destinationGroup = mongoTemplate.findById(attributeId, DestinationGroup.class);
                 QueryLineOneResponse.Item item = new QueryLineOneResponse.Item();
+                item.setId(destinationGroup.getId());
                 item.setType("目的地群");
                 item.setName(destinationGroup.getGroupName());
                 int score = destinationGroupService.getDestinationForPoint(attributeId);
