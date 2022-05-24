@@ -112,4 +112,7 @@ public class GiftBagVO implements Serializable {
 
     @ApiModelProperty(value = "礼品包中包含的礼品信息")
     private List<GiftVO> giftList;
+
+    @ApiModelProperty(value = "礼品包中包含的礼品每项的积分求和")
+    private Double scoreSum;
 }

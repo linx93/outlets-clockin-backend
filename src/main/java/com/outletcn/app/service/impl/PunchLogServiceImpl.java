@@ -88,6 +88,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
             if (!giftIds.isEmpty()) {
                 List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
                 giftBagVO.setGiftList(giftConverter.toGiftVOList(gifts));
+                giftBagVO.setScoreSum(gifts.stream().mapToDouble(Gift::getGiftScore).sum());
             }
         });
         return exchangeRecordResponses;
