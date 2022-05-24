@@ -15,11 +15,17 @@ public interface PunchSignatureService {
      *
      * @return 礼品兑换列表
      */
-    PageInfo<GiftPunchSignatureResponse> getPunchSignatureList(Integer page , Integer size);
+    PageInfo<GiftPunchSignatureResponse> exchangeOrdinaryGiftList(Integer page , Integer size);
 
     /**
      * 礼品兑换
      * @param giftId
      */
-    Boolean exchange(String giftId);
+    Boolean ordinaryExchange(String giftId);
+
+    /**
+     * 豪礼兑换
+     * @param giftId
+     */
+    Boolean luxuryExchange(String giftId);
 }

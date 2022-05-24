@@ -11,9 +11,10 @@ public enum GiftTypeEnum {
     /**
      * 礼品类型
      */
-    LUXURY(2, "豪华礼包"),
+    NORMAL(1, "普通礼包"),
 
-    NORMAL(1, "普通礼包");
+    LUXURY(2, "豪华礼包");
+
 
     @Getter
     private final Integer code;

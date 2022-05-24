@@ -21,7 +21,7 @@ public class QRCodeContent {
      */
     private String type;
     /**
-     * 礼品ID
+     * 礼品券ID
      */
     private String id;
 

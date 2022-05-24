@@ -58,7 +58,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
      * 获取礼品兑换列表
      */
     @Override
-    public PageInfo<GiftPunchSignatureResponse> getPunchSignatureList(Integer page, Integer size) {
+    public PageInfo<GiftPunchSignatureResponse> exchangeOrdinaryGiftList(Integer page, Integer size) {
         PageInfo<GiftBag> pageInfo = new PageInfo<>();
         pageInfo.setCurrent(page);
         pageInfo.setSize(size);
@@ -80,7 +80,27 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
     }
 
     @Override
-    public Boolean exchange(String giftId) {
+    public Boolean ordinaryExchange(String giftId) {
+        return exchange(giftId, String.valueOf(GiftTypeEnum.NORMAL.getCode()), 1);
+    }
+
+    /**
+     * 豪礼兑换
+     *
+     * @param giftId
+     */
+    @Override
+    public Boolean luxuryExchange(String giftId) {
+        return exchange(giftId, String.valueOf(GiftTypeEnum.LUXURY.getCode()), 1);
+    }
+
+    /**
+     * @param giftId      礼品包id
+     * @param type        礼品类型 1普通 2豪礼
+     * @param voucherType 券类型 1: 实物兑换卷 2: 消费优惠卷
+     * @return
+     */
+    private Boolean exchange(String giftId, String type, Integer voucherType) {
         //1查询礼品是否存在
         GiftBag giftBag = mongoTemplate.findOne(Query.query(Criteria.where("id").is(Long.parseLong(giftId))), GiftBag.class);
 
@@ -123,21 +143,22 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
                 throw new BasicException("该礼品每日单次兑换次数已用完");
             }
         }
-
+        long id = sequence.nextId();
         String content = QRCodeContent.builder()
-                .id(giftId)
+                .id(String.valueOf(id))
                 .appId(UserTypeEnum.WRITE_OFF.name())
-                .type(String.valueOf(GiftTypeEnum.NORMAL.getCode()))
+                .type(type)
                 .build().toString();
 
         try {
             String qrcodeBase64 = QrcodeUtil.getQrcodeBase64(content);
-
             GiftVoucher giftVoucher = new GiftVoucher();
+            giftVoucher.setId(id);
             giftVoucher.setGiftId(Long.parseLong(giftId));
             giftVoucher.setGiftName(giftBag.getName());
             giftVoucher.setGiftVoucherId(UUID.randomUUID().toString());
-            giftVoucher.setGiftVoucherType(giftBag.getType());
+            //礼品券类型
+            giftVoucher.setGiftVoucherType(voucherType);
             giftVoucher.setGiftVoucherQrcode(qrcodeBase64);
             giftVoucher.setUserId(Long.parseLong(userInfo.getId()));
             //礼品券名称
@@ -145,7 +166,8 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             giftVoucher.setExchangeDeadline(giftBag.getValidDate());
             giftVoucher.setGiftName(giftBag.getName());
             giftVoucher.setState(0);
-            giftVoucher.setExchangeInstructions("暂时为空");
+            //TODO 兑换说明暂时为空
+            giftVoucher.setExchangeInstructions("");
             long second = Instant.now().getEpochSecond();
             giftVoucher.setCreateTime(second);
             giftVoucher.setUpdateTime(second);
