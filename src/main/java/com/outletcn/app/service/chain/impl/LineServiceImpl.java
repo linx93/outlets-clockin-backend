@@ -123,7 +123,7 @@ public class LineServiceImpl implements LineService {
         long epochSecond = Instant.now().getEpochSecond();
 
         CreateLineRequest.BaseInfo baseInfo = createLineRequest.getBaseInfo();
-        if (Objects.isNull(baseInfo)) {
+        if (!Objects.isNull(baseInfo)) {
             line.setLineName(baseInfo.getLineName());
             line.setLineElements(baseInfo.getLineElements());
             line.setLineAttrs(baseInfo.getLineAttrs());
