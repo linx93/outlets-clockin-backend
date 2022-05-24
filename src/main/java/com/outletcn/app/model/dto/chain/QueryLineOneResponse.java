@@ -22,6 +22,7 @@ public class QueryLineOneResponse {
 
     @Data
     public static class Item {
+        private Long id;
         private String name;
         private String type;
         private List<String> attr;

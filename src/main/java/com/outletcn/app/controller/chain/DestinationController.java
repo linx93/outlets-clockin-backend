@@ -41,7 +41,7 @@ public class DestinationController {
 
     @ApiOperation(value = "名称查询目的地")
     @GetMapping("findByName")
-    public ApiResult<List<Destination>> findDestinationByName(@RequestParam("name") String name) {
+    public ApiResult<List<Destination>> findDestinationByName(@RequestParam(value = "name",required = false) String name) {
         List<Destination> destinations = destinationService.findDestinationByName(name);
         return ApiResult.thin(ErrorCode.SUCCESS, destinations);
     }

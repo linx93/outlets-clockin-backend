@@ -317,7 +317,7 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
     public List<DestinationGroup> findDestinationGroupByName(String name) {
         Query query = new Query();
         Pattern pattern = Pattern.compile("^.*" + name + ".*$", Pattern.CASE_INSENSITIVE);
-        query.addCriteria(Criteria.where("groupName").regex(pattern));
+        query.addCriteria(Criteria.where("groupName").regex(pattern).and("putOn").is(0));
         List<DestinationGroup> destinationGroups = mongoTemplate.find(query, DestinationGroup.class);
         return destinationGroups;
     }
