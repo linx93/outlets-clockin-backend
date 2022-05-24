@@ -1,5 +1,7 @@
 package com.outletcn.app.model.dto.chain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.outletcn.app.model.mongo.DetailObjectType;
 import com.outletcn.app.model.mongo.Line;
 import lombok.Data;
@@ -22,6 +24,7 @@ public class QueryLineOneResponse {
 
     @Data
     public static class Item {
+        @JsonSerialize(using = ToStringSerializer.class)
         private Long id;
         private String name;
         private String type;
