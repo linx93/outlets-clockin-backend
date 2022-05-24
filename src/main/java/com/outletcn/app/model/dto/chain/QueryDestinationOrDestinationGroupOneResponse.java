@@ -1,5 +1,7 @@
 package com.outletcn.app.model.dto.chain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.model.mongo.DetailObjectType;
@@ -18,6 +20,7 @@ import java.util.List;
 public class QueryDestinationOrDestinationGroupOneResponse {
 
     @ApiModelProperty(value = "目的地/目的地组")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @ApiModelProperty(value = "类型/0:目的地 1:目的地组")
