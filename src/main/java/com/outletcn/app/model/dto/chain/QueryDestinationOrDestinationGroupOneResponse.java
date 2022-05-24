@@ -23,7 +23,7 @@ public class QueryDestinationOrDestinationGroupOneResponse {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
-    @ApiModelProperty(value = "类型/0:目的地 1:目的地组")
+    @ApiModelProperty(value = "类型 1:目的地 2:目的地群")
     private Integer type;
 
     @ApiModelProperty(value = "名称")

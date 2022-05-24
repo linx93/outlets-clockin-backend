@@ -1,5 +1,6 @@
 package com.outletcn.app.controller.chain;
 
+import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.Destination;
@@ -151,6 +152,7 @@ public class LineController {
 
     /**
      * 根据名称查询目的地/目的地群
+     * 类型 1:目的地 2:目的地群
      */
     @ApiOperation(value = "根据名称查询目的地/目的地群")
     @GetMapping("/findDestinationOrDestinationGroupByName")
@@ -165,7 +167,7 @@ public class LineController {
                 QueryDestinationOrDestinationGroupOneResponse groupOneResponse = new QueryDestinationOrDestinationGroupOneResponse();
                 groupOneResponse.setId(destination.getId());
                 groupOneResponse.setName(destination.getDestinationName());
-                groupOneResponse.setType(0);
+                groupOneResponse.setType(ClockInType.Destination.getType());
                 destinations.add(groupOneResponse);
             }
         }
@@ -177,7 +179,7 @@ public class LineController {
                 QueryDestinationOrDestinationGroupOneResponse groupOneResponse = new QueryDestinationOrDestinationGroupOneResponse();
                 groupOneResponse.setId(destinationGroup.getId());
                 groupOneResponse.setName(destinationGroup.getGroupName());
-                groupOneResponse.setType(1);
+                groupOneResponse.setType(ClockInType.DestinationGroup.getType());
                 destinations.add(groupOneResponse);
             }
         }
