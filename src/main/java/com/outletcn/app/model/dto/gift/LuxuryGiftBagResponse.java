@@ -86,5 +86,18 @@ public class LuxuryGiftBagResponse {
          */
         @ApiModelProperty(value = "纬度")
         private String latitude;
+
+        /**
+         * 目的地推荐图片（列表页长方形缩略图）
+         */
+        @ApiModelProperty(value = "目的地推荐图片（列表页长方形缩略图）")
+        private String destinationRecommendImage;
+
+        /**
+         * 目的地推荐图片（列表页正方形缩略图）
+         */
+        @ApiModelProperty(value = "目的地推荐图片（列表页正方形缩略图）")
+        private String destinationRecommendSquareImage;
+
     }
 }

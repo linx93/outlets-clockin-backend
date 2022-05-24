@@ -767,6 +767,8 @@ public class GiftServiceImpl implements GiftService {
                         destinationInfo.setAddress(destination.getAddress());
                         destinationInfo.setLatitude(destination.getLatitude());
                         destinationInfo.setLongitude(destination.getLongitude());
+                        destinationInfo.setDestinationRecommendImage(destination.getDestinationRecommendImage());
+                        destinationInfo.setDestinationRecommendSquareImage(destination.getDestinationRecommendSquareImage());
                         //判断是否已经打卡
                         PunchLog punchLog = punchLogMapper.selectOne(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, Long.parseLong(info.getId())).eq(PunchLog::getDestinationId, destination.getId()));
                         //打卡日志为空说明没有打卡 0 已经打卡;1 未打卡
