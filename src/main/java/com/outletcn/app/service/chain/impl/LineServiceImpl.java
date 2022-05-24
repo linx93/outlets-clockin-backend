@@ -627,7 +627,7 @@ public class LineServiceImpl implements LineService {
     @Override
     public SearchDestinationResponse searchDestination(SearchDestinationRequest searchDestinationRequest) {
         //线路列表
-        List<Line> lines = findLineByDestinationName(searchDestinationRequest.getKeywords()).stream().filter(item->item.getPutOn()==0).collect(Collectors.toList());
+        List<Line> lines = findLineByDestinationName(searchDestinationRequest.getKeywords()).stream().filter(item -> item.getPutOn() != null && item.getPutOn() == 0).collect(Collectors.toList());
         //目的地列表
         List<Destination> destinations = mongoTemplate.findAll(Destination.class);
         List<Destination> collect = destinations.stream().filter(item -> item.getDestinationName().contains(searchDestinationRequest.getKeywords())).collect(Collectors.toList());
