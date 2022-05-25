@@ -105,7 +105,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             });
         }
         //排序 hot礼包在第一个
-        List<GiftPunchSignatureResponse> responses = signatureResponses.stream().sorted(Comparator.comparing(GiftPunchSignatureResponse::getHot).reversed()).collect(Collectors.toList());
+        List<GiftPunchSignatureResponse> responses = signatureResponses.stream().sorted(Comparator.comparing(GiftPunchSignatureResponse::getHot)).collect(Collectors.toList());
         responsePageInfo.setCurrent(page);
         responsePageInfo.setSize(size);
         responsePageInfo.setTotal(pageInfo.getTotal());
