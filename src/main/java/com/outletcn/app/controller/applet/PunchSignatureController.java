@@ -36,7 +36,7 @@ public class PunchSignatureController {
     @GetMapping("/exchangeLuxuryGiftList")
     @ApiOperation(value = "豪礼礼品-兑换列表")
     public ApiResult<PageInfo<LuxuryGiftBagResponse>> exchangeLuxuryGift(@RequestParam("page") Integer page,
-                                                                                                 @RequestParam(required = false, defaultValue = "1") Integer size) {
+                                                                         @RequestParam(required = false, defaultValue = "1") Integer size) {
         PageInfo<LuxuryGiftBagResponse> pageInfo = giftService.exchangeLuxuryGift(page, size);
 
         return ApiResult.thin(ErrorCode.SUCCESS, pageInfo);

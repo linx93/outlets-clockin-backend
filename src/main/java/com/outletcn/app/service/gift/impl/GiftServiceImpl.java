@@ -756,6 +756,7 @@ public class GiftServiceImpl implements GiftService {
                 giftBagInfo.setType(giftBag.getType());
                 giftBagInfo.setDescription(giftBag.getDescription());
                 giftBagInfo.setImage(giftBag.getImage());
+                giftBagInfo.setId(giftBag.getId());
                 giftBagInfo.setRecommendImage(giftBag.getRecommendImage());
                 List<Destination> destinations = mongoTemplate.find(queryDestination, Destination.class);
                 if (!destinations.isEmpty()) {

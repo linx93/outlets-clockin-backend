@@ -1,5 +1,7 @@
 package com.outletcn.app.model.dto.gift;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -17,6 +19,10 @@ public class LuxuryGiftBagResponse {
 
     @Data
     public static class GiftBagInfo {
+
+        @ApiModelProperty(value = "礼品包ID")
+        @JsonSerialize(using = ToStringSerializer.class)
+        private Long id;
 
         /**
          * 礼品包名称
