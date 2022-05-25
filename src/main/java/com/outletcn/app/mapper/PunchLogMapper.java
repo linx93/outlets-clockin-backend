@@ -110,8 +110,8 @@ public interface PunchLogMapper extends BaseMapper<PunchLog> {
     @Select("SELECT " +
             "destination_id as destinationId, " +
             "destination_name as destinationName, " +
-            "punch_longitude as longitude, " +
-            "punch_latitude as latitude, " +
+            "punch_longitude as lng, " +
+            "punch_latitude as lat, " +
             "COUNT(DISTINCT ( user_id )) AS count  " +
             "FROM " +
             "punch_log  " +
