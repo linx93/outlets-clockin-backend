@@ -10,7 +10,7 @@ public class HeatMap {
     private Long destinationId;
 
     private String destinationName;
-    private String longitude;
-    private String latitude;
+    private String lng;
+    private String lat;
     private Integer count;
 }

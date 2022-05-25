@@ -235,6 +235,7 @@ public class DestinationServiceImpl implements DestinationService {
             destination.setDestinationRecommendImage(baseInfo.getDestinationRecommendImage());
             destination.setDestinationRecommendSquareImage(baseInfo.getDestinationRecommendSquareImage());
             destination.setDestinationType(baseInfo.getDestinationType());
+            destination.setScore(baseInfo.getScore() == null ? 0 : baseInfo.getScore());
             destination.setSummary(baseInfo.getSummary());
             destination.setMajorDestination(baseInfo.getMajorDestination());
             destination.setAddress(baseInfo.getAddress());
