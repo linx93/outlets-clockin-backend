@@ -1,7 +1,9 @@
 package com.outletcn.app.model.dto.chain;
 
+import com.outletcn.app.validation.UpdateGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -16,6 +18,7 @@ import java.util.Map;
  * @datetime 2022/5/16 10:57 AM
  */
 @Data
+@Validated(value = UpdateGroup.class)
 public class DetailsInfo {
 
     /**

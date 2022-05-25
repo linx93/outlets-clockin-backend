@@ -1,8 +1,11 @@
 package com.outletcn.app.model.dto.chain;
 
 import com.outletcn.app.model.mongo.Line;
+import com.outletcn.app.validation.AddGroup;
+import com.outletcn.app.validation.UpdateGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -19,15 +22,17 @@ import java.util.List;
 @Data
 public class CreateLineRequest {
 
-//    @Valid
+    @Valid
     private BaseInfo baseInfo;
-//    @Valid
+    @Valid
     private DetailsInfo detailsInfo;
 
+    @NotNull(groups = UpdateGroup.class)
     @ApiModelProperty(value = "目的地ID/新增时不传/修改时必传", required = false)
     private Long id;
 
     @Data
+    @Validated(value = AddGroup.class)
     public static class BaseInfo {
 
 

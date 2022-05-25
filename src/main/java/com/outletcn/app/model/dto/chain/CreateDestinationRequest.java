@@ -1,7 +1,10 @@
 package com.outletcn.app.model.dto.chain;
 
+import com.outletcn.app.validation.AddGroup;
+import com.outletcn.app.validation.UpdateGroup;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -18,16 +21,18 @@ import java.util.List;
 @Data
 public class CreateDestinationRequest {
 
-    //    @Valid
+    @Valid
     private BaseInfo baseInfo;
-    //    @Valid
+    @Valid
     private DetailsInfo detailsInfo;
 
     @ApiModelProperty(value = "目的地ID/新增时不传/修改时必传", required = false)
+    @NotNull(groups = {UpdateGroup.class})
     private Long id;
 
 
     @Data
+    @Validated(value = AddGroup.class)
     public static class BaseInfo {
         /**
          * 目的地名称
@@ -68,7 +73,7 @@ public class CreateDestinationRequest {
         /**
          * 目的地打卡分值
          */
-        @NotNull(message = "目的地打卡分值不能为空")
+//        @NotNull(message = "目的地打卡分值不能为空")
         @ApiModelProperty(value = "目的地打卡分值")
         private Integer score;
 
@@ -83,7 +88,7 @@ public class CreateDestinationRequest {
          * 是否上架
          * 0:是/1:否
          */
-        @NotNull(message = "是否上架不能为空")
+//        @NotNull(message = "是否上架不能为空")
         @ApiModelProperty(value = "是否上架 0:是/1:否")
         private Integer putOn;
 

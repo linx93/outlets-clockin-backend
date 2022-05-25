@@ -7,6 +7,8 @@ import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.mongo.DestinationAttribute;
 import com.outletcn.app.model.mongo.DestinationType;
 import com.outletcn.app.utils.QrcodeUtil;
+import com.outletcn.app.validation.AddGroup;
+import com.outletcn.app.validation.UpdateGroup;
 import net.phadata.app.common.ApiResult;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
@@ -16,10 +18,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import net.phadata.app.common.ErrorCode;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.ByteArrayOutputStream;
@@ -41,7 +43,7 @@ public class DestinationController {
 
     @ApiOperation(value = "名称查询目的地")
     @GetMapping("findByName")
-    public ApiResult<List<Destination>> findDestinationByName(@RequestParam(value = "name",required = false) String name) {
+    public ApiResult<List<Destination>> findDestinationByName(@RequestParam(value = "name", required = false) String name) {
         List<Destination> destinations = destinationService.findDestinationByName(name);
         return ApiResult.thin(ErrorCode.SUCCESS, destinations);
     }
@@ -61,7 +63,7 @@ public class DestinationController {
      */
     @ApiOperation(value = "创建目的地")
     @PostMapping("createDestination")
-    public ApiResult<String> createDestination(@RequestBody @Valid CreateDestinationRequest createDestinationRequest) {
+    public ApiResult<String> createDestination(@RequestBody @Validated(value = AddGroup.class) CreateDestinationRequest createDestinationRequest) {
         String id = destinationService.createDestination(createDestinationRequest);
         return ApiResult.thin(ErrorCode.SUCCESS, id);
     }
@@ -101,7 +103,7 @@ public class DestinationController {
      */
     @ApiOperation(value = "修改目的地")
     @PostMapping("modifyDestination")
-    public ApiResult<Boolean> modifyDestination(@RequestBody @Valid CreateDestinationRequest createDestinationRequest) {
+    public ApiResult<Boolean> modifyDestination(@RequestBody @Validated(value = UpdateGroup.class) CreateDestinationRequest createDestinationRequest) {
         boolean destination = destinationService.modifyDestination(createDestinationRequest, createDestinationRequest.getId());
         return ApiResult.thin(ErrorCode.SUCCESS, destination);
     }

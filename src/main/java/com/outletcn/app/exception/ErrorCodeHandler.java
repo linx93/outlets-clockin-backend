@@ -13,6 +13,9 @@ import com.outletcn.app.common.ApiResult;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 异常统一处理
@@ -62,11 +65,16 @@ public class ErrorCodeHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResult<?> exceptionHandler(MethodArgumentNotValidException e) {
-        log.error("参数验证失败:{}", e.getMessage());
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        Map<String, Object> map = new HashMap<>(16);
+        for (FieldError fieldError : fieldErrors) {
+            map.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+        log.error("参数验证失败:{}", map);
         FieldError error = e.getBindingResult().getFieldError();
         String message = String.format("%s:%s", error == null ? "" : error.getField(), error == null ? "" : error.getDefaultMessage());
         //todo Bad Request
-        return ApiResult.result("100000", message);
+        return ApiResult.result(ErrorCode.PARAMS_IS_INVALID, message);
     }
 
     @ExceptionHandler(value = SocketException.class)

@@ -10,11 +10,14 @@ import com.outletcn.app.model.mongo.LineAttribute;
 import com.outletcn.app.service.chain.DestinationGroupService;
 import com.outletcn.app.service.chain.DestinationService;
 import com.outletcn.app.service.chain.LineService;
+import com.outletcn.app.validation.AddGroup;
+import com.outletcn.app.validation.UpdateGroup;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import net.phadata.app.common.ApiResult;
 import net.phadata.app.common.ErrorCode;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -42,7 +45,7 @@ public class LineController {
      */
     @ApiOperation(value = "创建线路")
     @PostMapping("/createLine")
-    public ApiResult<String> createLine(@RequestBody @Valid CreateLineRequest request) {
+    public ApiResult<String> createLine(@RequestBody @Validated(value = AddGroup.class) CreateLineRequest request) {
         String id = lineService.createLine(request);
         return ApiResult.thin(ErrorCode.SUCCESS, id);
     }
@@ -113,7 +116,7 @@ public class LineController {
      */
     @ApiOperation(value = "修改线路")
     @PostMapping("/modifyLine")
-    public ApiResult<Boolean> modifyLine(@RequestBody @Valid CreateLineRequest createLineRequest) {
+    public ApiResult<Boolean> modifyLine(@RequestBody @Validated(value = UpdateGroup.class) CreateLineRequest createLineRequest) {
         boolean line = lineService.modifyLine(createLineRequest, createLineRequest.getId());
         return ApiResult.thin(ErrorCode.SUCCESS, line);
     }
