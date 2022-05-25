@@ -103,7 +103,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
     private int clockInDistance;
 
     @Override
-    public ClockInResponse executeClockIn(ClockInRequest clockInRequest) {
+    public ClockInRecords executeClockIn(ClockInRequest clockInRequest) {
         UserInfo info = JwtUtil.getInfo(UserInfo.class);
         Destination byId = mongoTemplate.findById(clockInRequest.getId(), Destination.class);
         Assert.notNull(byId, "二维码代表的打卡点不存在");
@@ -121,7 +121,9 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         punchLog.setIntegralValue(byId.getScore());
         punchLog.setDestinationName(byId.getDestinationName());
         getBaseMapper().insert(punchLog);
-        ClockInResponse clockInResponse = clockInConverter.toClockInResponse(byId);
+        Long id = punchLog.getId();
+        PunchLog punchLogNew = getBaseMapper().selectById(id);
+        ClockInRecords clockInResponse = clockInConverter.toClockInRecords(punchLogNew);
         return clockInResponse;
     }
 

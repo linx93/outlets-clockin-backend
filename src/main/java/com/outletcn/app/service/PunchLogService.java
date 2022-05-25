@@ -42,7 +42,7 @@ public interface PunchLogService extends IService<PunchLog> {
      * @param clockInRequest 打卡参数
      * @return res
      */
-    ClockInResponse executeClockIn(ClockInRequest clockInRequest);
+    ClockInRecords executeClockIn(ClockInRequest clockInRequest);
 
     /**
      * 用户打卡记录

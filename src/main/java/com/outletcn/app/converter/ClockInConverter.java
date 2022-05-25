@@ -20,5 +20,4 @@ public interface ClockInConverter {
 
     List<ClockInRecords> toClockInRecordsList(List<PunchLog> punchLogs);
 
-    ClockInResponse toClockInResponse(Destination destination);
 }
