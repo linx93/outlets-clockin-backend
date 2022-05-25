@@ -88,9 +88,8 @@ public interface PunchLogMapper extends BaseMapper<PunchLog> {
     //总用户数量统计
     @Select("SELECT " +
             "COUNT(1) as num " +
-            "FROM clock_in_user " +
-            "WHERE create_time BETWEEN #{begin} AND #{end}")
-    Integer countUser(@Param("begin") Date begin, @Param("end") Date end);
+            "FROM clock_in_user")
+    Integer countUser();
 
 
     //电子券核销统计

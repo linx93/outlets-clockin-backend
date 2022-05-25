@@ -56,7 +56,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         Integer newUsers = punchLogMapper.countNewUser(begin_date, end_date);
 
         //总用户数量统计
-        Integer totalUser = punchLogMapper.countUser(begin_date, end_date);
+        Integer totalUser = punchLogMapper.countUser();
 
         //电子券核销统计
         Integer countUsedVoucher = punchLogMapper.countUsedGiftVoucher(begin, end);
