@@ -10,6 +10,7 @@ import com.outletcn.app.common.UserTypeEnum;
 import com.outletcn.app.converter.GiftConverter;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.mapper.GiftVoucherMapper;
+import com.outletcn.app.mapper.PunchLogMapper;
 import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.gift.GiftListResponse;
 import com.outletcn.app.model.dto.gift.GiftPunchSignatureResponse;
@@ -18,6 +19,7 @@ import com.outletcn.app.model.mongo.Gift;
 import com.outletcn.app.model.mongo.GiftBag;
 import com.outletcn.app.model.mongo.GiftBagRelation;
 import com.outletcn.app.model.mysql.GiftVoucher;
+import com.outletcn.app.model.mysql.PunchLog;
 import com.outletcn.app.repository.PunchSignatureMongoRepository;
 import com.outletcn.app.service.PunchSignatureService;
 import com.outletcn.app.utils.JwtUtil;
@@ -49,6 +51,8 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
     private GiftConverter giftConverter;
 
     private GiftVoucherMapper giftVoucherMapper;
+
+    private PunchLogMapper punchLogMapper;
 
     private Sequence sequence;
 
@@ -145,6 +149,31 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             log.info("礼品不存在 {}", giftId);
             throw new BasicException("礼品不存在");
         }
+
+        //判断是否已完成所有打卡点
+        List<Long> placeElement = giftBag.getPlaceElement();
+        Query queryDestination = new Query();
+        Criteria criteriaDestination = Criteria.where("id").in(placeElement);
+        queryDestination.addCriteria(criteriaDestination);
+        List<Destination> destinations = mongoTemplate.find(queryDestination, Destination.class);
+        List<Long> destinationIds = destinations.stream().map(Destination::getId).collect(Collectors.toList());
+        List<PunchLog> punchLogs = punchLogMapper.selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, Long.parseLong(userInfo.getId())).in(PunchLog::getDestinationId, destinationIds));
+        List<Long> destinationIdPunchLogs = punchLogs.stream().map(PunchLog::getDestinationId).collect(Collectors.toList());
+
+        List<Long> tempDestinationIdPunchLogs = new ArrayList<>();
+        // 如果所需打卡点记录没有在日志表中说明未打卡
+        for (Long destinationIdPunchLog : destinationIdPunchLogs) {
+            if (destinationIds.contains(destinationIdPunchLog)) {
+                tempDestinationIdPunchLogs.add(destinationIdPunchLog);
+            }
+        }
+
+        if (destinationIds.size() != tempDestinationIdPunchLogs.size()) {
+
+            throw new BasicException("请完成打卡后兑换");
+        }
+
+
         //2查询礼品是否已经过期
         LocalDateTime validDate = LocalDateTime.ofEpochSecond(giftBag.getValidDate(), 0, ZoneOffset.of("+8"));
         if (validDate.isBefore(LocalDateTime.now())) {
