@@ -45,7 +45,7 @@ public class OperatorServiceImpl extends ServiceImpl<OperatorMapper, Operator> i
             throw new BasicException("用户名或密码错误");
         }
         if (one.getState() == null || one.getState() == AccountStateEnum.LOGOUT.getCode()) {
-            throw new BasicException("账户已被管理员注销，请联系管理员");
+            throw new BasicException("改账户已注销");
         }
         LoginResponse loginResponse = buildLoginResponse(one);
         return ApiResult.ok(loginResponse);
@@ -53,6 +53,7 @@ public class OperatorServiceImpl extends ServiceImpl<OperatorMapper, Operator> i
 
     private LoginResponse buildLoginResponse(Operator one) {
         UserInfo userInfo = userConverter.toUserInfo(one);
+        userInfo.setType(UserTypeEnum.PC);
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setUserInfo(userInfo);
         String jwtToken = JwtUtil.create(userInfo.getAccount(), userInfo);

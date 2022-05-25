@@ -95,7 +95,7 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
         //1. 构建活动1
         Map<String, Object> description1 = new LinkedHashMap<>();
         description1.put("type", "title");
-        description1.put("content", "点亮新奥莱  「超级大礼」");
+        description1.put("content", "活动一：点亮新奥莱  「超级大礼」");
         descriptions.add(description1);
 
         Map<String, Object> description2 = new LinkedHashMap<>();
@@ -148,8 +148,10 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
         descriptions.add(description8);
 
         ActivityRule activityRule = new ActivityRule();
-        activityRule.setRecommendAudio("https://test-1311883259.cos.ap-chongqing.myqcloud.com/25d9ca5fc88747d89dcef66b04670482.mp3");
-        activityRule.setRecommendVideo("https://test-1311883259.cos.ap-chongqing.myqcloud.com/510792601-1-208.mp4");
+        //activityRule.setRecommendAudio("https://test-1311883259.cos.ap-chongqing.myqcloud.com/25d9ca5fc88747d89dcef66b04670482.mp3");
+        //activityRule.setRecommendVideo("https://test-1311883259.cos.ap-chongqing.myqcloud.com/510792601-1-208.mp4");
+        activityRule.setRecommendAudio("");
+        activityRule.setRecommendVideo("");
         activityRule.setDescriptions(descriptions);
         return activityRule;
     }

@@ -105,3 +105,5 @@ tencent:
 system:
   ##开启token校验
   check-token: true
+  ##打卡点距离限制单位米
+  clock-in-distance: 30000

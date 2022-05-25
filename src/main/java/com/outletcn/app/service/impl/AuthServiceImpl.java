@@ -1,6 +1,7 @@
 package com.outletcn.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.outletcn.app.common.AccountStateEnum;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.UserTypeEnum;
 import com.outletcn.app.converter.UserConverter;
@@ -67,6 +68,9 @@ public class AuthServiceImpl extends ServiceImpl<AuthMapper, Auth> implements Au
         if (!bCryptPasswordEncoder.matches(loginRequest.getPassword(), writeOffUser.getPassword())) {
             throw new BasicException("用户名或密码错误");
         }
+        if (writeOffUser.getState() == null || writeOffUser.getState() == AccountStateEnum.LOGOUT.getCode()) {
+            throw new BasicException("改账户已注销");
+        }
         // if (writeOffUser.getAuthId() == null) {
         //     throw new BasicException("未进行秘袋儿实人认证");
         // }
@@ -112,6 +116,7 @@ public class AuthServiceImpl extends ServiceImpl<AuthMapper, Auth> implements Au
         LoginResponse loginResponse = buildLoginResponse(clockInUser, auth);
         return ApiResult.ok(loginResponse);
     }
+
     private LoginResponse buildLoginResponse(ClockInUser clockInUser, Auth auth) {
         UserInfo userInfo = userConverter.toUserInfo(clockInUser, auth);
         userInfo.setType(UserTypeEnum.CLOCK_IN);
