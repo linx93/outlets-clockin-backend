@@ -1,5 +1,6 @@
 package com.outletcn.app.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
@@ -90,24 +91,26 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         Map<Long, List<GiftVoucher>> collect = giftVouchers.stream().collect(Collectors.groupingBy(GiftVoucher::getGiftId));
         List<Map.Entry<Long, List<GiftVoucher>>> entries = new ArrayList<>(collect.entrySet());
         //3.根据礼品包兑换次数排序
-        entries.sort(Comparator.comparingInt(x -> x.getValue().size()));
         //4 返回排好序的集合
-        Map<Long, List<GiftVoucher>> map2 = new LinkedHashMap<>();
-        for (Map.Entry<Long, List<GiftVoucher>> entry : entries) {
-            map2.put(entry.getKey(), entry.getValue());
-        }
-        //0 hot礼包 1不是hot礼包
-        Optional<Map.Entry<Long, List<GiftVoucher>>> optional = map2.entrySet().stream().findFirst();
-        if (optional.isPresent()) {
-            Long key = optional.get().getKey();
-            signatureResponses.forEach(item -> {
-                if (item.getId().equals(key)) {
-                    item.setHot(0);
-                } else {
-                    item.setHot(1);
+        Long key = 0L;
+        for (Map.Entry<Long, List<GiftVoucher>> listEntry1 : entries) {
+            for (Map.Entry<Long, List<GiftVoucher>> listEntry2 : entries) {
+                if (listEntry1.getValue().size() > 2 * listEntry2.getValue().size()) {
+                    key = listEntry1.getKey();
+                    break;
                 }
-            });
+            }
         }
+
+        //0 hot礼包 1不是hot礼包
+        for (GiftPunchSignatureResponse item : signatureResponses) {
+            if (item.getId().equals(key)) {
+                item.setHot(0);
+            } else {
+                item.setHot(1);
+            }
+        }
+
         //排序 hot礼包在第一个
         List<GiftPunchSignatureResponse> responses = signatureResponses.stream().sorted(Comparator.comparing(GiftPunchSignatureResponse::getHot)).collect(Collectors.toList());
         responsePageInfo.setCurrent(page);
@@ -159,7 +162,6 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         List<Long> destinationIds = destinations.stream().map(Destination::getId).collect(Collectors.toList());
         List<PunchLog> punchLogs = punchLogMapper.selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, Long.parseLong(userInfo.getId())).in(PunchLog::getDestinationId, destinationIds));
         List<Long> destinationIdPunchLogs = punchLogs.stream().map(PunchLog::getDestinationId).collect(Collectors.toList());
-
         List<Long> tempDestinationIdPunchLogs = new ArrayList<>();
         // 如果所需打卡点记录没有在日志表中说明未打卡
         for (Long destinationIdPunchLog : destinationIdPunchLogs) {
@@ -170,7 +172,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
 
         if (destinationIds.size() != tempDestinationIdPunchLogs.size()) {
 
-            throw new BasicException("请完成打卡后兑换");
+//            throw new BasicException("请完成打卡后兑换");
         }
 
 
