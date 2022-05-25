@@ -16,6 +16,7 @@ import com.outletcn.app.model.dto.gift.GiftPunchSignatureResponse;
 import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.Gift;
 import com.outletcn.app.model.mongo.GiftBag;
+import com.outletcn.app.model.mongo.GiftBagRelation;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.outletcn.app.repository.PunchSignatureMongoRepository;
 import com.outletcn.app.service.PunchSignatureService;
@@ -34,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author felix
@@ -71,6 +73,12 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         PageInfo<GiftBag> bagPageInfo = punchSignatureMongoRepository.findObjForPage(query, pageInfo);
         List<GiftPunchSignatureResponse> signatureResponses = giftConverter.toGiftPunch(bagPageInfo.getRecords());
         PageInfo<GiftPunchSignatureResponse> responsePageInfo = new PageInfo<>();
+        signatureResponses.forEach(item -> {
+            List<Long> giftBagId = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(item.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+            List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftBagId)), Gift.class);
+            int scoreSum = gifts.stream().mapToInt(Gift::getGiftScore).sum();
+            item.setScoreSum(scoreSum);
+        });
         responsePageInfo.setCurrent(page);
         responsePageInfo.setSize(size);
         responsePageInfo.setTotal(pageInfo.getTotal());

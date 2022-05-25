@@ -47,4 +47,7 @@ public class GiftPunchSignatureResponse {
     @ApiModelProperty(value = "礼品推荐图片（列表页正方形缩略图）")
     private String recommendImage;
 
+    @ApiModelProperty(value = "礼包下所有礼品的积分和")
+    private Integer scoreSum;
+
 }
