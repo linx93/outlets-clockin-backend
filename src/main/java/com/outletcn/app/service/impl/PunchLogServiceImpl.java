@@ -3,12 +3,10 @@ package com.outletcn.app.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.outletcn.app.converter.ClockInConverter;
 import com.outletcn.app.converter.GiftConverter;
+import com.outletcn.app.converter.LineConverter;
 import com.outletcn.app.mapper.GiftVoucherMapper;
 import com.outletcn.app.model.dto.UserInfo;
-import com.outletcn.app.model.dto.applet.ClockInRecords;
-import com.outletcn.app.model.dto.applet.ClockInRequest;
-import com.outletcn.app.model.dto.applet.GiftBagVO;
-import com.outletcn.app.model.dto.applet.MyExchangeRecordResponse;
+import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.Gift;
 import com.outletcn.app.model.mongo.GiftBag;
@@ -97,17 +95,15 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
     /**
      * 打卡距离判断 单位米
      */
-    private final int CLOCK_IN_DISTANCE = 100;
+    private static final int CLOCK_IN_DISTANCE = 100;
 
     @Override
-    public Boolean executeClockIn(ClockInRequest clockInRequest) {
+    public ClockInResponse executeClockIn(ClockInRequest clockInRequest) {
         UserInfo info = JwtUtil.getInfo(UserInfo.class);
         Destination byId = mongoTemplate.findById(clockInRequest.getId(), Destination.class);
         Assert.notNull(byId, "二维码代表的打卡点不存在");
         double distance = GeoUtil.getDistance(Double.parseDouble(clockInRequest.getLongitude()), Double.parseDouble(clockInRequest.getLatitude()), Double.parseDouble(byId.getLongitude()), Double.parseDouble(byId.getLatitude()));
-        if (distance > CLOCK_IN_DISTANCE) {
-            Assert.notNull(byId, "你距离打卡点太远，请到打卡点再打卡");
-        }
+        Assert.isTrue(distance <= CLOCK_IN_DISTANCE, "你距离打卡点太远，请到打卡点再打卡");
         //保存打卡记录
         PunchLog punchLog = new PunchLog();
         punchLog.setCreateTime(Instant.now().getEpochSecond());
@@ -119,16 +115,16 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         punchLog.setPunchLongitude(byId.getLongitude());
         punchLog.setIntegralValue(byId.getScore());
         punchLog.setDestinationName(byId.getDestinationName());
-        int insert = getBaseMapper().insert(punchLog);
-        return insert > 0;
+        getBaseMapper().insert(punchLog);
+        ClockInResponse clockInResponse = clockInConverter.toClockInResponse(byId);
+        return clockInResponse;
     }
 
     @Override
     public List<ClockInRecords> clockInRecords(String flag) {
-        List<PunchLog> punchLogs = Collections.emptyList();
+        List<PunchLog> punchLogs;
         if ("my".equals(flag)) {
             punchLogs = getBaseMapper().selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, JwtUtil.getInfo(UserInfo.class).getId()));
-
         } else {
             punchLogs = getBaseMapper().selectList(null);
         }
