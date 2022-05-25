@@ -1,6 +1,7 @@
 package com.outletcn.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.outletcn.app.common.AccountStateEnum;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.UserTypeEnum;
 import com.outletcn.app.converter.UserConverter;
@@ -42,6 +43,9 @@ public class OperatorServiceImpl extends ServiceImpl<OperatorMapper, Operator> i
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         if (!bCryptPasswordEncoder.matches(loginRequest.getPassword(), one.getPassword())) {
             throw new BasicException("用户名或密码错误");
+        }
+        if (one.getState() == null || one.getState() == AccountStateEnum.LOGOUT.getCode()) {
+            throw new BasicException("账户已被管理员注销，请联系管理员");
         }
         LoginResponse loginResponse = buildLoginResponse(one);
         return ApiResult.ok(loginResponse);

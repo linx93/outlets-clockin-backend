@@ -38,5 +38,7 @@ public class OperatorController {
         ApiResult<LoginResponse> apiResult = operatorService.login(loginRequest);
         return apiResult;
     }
+
+
 }
 

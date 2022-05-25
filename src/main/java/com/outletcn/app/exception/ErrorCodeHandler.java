@@ -31,18 +31,18 @@ public class ErrorCodeHandler {
     @ExceptionHandler(value = BasicException.class)
     public ApiResult<Object> commonExceptionHandler(BasicException ex) {
         if (ex.getApiCode() != null) {
-            log.error("commonException:{}", ex.getApiCode().getMessage());
+            log.error("BasicException:{}", ex.getApiCode().getMessage());
             return ApiResult.result(ex.getApiCode());
         }
         if (ex.getCode() != null) {
-            log.error("commonException:{}", ex.getMessage());
+            log.error("BasicException:{}", ex.getMessage());
             return ApiResult.result(ex.getCode(), ex.getMessage());
         }
         if (ex.getMessage() != null) {
-            log.error("commonException:{}", ex.getMessage());
+            log.error("BasicException:{}", ex.getMessage());
             return ApiResult.result(ErrorCode.FAILED.getCode(), ex.getMessage());
         }
-        log.error("commonException:{}", ErrorCode.FAILED.getMessage());
+        log.error("BasicException:{}", ErrorCode.FAILED.getMessage());
         return ApiResult.result(ErrorCode.FAILED);
     }
 

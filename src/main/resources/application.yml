@@ -99,3 +99,9 @@ tencent:
   pc-map:
     app-key: GPJBZ-5K36U-KR7VG-2FMX3-O6F4O-EYF5R
     secret-key: SzaCGuF17py33V4IsPHaf1eiX6zmr4Xf
+
+
+##系统配置
+system:
+  ##开启token校验
+  check-token: true

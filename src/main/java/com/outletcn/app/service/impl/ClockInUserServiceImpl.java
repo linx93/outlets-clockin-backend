@@ -71,32 +71,81 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
     private ActivityRule buildActivityRule() {
         //todo 构建活动规则
         List<Map<String, Object>> descriptions = new ArrayList<>(8);
-        Map<String, Object> descriptionC = new LinkedHashMap<>();
+       /* Map<String, Object> descriptionC = new LinkedHashMap<>();
         descriptionC.put("type", "video");
         descriptionC.put("content", "https://test-1311883259.cos.ap-chongqing.myqcloud.com/510792601-1-208.mp4");
-        descriptions.add(descriptionC);
+        descriptions.add(descriptionC);*/
 
-        Map<String, Object> descriptionD = new LinkedHashMap<>();
+        /*Map<String, Object> descriptionD = new LinkedHashMap<>();
         descriptionD.put("type", "audio");
         descriptionD.put("content", "https://test-1311883259.cos.ap-chongqing.myqcloud.com/25d9ca5fc88747d89dcef66b04670482.mp3");
-        descriptions.add(descriptionD);
+        descriptions.add(descriptionD);*/
 
 
-        Map<String, Object> descriptionE = new LinkedHashMap<>();
+       /* Map<String, Object> descriptionE = new LinkedHashMap<>();
         descriptionE.put("type", "text");
         descriptionE.put("content", "1990年海湾战争后，世界进入了一个短暂的相对和平时期。家驹便写了《AMANI》这首歌，抒发了对战后和平长久的渴望,也警示了人们必须要以自己的努力斗争来争取和平，一味地求助于神灵是不行的。这首歌堪称是颂和平歌之最。另外，有些网友可能查不出歌词中的“英文”是什么意思，因为这是非洲国家肯尼亚(Kenya)的语言，“AMANI”是和平的意思；“ NAKUPENDA NAKUPENDA WEWE”就是“我们爱你”“TUNE TAKE WE WE”是“我们需要你”的意思。");
-        descriptions.add(descriptionE);
+        descriptions.add(descriptionE);*/
         
-        Map<String, Object> descriptionB = new LinkedHashMap<>();
+       /* Map<String, Object> descriptionB = new LinkedHashMap<>();
         descriptionB.put("type", "image");
         descriptionB.put("content", "https://test-1311883259.cos.ap-chongqing.myqcloud.com/c57c48e5829942ee80df36d59eb9f566.png");
-        descriptions.add(descriptionB);
+        descriptions.add(descriptionB);*/
 
-        Map<String, Object> descriptionA = new LinkedHashMap<>();
-        descriptionA.put("type", "text");
-        descriptionA.put("content", "1991年2月1日到8月，Beyond应世界宣明会之邀远赴战火中的非洲，探访第三世界的穷困人民，开始了一段非洲之旅，目的地是非洲的新几内亚和肯尼亚，在卢旺达晒成一只非洲鸡。Beyond第一次从事慈善的探访时间，并成立了一个第三世界基金，并且在归来后，把回忆变成一曲真诚彻骨、蕴含着世界大同思想的新曲“AMANI”。还写了一首《光辉岁月》送给为自由拼搏终身的非洲总统曼德拉，反对种族歧视，希望世界和平，这一直都是家驹的心愿，家驹也因《光辉岁月》成了年度最佳填词人，Beyond也成为香港世界宣明会的代言人。在一次接受采访时，家驹说：“我去看第三世界不单只看贫穷，而是看第三世界的改变，看未来的第叁世界，以人类的良知为出发点，用感性反思人的所作所为。非洲向来予人穷困和落后的感觉，我们觉得微不足道的物质，在那里也许会成为很有意义的物质。世界不断前进，眼看他们的生命停滞下来，不禁觉得可惜。只要我们肯付出一点关注，他们也可以跟我们迈进明天");
-        descriptions.add(descriptionA);
+        //1. 构建活动1
+        Map<String, Object> description1 = new LinkedHashMap<>();
+        description1.put("type", "title");
+        description1.put("content", "点亮新奥莱  「超级大礼」");
+        descriptions.add(description1);
 
+        Map<String, Object> description2 = new LinkedHashMap<>();
+        description2.put("type", "text");
+        description2.put("content", "活动时间：2022年7月1日-12月31日");
+        descriptions.add(description2);
+
+        Map<String, Object> description3 = new LinkedHashMap<>();
+        description3.put("type", "text");
+        description3.put("content", "参与方式：\n" +
+                "1、所有用户均可参与，每个用户限参与一次；\n" +
+                "2、在指定地点扫码打卡，可点亮卡牌。点亮所有卡牌，可领取礼品兑换券，凭券兑换礼品；\n" +
+                "3、本活动需在指定礼品兑换点进行兑换，详见礼品活动详情页；");
+        descriptions.add(description3);
+
+        Map<String, Object> description4 = new LinkedHashMap<>();
+        description4.put("type", "text");
+        description4.put("content", "其他：\n" +
+                "1、如发现作弊行为，新奥莱有权采取相应措施；\n" +
+                "2、本活动不和其他活动叠加；\n" +
+                "3、其他未尽事宜，请详细咨询客服。新奥莱对此拥有最终解释权。");
+        descriptions.add(description4);
+
+
+        //2.构建活动2
+        Map<String, Object> description5 = new LinkedHashMap<>();
+        description5.put("type", "title");
+        description5.put("content", "活动二：打卡游关岭");
+        descriptions.add(description5);
+
+        Map<String, Object> description6 = new LinkedHashMap<>();
+        description6.put("type", "text");
+        description6.put("content", "活动时间：2022年7月1日-12月31日");
+        descriptions.add(description6);
+
+        Map<String, Object> description7 = new LinkedHashMap<>();
+        description7.put("type", "text");
+        description7.put("content", "参与方式：\n" +
+                "1、所有用户均可参与，每个用户限参与一次；\n" +
+                "2、在指定地点扫码打卡，可点亮卡牌。点亮所有卡牌，可领取礼品兑换券，凭券兑换礼品；\n" +
+                "3、本活动需在指定礼品兑换点进行兑换，详见礼品活动详情页；");
+        descriptions.add(description7);
+
+        Map<String, Object> description8 = new LinkedHashMap<>();
+        description8.put("type", "text");
+        description8.put("content", "其他：\n" +
+                "1、如发现作弊行为，新奥莱有权采取相应措施；\n" +
+                "2、本活动不和其他活动叠加；\n" +
+                "3、其他未尽事宜，请详细咨询客服。新奥莱对此拥有最终解释权。");
+        descriptions.add(description8);
 
         ActivityRule activityRule = new ActivityRule();
         activityRule.setRecommendAudio("https://test-1311883259.cos.ap-chongqing.myqcloud.com/25d9ca5fc88747d89dcef66b04670482.mp3");

@@ -9,6 +9,7 @@ import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
 import com.outletcn.app.interceptor.TokenInterceptor;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -36,6 +37,8 @@ import java.util.function.Predicate;
 @EnableSwagger2WebMvc
 public class ApplicationConfig implements WebMvcConfigurer {
 
+    @Value("${system.check-token:true}")
+    private boolean checkToken;
 
     private final OpenApiExtensionResolver openApiExtensionResolver;
 
@@ -49,15 +52,16 @@ public class ApplicationConfig implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TokenInterceptor())
+        registry.addInterceptor(new TokenInterceptor(checkToken))
                 .addPathPatterns("/v1/api/**")
                 .excludePathPatterns("/doc.html",
                         "/favicon.ico",
                         "/webjars/**",
                         "/swagger-resources/**",
-                        "/v1/api/applet-user/operator/login",
-                        "/v1/api/applet-user/operator/normal-login",
-                        "/v1/api/applet-user/clock-in/login"
+                        "/v1/api/applet/operator/login",
+                        "/v1/api/applet/operator/normal-login",
+                        "/v1/api/applet/clock-in/login",
+                        "/v1/api/applet/write-off/normal-login"
                 );
     }
 
