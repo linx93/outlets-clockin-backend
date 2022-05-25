@@ -5,11 +5,14 @@ import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.model.mongo.DestinationGroupAttribute;
 import com.outletcn.app.service.chain.DestinationGroupService;
+import com.outletcn.app.validation.AddGroup;
+import com.outletcn.app.validation.UpdateGroup;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import net.phadata.app.common.ApiResult;
 import net.phadata.app.common.ErrorCode;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -34,7 +37,7 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "创建目的地群")
     @PostMapping("/createDestinationGroup")
-    public ApiResult<String> createDestinationGroup(@RequestBody @Valid CreateDestinationGroupRequest request) {
+    public ApiResult<String> createDestinationGroup(@RequestBody @Validated(value = AddGroup.class) CreateDestinationGroupRequest request) {
         String id = destinationGroupService.createDestinationGroup(request);
         return ApiResult.thin(ErrorCode.SUCCESS, id);
     }
@@ -54,7 +57,7 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "修改目的地群")
     @PostMapping("/updateDestinationGroup")
-    public ApiResult<Boolean> modifyDestinationGroup(@RequestBody @Valid CreateDestinationGroupRequest createDestinationGroupRequest) {
+    public ApiResult<Boolean> modifyDestinationGroup(@RequestBody @Validated(value = UpdateGroup.class) CreateDestinationGroupRequest createDestinationGroupRequest) {
         boolean group = destinationGroupService.modifyDestinationGroup(createDestinationGroupRequest, createDestinationGroupRequest.getId());
         return ApiResult.thin(ErrorCode.SUCCESS, group);
     }
@@ -104,7 +107,7 @@ public class DestinationGroupController {
      */
     @ApiOperation(value = "基于名称模糊查询")
     @GetMapping("/findDestinationGroupByName")
-    public ApiResult<List<DestinationGroup>> findDestinationGroupByName(@RequestParam(value = "name",required = false) String name) {
+    public ApiResult<List<DestinationGroup>> findDestinationGroupByName(@RequestParam(value = "name", required = false) String name) {
         List<DestinationGroup> destinationGroups = destinationGroupService.findDestinationGroupByName(name);
         return ApiResult.thin(ErrorCode.SUCCESS, destinationGroups);
     }
