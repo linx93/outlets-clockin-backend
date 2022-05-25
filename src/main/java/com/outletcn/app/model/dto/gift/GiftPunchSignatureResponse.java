@@ -50,4 +50,7 @@ public class GiftPunchSignatureResponse {
     @ApiModelProperty(value = "礼包下所有礼品的积分和")
     private Integer scoreSum;
 
+    @ApiModelProperty(value = "HOT,0是1否")
+    private Integer hot;
+
 }

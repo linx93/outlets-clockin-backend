@@ -74,7 +74,7 @@ public class ErrorCodeHandler {
         FieldError error = e.getBindingResult().getFieldError();
         String message = String.format("%s:%s", error == null ? "" : error.getField(), error == null ? "" : error.getDefaultMessage());
         //todo Bad Request
-        return ApiResult.result(ErrorCode.PARAMS_IS_INVALID, message);
+        return ApiResult.result("100000", message);
     }
 
     @ExceptionHandler(value = SocketException.class)
