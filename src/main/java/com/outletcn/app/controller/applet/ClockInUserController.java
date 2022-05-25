@@ -70,15 +70,15 @@ public class ClockInUserController {
 
     @ApiOperation(value = "用户打卡")
     @PostMapping(value = "/execute")
-    public ApiResult<Boolean> executeClockIn(@RequestBody @Valid ClockInRequest clockInRequest) {
-        Boolean result = punchLogService.executeClockIn(clockInRequest);
+    public ApiResult<ClockInResponse> executeClockIn(@RequestBody @Valid ClockInRequest clockInRequest) {
+        ClockInResponse result = punchLogService.executeClockIn(clockInRequest);
         return ApiResult.ok(result);
     }
 
 
     @ApiOperation(value = "用户打卡记录")
     @GetMapping(value = "/records")
-    public ApiResult<List<ClockInRecords>> clockInRecords(@ApiParam(value = "all:查所有打卡记录 my:查自己的打卡记录", name = "flag") @RequestParam(value = "flag", required = true, defaultValue = "my") String flag) {
+    public ApiResult<List<ClockInRecords>> clockInRecords(@ApiParam(value = "all:查所有打卡记录 my:查自己的打卡记录", name = "flag") @RequestParam(value = "flag", defaultValue = "my") String flag) {
         List<ClockInRecords> clockInRecordsList = punchLogService.clockInRecords(flag);
         return ApiResult.ok(clockInRecordsList);
     }

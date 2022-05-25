@@ -2,6 +2,7 @@ package com.outletcn.app.service;
 
 import com.outletcn.app.model.dto.applet.ClockInRecords;
 import com.outletcn.app.model.dto.applet.ClockInRequest;
+import com.outletcn.app.model.dto.applet.ClockInResponse;
 import com.outletcn.app.model.dto.applet.MyExchangeRecordResponse;
 import com.outletcn.app.model.mysql.PunchLog;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -39,9 +40,9 @@ public interface PunchLogService extends IService<PunchLog> {
      * 打卡
      *
      * @param clockInRequest 打卡参数
-     * @return bool
+     * @return res
      */
-    Boolean executeClockIn(ClockInRequest clockInRequest);
+    ClockInResponse executeClockIn(ClockInRequest clockInRequest);
 
     /**
      * 用户打卡记录

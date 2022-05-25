@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * 打卡请求实体
@@ -14,8 +15,8 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class ClockInRequest {
     @ApiModelProperty(value = "目的地id，雪花算法ID", required = true)
-    @NotBlank(message = "目的地id不能为空")
-    private String id;
+    @NotNull(message = "目的地id不能为空")
+    private Long id;
 
     @ApiModelProperty(value = "经度", required = true)
     @NotBlank(message = "经度不能为空")
