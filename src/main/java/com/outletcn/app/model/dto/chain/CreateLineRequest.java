@@ -113,7 +113,7 @@ public class CreateLineRequest {
          */
         @NotNull(message = "线路预计游览时间不能为空")
         @ApiModelProperty(value = "线路预计游览时间")
-        private Integer lineExpectTime;
+        private Double lineExpectTime;
 
     }
 
