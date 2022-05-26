@@ -24,4 +24,6 @@ public interface ClockInUserService extends IService<ClockInUser> {
     ActivityRuleResponse activity();
 
     List<GiftBag> buildGiftBag();
+
+    String contactCustomerService();
 }

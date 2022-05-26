@@ -2,24 +2,19 @@ package com.outletcn.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.outletcn.app.common.ApiResult;
-import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.converter.UserConverter;
+import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.ActivityRule;
 import com.outletcn.app.model.dto.applet.ActivityRuleResponse;
-import com.outletcn.app.model.dto.applet.DetailsVO;
 import com.outletcn.app.model.dto.applet.UpdateUserRequest;
-import com.outletcn.app.model.dto.gift.LuxuryGiftBagResponse;
-import com.outletcn.app.model.mongo.Gift;
 import com.outletcn.app.model.mongo.GiftBag;
 import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.mapper.ClockInUserMapper;
 import com.outletcn.app.service.ClockInUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.outletcn.app.service.gift.GiftService;
 import com.outletcn.app.utils.JwtUtil;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -37,11 +32,21 @@ import java.util.stream.Collectors;
  * @author linx
  * @since 2022-05-16
  */
-@AllArgsConstructor
 @Service
 public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, ClockInUser> implements ClockInUserService {
     private final UserConverter userConverter;
     private final MongoTemplate mongoTemplate;
+
+    public ClockInUserServiceImpl(UserConverter userConverter, MongoTemplate mongoTemplate) {
+        this.userConverter = userConverter;
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    /**
+     * 客服电话
+     */
+    @Value("${system.phone}")
+    private String phone;
 
     @Override
     public ApiResult<Boolean> updateUser(UpdateUserRequest updateUserRequest) {
@@ -66,6 +71,14 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
     public List<GiftBag> buildGiftBag() {
         Query type = Query.query(Criteria.where("type").is(2));
         return mongoTemplate.find(type, GiftBag.class);
+    }
+
+    @Override
+    public String contactCustomerService() {
+        if (phone == null) {
+            throw new BasicException("联系客户电话未配置");
+        }
+        return phone;
     }
 
     private ActivityRule buildActivityRule() {
