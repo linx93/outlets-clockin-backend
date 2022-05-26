@@ -61,7 +61,7 @@ public class CreateDestinationGroupRequest {
         /**
          * 摘要
          */
-        @NotBlank(message = "摘要不能为空")
+//        @NotBlank(message = "摘要不能为空")
         @ApiModelProperty(value = "摘要")
         private String summary;
 

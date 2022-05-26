@@ -61,7 +61,7 @@ public class CreateLineRequest {
         /**
          * 摘要
          */
-        @NotBlank(message = "摘要不能为空")
+//        @NotBlank(message = "摘要不能为空")
         @ApiModelProperty("摘要")
         private String summary;
 
