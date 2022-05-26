@@ -115,4 +115,11 @@ public class ClockInAppletPageController {
     }
 
 
+    @ApiOperation(value = "联系客服")
+    @GetMapping(value = "/contact-customer-service")
+    public ApiResult<String> contactCustomerService() {
+        String phone = clockInUserService.contactCustomerService();
+        return ApiResult.ok(phone);
+    }
+
 }

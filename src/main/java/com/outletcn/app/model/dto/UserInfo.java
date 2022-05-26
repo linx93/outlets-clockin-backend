@@ -31,7 +31,7 @@ public class UserInfo {
     private Integer gender;
 
     @ApiModelProperty(value = "生日 格式为年/月/")
-    @JsonFormat(pattern="yyyy/MM/dd",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private Date birthday;
 
     @ApiModelProperty(value = "头像")
@@ -58,9 +58,9 @@ public class UserInfo {
     @ApiModelProperty(value = "姓名")
     private String name;
 
-    @ApiModelProperty(value = "角色Id,留着后续扩展")
-    private Integer role;
+    @ApiModelProperty(value = "当type为PC时候，角色id[0:内置的管理员     1:运营人员]")
+    private Integer roleId;
 
-    @ApiModelProperty(value = "运营小程序、打卡小程序")
+    @ApiModelProperty(value = "运营小程序、打卡小程序、pc")
     private UserTypeEnum type;
 }

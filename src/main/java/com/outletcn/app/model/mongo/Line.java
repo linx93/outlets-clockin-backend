@@ -100,7 +100,7 @@ public class Line implements Serializable {
      * 线路预计游览时间
      */
     @ApiModelProperty(value = "线路预计游览时间")
-    private Integer lineExpectTime;
+    private Double lineExpectTime;
 
     /**
      * 创建时间

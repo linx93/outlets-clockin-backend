@@ -1,6 +1,7 @@
 package com.outletcn.app.controller.applet;
 
 
+import com.outletcn.app.annotation.PassToken;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.LoginRequest;
 import com.outletcn.app.model.dto.LoginResponse;
@@ -32,6 +33,7 @@ import javax.validation.Valid;
 public class WriteOffUserController {
     private final AuthService authService;
 
+    @PassToken
     @ApiOperation(value = "核销小程序登录[用户名密码]")
     @PostMapping(value = "/normal-login")
     public ApiResult<LoginResponse> normalLogin(@RequestBody @Valid LoginRequest loginRequest) {
@@ -40,6 +42,7 @@ public class WriteOffUserController {
     }
 
 
+    @PassToken
     @ApiOperation(value = "核销小程序登录")
     @PostMapping(value = "/login")
     public ApiResult<LoginResponse> operatorLogin(@RequestBody @Valid AppletLoginRequest appletLoginRequest) {

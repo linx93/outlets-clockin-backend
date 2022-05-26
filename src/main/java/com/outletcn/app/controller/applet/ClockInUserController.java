@@ -70,8 +70,8 @@ public class ClockInUserController {
 
     @ApiOperation(value = "用户打卡")
     @PostMapping(value = "/execute")
-    public ApiResult<ClockInResponse> executeClockIn(@RequestBody @Valid ClockInRequest clockInRequest) {
-        ClockInResponse result = punchLogService.executeClockIn(clockInRequest);
+    public ApiResult<ClockInRecords> executeClockIn(@RequestBody @Valid ClockInRequest clockInRequest) {
+        ClockInRecords result = punchLogService.executeClockIn(clockInRequest);
         return ApiResult.ok(result);
     }
 

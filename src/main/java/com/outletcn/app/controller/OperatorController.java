@@ -1,6 +1,7 @@
 package com.outletcn.app.controller;
 
 
+import com.outletcn.app.annotation.PassToken;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.LoginRequest;
 import com.outletcn.app.model.dto.LoginResponse;
@@ -32,6 +33,7 @@ import javax.validation.Valid;
 public class OperatorController {
     private final OperatorService operatorService;
 
+    @PassToken
     @ApiOperation(value = "pc端的管理人员用户名密码登录")
     @PostMapping(value = "/login")
     public ApiResult<LoginResponse> normalLogin(@RequestBody @Valid LoginRequest loginRequest) {

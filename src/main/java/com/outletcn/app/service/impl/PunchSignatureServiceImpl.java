@@ -22,6 +22,7 @@ import com.outletcn.app.model.mongo.GiftBagRelation;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.outletcn.app.model.mysql.PunchLog;
 import com.outletcn.app.repository.PunchSignatureMongoRepository;
+import com.outletcn.app.service.PunchLogService;
 import com.outletcn.app.service.PunchSignatureService;
 import com.outletcn.app.utils.JwtUtil;
 import com.outletcn.app.utils.QrcodeUtil;
@@ -56,6 +57,8 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
     private PunchLogMapper punchLogMapper;
 
     private Sequence sequence;
+
+    private PunchLogService punchLogService;
 
     private PunchSignatureMongoRepository punchSignatureMongoRepository;
 
@@ -122,69 +125,83 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
     }
 
     @Override
-    public Boolean ordinaryExchange(String giftId) {
-        return exchange(giftId, String.valueOf(GiftTypeEnum.NORMAL.getCode()), 1);
+    public Boolean ordinaryExchange(String giftBagId) {
+        return exchange(giftBagId, String.valueOf(GiftTypeEnum.NORMAL.getCode()), 1);
     }
 
     /**
      * 豪礼兑换
      *
-     * @param giftId
+     * @param giftBagId
      */
     @Override
-    public Boolean luxuryExchange(String giftId) {
-        return exchange(giftId, String.valueOf(GiftTypeEnum.LUXURY.getCode()), 1);
+    public Boolean luxuryExchange(String giftBagId) {
+        return exchange(giftBagId, String.valueOf(GiftTypeEnum.LUXURY.getCode()), 1);
     }
 
     /**
-     * @param giftId      礼品包id
+     * @param giftBagId      礼品包id
      * @param type        礼品类型 1普通 2豪礼
      * @param voucherType 券类型 1: 实物兑换卷 2: 消费优惠卷
      * @return
      */
-    private Boolean exchange(String giftId, String type, Integer voucherType) {
+    private Boolean exchange(String giftBagId, String type, Integer voucherType) {
         //1查询礼品是否存在
-        GiftBag giftBag = mongoTemplate.findOne(Query.query(Criteria.where("id").is(Long.parseLong(giftId))), GiftBag.class);
+        GiftBag giftBag = mongoTemplate.findOne(Query.query(Criteria.where("id").is(Long.parseLong(giftBagId))), GiftBag.class);
 
         UserInfo userInfo = JwtUtil.getInfo(UserInfo.class);
 
         if (giftBag == null) {
-            log.info("礼品不存在 {}", giftId);
+            log.info("礼品不存在 {}", giftBagId);
             throw new BasicException("礼品不存在");
         }
 
-        //判断是否已完成所有打卡点
-        List<Long> placeElement = giftBag.getPlaceElement();
-        Query queryDestination = new Query();
-        Criteria criteriaDestination = Criteria.where("id").in(placeElement);
-        queryDestination.addCriteria(criteriaDestination);
-        List<Destination> destinations = mongoTemplate.find(queryDestination, Destination.class);
-        List<Long> destinationIds = destinations.stream().map(Destination::getId).collect(Collectors.toList());
-        List<PunchLog> punchLogs = punchLogMapper.selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, Long.parseLong(userInfo.getId())).in(PunchLog::getDestinationId, destinationIds));
-        List<Long> destinationIdPunchLogs = punchLogs.stream().map(PunchLog::getDestinationId).collect(Collectors.toList());
-        List<Long> tempDestinationIdPunchLogs = new ArrayList<>();
-        // 如果所需打卡点记录没有在日志表中说明未打卡
-        for (Long destinationIdPunchLog : destinationIdPunchLogs) {
-            if (destinationIds.contains(destinationIdPunchLog)) {
-                tempDestinationIdPunchLogs.add(destinationIdPunchLog);
+        //豪礼兑换
+        if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
+            //判断是否已完成所有打卡点
+            List<Long> placeElement = giftBag.getPlaceElement();
+            Query queryDestination = new Query();
+            Criteria criteriaDestination = Criteria.where("id").in(placeElement);
+            queryDestination.addCriteria(criteriaDestination);
+            List<Destination> destinations = mongoTemplate.find(queryDestination, Destination.class);
+            List<Long> destinationIds = destinations.stream().map(Destination::getId).collect(Collectors.toList());
+            List<PunchLog> punchLogs = punchLogMapper.selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, Long.parseLong(userInfo.getId())).in(PunchLog::getDestinationId, destinationIds));
+            List<Long> destinationIdPunchLogs = punchLogs.stream().map(PunchLog::getDestinationId).collect(Collectors.toList());
+            List<Long> tempDestinationIdPunchLogs = new ArrayList<>();
+            // 如果所需打卡点记录没有在日志表中说明未打卡
+            for (Long destinationIdPunchLog : destinationIdPunchLogs) {
+                if (destinationIds.contains(destinationIdPunchLog)) {
+                    tempDestinationIdPunchLogs.add(destinationIdPunchLog);
+                }
+            }
+            if (destinationIds.size() != tempDestinationIdPunchLogs.size()) {
+
+//                throw new BasicException("请完成打卡后兑换");
             }
         }
 
-        if (destinationIds.size() != tempDestinationIdPunchLogs.size()) {
+        // TODO 普通礼品兑换
+        if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
+            List<Long> giftBagIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBag.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+            List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftBagIds)), Gift.class);
+            int scoreSum = gifts.stream().mapToInt(Gift::getGiftScore).sum();
+            Long myScore = punchLogService.myScore();
+            if (myScore.intValue() < scoreSum) {
 
-//            throw new BasicException("请完成打卡后兑换");
+//                throw new BasicException("请完成打卡后兑换");
+            }
         }
 
 
         //2查询礼品是否已经过期
         LocalDateTime validDate = LocalDateTime.ofEpochSecond(giftBag.getValidDate(), 0, ZoneOffset.of("+8"));
         if (validDate.isBefore(LocalDateTime.now())) {
-            log.info("礼品已过期 {}", giftId);
+            log.info("礼品已过期 {}", giftBagId);
             throw new BasicException("礼品已过期");
         }
 
 
-        LambdaQueryWrapper<GiftVoucher> queryWrapper = new QueryWrapper<GiftVoucher>().lambda().eq(GiftVoucher::getGiftId, Long.parseLong(giftId)).eq(GiftVoucher::getUserId, Long.parseLong(userInfo.getId()));
+        LambdaQueryWrapper<GiftVoucher> queryWrapper = new QueryWrapper<GiftVoucher>().lambda().eq(GiftVoucher::getGiftId, Long.parseLong(giftBagId)).eq(GiftVoucher::getUserId, Long.parseLong(userInfo.getId()));
         List<GiftVoucher> voucher = giftVoucherMapper.selectList(queryWrapper);
         //3查询礼品是否已经兑换
         Integer exchangeCount = giftBag.getExchangeCount();
@@ -198,7 +215,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
 
 
         long epochSecond = Instant.now().getEpochSecond();
-        List<GiftVoucher> exchangeLimitVoucher = giftVoucherMapper.findAllBy(Long.parseLong(giftId), Long.parseLong(userInfo.getId()), epochSecond);
+        List<GiftVoucher> exchangeLimitVoucher = giftVoucherMapper.findAllBy(Long.parseLong(giftBagId), Long.parseLong(userInfo.getId()), epochSecond);
         //4查询礼品每日单次限制兑换次数
         Integer exchangeLimit = giftBag.getExchangeLimit();
 
@@ -220,7 +237,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             String qrcodeBase64 = QrcodeUtil.getQrcodeBase64(content);
             GiftVoucher giftVoucher = new GiftVoucher();
             giftVoucher.setId(id);
-            giftVoucher.setGiftId(Long.parseLong(giftId));
+            giftVoucher.setGiftId(Long.parseLong(giftBagId));
             giftVoucher.setGiftName(giftBag.getName());
             giftVoucher.setGiftVoucherId(UUID.randomUUID().toString());
             //礼品券类型
@@ -239,7 +256,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             giftVoucher.setUpdateTime(second);
             int i = giftVoucherMapper.insert(giftVoucher);
             if (i == 0) {
-                log.info("礼品兑换失败 {}", giftId);
+                log.info("礼品兑换失败 {}", giftBagId);
                 return Boolean.FALSE;
             }
         } catch (Exception e) {

@@ -27,7 +27,7 @@ public class CreateLineRequest {
     @Valid
     private DetailsInfo detailsInfo;
 
-    @NotNull(groups = UpdateGroup.class)
+    @NotNull(groups = {UpdateGroup.class}, message = "修改线路ID不能为空")
     @ApiModelProperty(value = "目的地ID/新增时不传/修改时必传", required = false)
     private Long id;
 
@@ -61,7 +61,7 @@ public class CreateLineRequest {
         /**
          * 摘要
          */
-        @NotBlank(message = "摘要不能为空")
+//        @NotBlank(message = "摘要不能为空")
         @ApiModelProperty("摘要")
         private String summary;
 
@@ -113,7 +113,7 @@ public class CreateLineRequest {
          */
         @NotNull(message = "线路预计游览时间不能为空")
         @ApiModelProperty(value = "线路预计游览时间")
-        private Integer lineExpectTime;
+        private Double lineExpectTime;
 
     }
 

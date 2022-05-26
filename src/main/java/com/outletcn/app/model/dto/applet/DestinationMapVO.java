@@ -1,5 +1,7 @@
 package com.outletcn.app.model.dto.applet;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,6 +16,10 @@ import java.util.List;
 @Data
 public class DestinationMapVO {
 
+
+    @JsonSerialize(using = ToStringSerializer.class)
+    @ApiModelProperty(value = "目的地ID")
+    private Long id;
     /**
      * 目的地名称
      */

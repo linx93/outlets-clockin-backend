@@ -1,5 +1,6 @@
 package com.outletcn.app.interceptor;
 
+import com.outletcn.app.annotation.PassToken;
 import com.outletcn.app.exception.BasicException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +13,7 @@ import com.outletcn.app.utils.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Method;
 
 /**
  * token校验拦截器
@@ -34,6 +36,17 @@ public class TokenInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        Method method = handlerMethod.getMethod();
+        //检查是否有pass token注释，有则跳过认证
+        if (method.isAnnotationPresent(PassToken.class)) {
+            PassToken passToken = method.getAnnotation(PassToken.class);
+            if (passToken.required()) {
+                return true;
+            }
+        }
+
+
         //判断开启token验证
         if (checkToken) {
             log.info("校验token");

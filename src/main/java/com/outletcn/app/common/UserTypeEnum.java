@@ -8,11 +8,15 @@ package com.outletcn.app.common;
  */
 public enum UserTypeEnum {
     /**
-     * 运营小程序用户
+     * 核销小程序用户
      */
     WRITE_OFF,
     /**
      * 打卡小程序用户
      */
-    CLOCK_IN
+    CLOCK_IN,
+    /**
+     * pc端用户
+     */
+    PC
 }

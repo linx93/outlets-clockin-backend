@@ -630,7 +630,7 @@ public class LineServiceImpl implements LineService {
         List<Line> lines = findLineByDestinationName(searchDestinationRequest.getKeywords()).stream().filter(item -> item.getPutOn() != null && item.getPutOn() == 0).collect(Collectors.toList());
         //目的地列表
         List<Destination> destinations = mongoTemplate.findAll(Destination.class);
-        List<Destination> collect = destinations.stream().filter(item -> item.getDestinationName().contains(searchDestinationRequest.getKeywords())).collect(Collectors.toList());
+        List<Destination> collect = destinations.stream().filter(item -> item.getDestinationName().contains(searchDestinationRequest.getKeywords()) && item.getPutOn() != null && item.getPutOn() == 0).collect(Collectors.toList());
         return SearchDestinationResponse.builder().lines(buildLineVOS(lines)).destinations(lineConverter.toDestinationVOList(collect)).build();
     }
 }

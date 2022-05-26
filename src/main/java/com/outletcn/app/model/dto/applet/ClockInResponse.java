@@ -13,6 +13,7 @@ import java.util.List;
  * @author linx
  * @since 2022-05-25 09:26
  */
+@Deprecated
 @Data
 public class ClockInResponse {
     @JsonSerialize(using = ToStringSerializer.class)
