@@ -21,11 +21,11 @@ public interface PunchSignatureService {
      * 礼品兑换
      * @param giftId
      */
-    Boolean ordinaryExchange(String giftId);
+    Boolean ordinaryExchange(String giftBagId);
 
     /**
      * 豪礼兑换
      * @param giftId
      */
-    Boolean luxuryExchange(String giftId);
+    Boolean luxuryExchange(String giftBagId);
 }

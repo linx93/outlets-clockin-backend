@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public class CreateDestinationRequest {
     private DetailsInfo detailsInfo;
 
     @ApiModelProperty(value = "目的地ID/新增时不传/修改时必传", required = false)
-    @NotNull(groups = {UpdateGroup.class})
+    @NotNull(groups = {UpdateGroup.class}, message = "修改目的地ID不能为空")
     private Long id;
 
 
@@ -80,7 +81,7 @@ public class CreateDestinationRequest {
         /**
          * 摘要
          */
-        @NotBlank(message = "摘要不能为空")
+//        @NotBlank(message = "摘要不能为空")
         @ApiModelProperty(value = "摘要")
         private String summary;
 
@@ -110,6 +111,7 @@ public class CreateDestinationRequest {
         /**
          * 经度
          */
+        @Pattern(regexp = "^[\\-\\+]?(0(\\.\\d{1,16})?|([1-9](\\d)?)(\\.\\d{1,16})?|1[0-7]\\d{1}(\\.\\d{1,16})?|180(\\.0{1,16})?)$", message = "经度格式错误")
         @NotBlank(message = "经度不能为空")
         @ApiModelProperty(value = "经度")
         private String longitude;
@@ -117,6 +119,7 @@ public class CreateDestinationRequest {
         /**
          * 纬度
          */
+        @Pattern(regexp = "^[\\-\\+]?((0|([1-8]\\d?))(\\.\\d{1,16})?|90(\\.0{1,16})?)$", message = "纬度格式错误")
         @NotBlank(message = "纬度不能为空")
         @ApiModelProperty(value = "纬度")
         private String latitude;
@@ -125,7 +128,7 @@ public class CreateDestinationRequest {
          * 是否适合60岁以上老人
          * 0:是/1:否
          */
-        @NotNull(message = "是否适合60岁以上老人不能为空")
+//        @NotNull(message = "是否适合60岁以上老人不能为空")
         @ApiModelProperty(value = "是否适合60岁以上老人 0:是/1:否")
         private Integer forOldPeople;
 
@@ -133,21 +136,21 @@ public class CreateDestinationRequest {
          * 是否适合4岁以下小孩
          * 0:是/1:否
          */
-        @NotNull(message = "是否适合4岁以下小孩不能为空")
+//        @NotNull(message = "是否适合4岁以下小孩不能为空")
         @ApiModelProperty(value = "是否适合4岁以下小孩 0:是/1:否")
         private Integer forChildren;
 
         /**
          * 开业时间
          */
-        @NotBlank(message = "开业时间不能为空")
+//        @NotBlank(message = "开业时间不能为空")
         @ApiModelProperty(value = "开业时间")
         private String openTime;
 
         /**
          * 歇业时间
          */
-        @NotBlank(message = "歇业时间不能为空")
+//        @NotBlank(message = "歇业时间不能为空")
         @ApiModelProperty(value = "歇业时间")
         private String closeTime;
     }

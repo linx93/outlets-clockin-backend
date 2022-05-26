@@ -27,7 +27,7 @@ public class CreateLineRequest {
     @Valid
     private DetailsInfo detailsInfo;
 
-    @NotNull(groups = UpdateGroup.class)
+    @NotNull(groups = {UpdateGroup.class}, message = "修改线路ID不能为空")
     @ApiModelProperty(value = "目的地ID/新增时不传/修改时必传", required = false)
     private Long id;
 

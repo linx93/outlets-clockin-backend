@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class CreateDestinationGroupRequest {
     private DetailsInfo detailsInfo;
 
     @ApiModelProperty(value = "目的地ID/新增时不传/修改时必传", required = false)
-    @NotNull(groups = {UpdateGroup.class})
+    @NotNull(groups = {UpdateGroup.class}, message = "修改目的地群ID不能为空")
     private Long id;
 
     @Data
@@ -95,6 +96,7 @@ public class CreateDestinationGroupRequest {
         /**
          * 目的地群主地标经度
          */
+        @Pattern(regexp = "^[\\-\\+]?(0(\\.\\d{1,16})?|([1-9](\\d)?)(\\.\\d{1,16})?|1[0-7]\\d{1}(\\.\\d{1,16})?|180(\\.0{1,16})?)$", message = "经度格式错误")
         @NotBlank(message = "目的地群主地标经度不能为空")
         @ApiModelProperty(value = "目的地群主地标经度")
         private String groupMainLongitude;
@@ -102,6 +104,7 @@ public class CreateDestinationGroupRequest {
         /**
          * 目的地群主地标纬度
          */
+        @Pattern(regexp = "^[\\-\\+]?((0|([1-8]\\d?))(\\.\\d{1,16})?|90(\\.0{1,16})?)$", message = "纬度格式错误")
         @NotBlank(message = "目的地群主地标纬度不能为空")
         @ApiModelProperty(value = "目的地群主地标纬度")
         private String groupMainLatitude;
