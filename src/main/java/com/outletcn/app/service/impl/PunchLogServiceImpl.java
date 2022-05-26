@@ -120,6 +120,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         punchLog.setPunchLongitude(byId.getLongitude());
         punchLog.setIntegralValue(byId.getScore());
         punchLog.setDestinationName(byId.getDestinationName());
+        punchLog.setDestinationRecommendSquareImage(byId.getDestinationRecommendSquareImage());
         getBaseMapper().insert(punchLog);
         Long id = punchLog.getId();
         PunchLog punchLogNew = getBaseMapper().selectById(id);
