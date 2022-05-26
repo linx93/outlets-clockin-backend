@@ -24,21 +24,20 @@ public class DetailsInfo {
     /**
      * 推荐视频
      */
-    @NotBlank(message = "推荐视频不能为空")
+//    @NotBlank(message = "推荐视频不能为空")
     @ApiModelProperty("推荐视频")
     private String recommendVideo;
 
     /**
      * 推荐音频
      */
-    @NotBlank(message = "推荐音频不能为空")
+//    @NotBlank(message = "推荐音频不能为空")
     @ApiModelProperty("推荐音频")
     private String recommendAudio;
 
     /**
      * 描述
      */
-    @NotEmpty
     @NotNull(message = "描述不能为空")
     @ApiModelProperty("描述")
     private List<Map<String, Object>> descriptions;

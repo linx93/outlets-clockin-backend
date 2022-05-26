@@ -226,7 +226,7 @@ class OutletsClockinBackendApplicationTests {
         baseInfo.setMainDestination("金融MIX13号楼");
         baseInfo.setLineRecommendImage("https://oss.phadata.net/01.jpeg");
         baseInfo.setLineRecommendSquareImage("https://oss.phadata.net/01.jpeg");
-        baseInfo.setLineExpectTime(2); // 两小时
+        baseInfo.setLineExpectTime(2.0); // 两小时
 
         DetailsInfo detailsInfo = new DetailsInfo();
         detailsInfo.setRecommendVideo("https://oss.phadata.net/01.mp4");

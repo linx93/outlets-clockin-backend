@@ -84,7 +84,7 @@ public class LineVO {
      * 线路预计游览时间
      */
     @ApiModelProperty(value = "线路预计游览时间，单位：小时")
-    private Integer lineExpectTime;
+    private Double lineExpectTime;
 
 
     /**
