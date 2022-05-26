@@ -2,7 +2,9 @@ package com.outletcn.app.converter;
 
 import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.AddWriteOffUserRequest;
+import com.outletcn.app.model.dto.applet.NewOrModifyRequest;
 import com.outletcn.app.model.dto.applet.UpdateUserRequest;
+import com.outletcn.app.model.dto.applet.UserManagementResponse;
 import com.outletcn.app.model.mysql.Auth;
 import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.model.mysql.Operator;
@@ -10,6 +12,8 @@ import com.outletcn.app.model.mysql.WriteOffUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+
+import java.util.List;
 
 /**
  * 用户相关映射
@@ -50,4 +54,14 @@ public interface UserConverter {
             @Mapping(target = "password", ignore = true)
     })
     WriteOffUser toWriteOffUser(AddWriteOffUserRequest addWriteOffUserRequest);
+
+
+    Operator toOperator(NewOrModifyRequest newOrModifyRequest);
+
+    WriteOffUser toWriteOffUser(NewOrModifyRequest newOrModifyRequest);
+
+    List<UserManagementResponse> operatorsToUserManagementResponseList(List<Operator> operators);
+
+    List<UserManagementResponse> writeOffUsersToUserManagementResponseList(List<WriteOffUser> writeOffUsers);
+
 }

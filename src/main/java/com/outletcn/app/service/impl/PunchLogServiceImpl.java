@@ -121,6 +121,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         punchLog.setIntegralValue(byId.getScore());
         punchLog.setDestinationName(byId.getDestinationName());
         punchLog.setDestinationRecommendSquareImage(byId.getDestinationRecommendSquareImage());
+        punchLog.setAddress(byId.getAddress());
         getBaseMapper().insert(punchLog);
         Long id = punchLog.getId();
         PunchLog punchLogNew = getBaseMapper().selectById(id);
@@ -138,6 +139,25 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         }
         List<ClockInRecords> clockInRecordsList = clockInConverter.toClockInRecordsList(punchLogs);
         return clockInRecordsList;
+    }
+
+    @Override
+    public MyExchangeRecordResponse myExchangeRecordDetails(Long id) {
+        GiftVoucher giftVoucher = giftVoucherMapper.selectById(id);
+        MyExchangeRecordResponse myExchangeRecordResponse = giftConverter.toMyExchangeRecordResponse(giftVoucher);
+        //礼品包id
+        Long giftId = myExchangeRecordResponse.getGiftId();
+        //查询礼品包
+        GiftBag giftBag = mongoTemplate.findById(giftId, GiftBag.class);
+        GiftBagVO giftBagVO = giftConverter.toGiftBagVO(giftBag);
+        myExchangeRecordResponse.setGiftBag(giftBagVO);
+        List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftId)), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+        if (!giftIds.isEmpty()) {
+            List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
+            giftBagVO.setGiftList(giftConverter.toGiftVOList(gifts));
+            giftBagVO.setScoreSum(gifts.stream().mapToDouble(Gift::getGiftScore).sum());
+        }
+        return myExchangeRecordResponse;
     }
 
 }

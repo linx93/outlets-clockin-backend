@@ -4,17 +4,16 @@ package com.outletcn.app.controller;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.LoginRequest;
 import com.outletcn.app.model.dto.LoginResponse;
+import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.service.OperatorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -32,13 +31,49 @@ import javax.validation.Valid;
 public class OperatorController {
     private final OperatorService operatorService;
 
-    @ApiOperation(value = "pc端的管理人员用户名密码登录")
+    @ApiOperation(value = "pc端的用户名密码登录")
     @PostMapping(value = "/login")
     public ApiResult<LoginResponse> normalLogin(@RequestBody @Valid LoginRequest loginRequest) {
         ApiResult<LoginResponse> apiResult = operatorService.login(loginRequest);
         return apiResult;
     }
 
+
+    @ApiOperation(value = "pc端的重置密码")
+    @PostMapping(value = "/reset-password")
+    public ApiResult<Boolean> resetPassword(@RequestBody @Valid ResetPasswordRequest resetPassword) {
+        Boolean bool = operatorService.resetPassword(resetPassword);
+        return ApiResult.ok(bool);
+    }
+
+    @ApiOperation(value = "pc端的注销用户")
+    @PostMapping(value = "/logout")
+    public ApiResult<Boolean> logout(@RequestBody @Valid LogoutRequest logoutRequest) {
+        Boolean bool = operatorService.logout(logoutRequest);
+        return ApiResult.ok(bool);
+    }
+
+    @ApiOperation(value = "pc端的恢复注销用户")
+    @PostMapping(value = "/recover")
+    public ApiResult<Boolean> recover(@RequestBody @Valid LogoutRequest logoutRequest) {
+        Boolean bool = operatorService.recover(logoutRequest);
+        return ApiResult.ok(bool);
+    }
+
+    @ApiOperation(value = "pc端的新增-修改用户")
+    @PostMapping(value = "/new-or-modify-user")
+    public ApiResult<Boolean> newOrModify(@RequestBody @Valid NewOrModifyRequest newOrModifyRequest) {
+        Boolean bool = operatorService.newOrModify(newOrModifyRequest);
+        return ApiResult.ok(bool);
+    }
+
+
+    @ApiOperation(value = "用户管理列表")
+    @PostMapping(value = "/user-management-list")
+    public ApiResult<List<UserManagementResponse>> userManagementList(@RequestBody @Valid UserMangeQuery userMangeQuery) {
+        List<UserManagementResponse> list = operatorService.userManagementList(userMangeQuery);
+        return ApiResult.ok(list);
+    }
 
 }
 
