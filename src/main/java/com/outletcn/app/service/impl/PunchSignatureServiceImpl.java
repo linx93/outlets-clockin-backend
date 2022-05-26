@@ -22,6 +22,7 @@ import com.outletcn.app.model.mongo.GiftBagRelation;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.outletcn.app.model.mysql.PunchLog;
 import com.outletcn.app.repository.PunchSignatureMongoRepository;
+import com.outletcn.app.service.PunchLogService;
 import com.outletcn.app.service.PunchSignatureService;
 import com.outletcn.app.utils.JwtUtil;
 import com.outletcn.app.utils.QrcodeUtil;
@@ -56,6 +57,8 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
     private PunchLogMapper punchLogMapper;
 
     private Sequence sequence;
+
+    private PunchLogService punchLogService;
 
     private PunchSignatureMongoRepository punchSignatureMongoRepository;
 
@@ -153,26 +156,40 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             throw new BasicException("礼品不存在");
         }
 
-        //判断是否已完成所有打卡点
-        List<Long> placeElement = giftBag.getPlaceElement();
-        Query queryDestination = new Query();
-        Criteria criteriaDestination = Criteria.where("id").in(placeElement);
-        queryDestination.addCriteria(criteriaDestination);
-        List<Destination> destinations = mongoTemplate.find(queryDestination, Destination.class);
-        List<Long> destinationIds = destinations.stream().map(Destination::getId).collect(Collectors.toList());
-        List<PunchLog> punchLogs = punchLogMapper.selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, Long.parseLong(userInfo.getId())).in(PunchLog::getDestinationId, destinationIds));
-        List<Long> destinationIdPunchLogs = punchLogs.stream().map(PunchLog::getDestinationId).collect(Collectors.toList());
-        List<Long> tempDestinationIdPunchLogs = new ArrayList<>();
-        // 如果所需打卡点记录没有在日志表中说明未打卡
-        for (Long destinationIdPunchLog : destinationIdPunchLogs) {
-            if (destinationIds.contains(destinationIdPunchLog)) {
-                tempDestinationIdPunchLogs.add(destinationIdPunchLog);
+        //豪礼兑换
+        if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
+            //判断是否已完成所有打卡点
+            List<Long> placeElement = giftBag.getPlaceElement();
+            Query queryDestination = new Query();
+            Criteria criteriaDestination = Criteria.where("id").in(placeElement);
+            queryDestination.addCriteria(criteriaDestination);
+            List<Destination> destinations = mongoTemplate.find(queryDestination, Destination.class);
+            List<Long> destinationIds = destinations.stream().map(Destination::getId).collect(Collectors.toList());
+            List<PunchLog> punchLogs = punchLogMapper.selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, Long.parseLong(userInfo.getId())).in(PunchLog::getDestinationId, destinationIds));
+            List<Long> destinationIdPunchLogs = punchLogs.stream().map(PunchLog::getDestinationId).collect(Collectors.toList());
+            List<Long> tempDestinationIdPunchLogs = new ArrayList<>();
+            // 如果所需打卡点记录没有在日志表中说明未打卡
+            for (Long destinationIdPunchLog : destinationIdPunchLogs) {
+                if (destinationIds.contains(destinationIdPunchLog)) {
+                    tempDestinationIdPunchLogs.add(destinationIdPunchLog);
+                }
+            }
+            if (destinationIds.size() != tempDestinationIdPunchLogs.size()) {
+
+//                throw new BasicException("请完成打卡后兑换");
             }
         }
 
-        if (destinationIds.size() != tempDestinationIdPunchLogs.size()) {
+        // TODO 普通礼品兑换
+        if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
+            List<Long> giftBagId = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBag.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+            List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftBagId)), Gift.class);
+            int scoreSum = gifts.stream().mapToInt(Gift::getGiftScore).sum();
+            Long myScore = punchLogService.myScore();
+            if (myScore.intValue() < scoreSum) {
 
-//            throw new BasicException("请完成打卡后兑换");
+//                throw new BasicException("请完成打卡后兑换");
+            }
         }
 
 
