@@ -28,24 +28,24 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         // 打卡次数统计（时间）
         PunchTimesResponse punchTimesResponse = new PunchTimesResponse();
-        List<JSONObject> punchTimes = punchLogMapper.punchTimesStatistics(begin, end);
+        List<LineChartResponse> punchTimes = punchLogMapper.punchTimesStatistics(begin, end);
         List<String> strList1 = new ArrayList<>();
         List<Integer> intList1 = new ArrayList<>();
-        for (JSONObject o1 : punchTimes) {
-            strList1.add(o1.getString("days"));
-            intList1.add(o1.getInteger("count"));
+        for (LineChartResponse o1 : punchTimes) {
+            strList1.add(o1.getDays());
+            intList1.add(o1.getCount() == null ? 0 : o1.getCount());
         }
         punchTimesResponse.setTimes(intList1);
         punchTimesResponse.setDays(strList1);
 
         //活跃用户人数统计（时间）
         ActivePeopleResponse activePeopleResponse = new ActivePeopleResponse();
-        List<JSONObject> activePeople = punchLogMapper.activePeopleStatistics(begin, end);
+        List<LineChartResponse> activePeople = punchLogMapper.activePeopleStatistics(begin, end);
         List<String> strList2 = new ArrayList<>();
         List<Integer> intList2 = new ArrayList<>();
-        for (JSONObject o2 : activePeople) {
-            strList2.add(o2.getString("days"));
-            intList2.add(o2.getInteger("count"));
+        for (LineChartResponse o2 : activePeople) {
+            strList2.add(o2.getDays());
+            intList2.add(o2.getCount() == null ? 0 : o2.getCount());
         }
         activePeopleResponse.setTimes(intList2);
         activePeopleResponse.setDays(strList2);

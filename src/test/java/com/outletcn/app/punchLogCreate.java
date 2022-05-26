@@ -2,7 +2,9 @@ package com.outletcn.app;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
+import com.outletcn.app.model.mysql.DateStatistics;
 import com.outletcn.app.model.mysql.PunchLog;
+import com.outletcn.app.service.DateStatisticsService;
 import com.outletcn.app.service.PunchLogService;
 import com.outletcn.app.service.gift.GiftService;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,8 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Random;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
@@ -27,16 +31,18 @@ public class punchLogCreate {
     GiftService giftService;
     @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
+    DateStatisticsService dateStatisticsService;
 
     @Test
     public void create() {
         Long[] destinationIds = new Long[]{1L, 2L, 3L, 4L, 5L};
-        for (int i = 0; i < 10000; i++) {
-
+        for (int i = 0; i < 100; i++) {
             PunchLog punchLog = new PunchLog();
             punchLog.setId(sequence.nextId());
-            punchLog.setPunchLongitude("xx");
-            punchLog.setPunchLatitude("xx");
+            punchLog.setPunchLongitude("105.55137234292738");
+            punchLog.setPunchLatitude("25.924972208806857");
+            punchLog.setDestinationName("nnnn");
             Random r = new Random();
             int rand = r.nextInt(4);
             punchLog.setDestinationId(destinationIds[rand]);
@@ -49,6 +55,8 @@ public class punchLogCreate {
             System.out.println(punchLog);
             punchLogService.save(punchLog);
         }
+
+        //
     }
 
     @Test
@@ -75,4 +83,17 @@ public class punchLogCreate {
         }
     }
 
+
+    @Test
+    public void create2(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(1651334400000L);
+        for (int i = 0; i < 25; i++) {
+            calendar.add(Calendar.DATE,1);
+            DateStatistics dateStatistics = new DateStatistics();
+            Date d = calendar.getTime();
+            dateStatistics.setDate(d.toInstant().getEpochSecond());
+            dateStatisticsService.save(dateStatistics);
+        }
+    }
 }

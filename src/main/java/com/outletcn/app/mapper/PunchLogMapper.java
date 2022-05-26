@@ -3,6 +3,7 @@ package com.outletcn.app.mapper;
 import com.alibaba.fastjson.JSONObject;
 import com.outletcn.app.model.dto.statistics.CommonTopListUnit;
 import com.outletcn.app.model.dto.statistics.HeatMap;
+import com.outletcn.app.model.dto.statistics.LineChartResponse;
 import com.outletcn.app.model.mysql.PunchLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import io.swagger.models.auth.In;
@@ -52,31 +53,66 @@ public interface PunchLogMapper extends BaseMapper<PunchLog> {
 
     //打卡次数统计（时间）
     @Select("SELECT " +
-            "COUNT( 1 ) AS count," +
-            "FROM_UNIXTIME( `create_time`, '%Y-%m-%d' ) AS days " +
+            "count, days2 as days  " +
             "FROM " +
-            "punch_log " +
+            "( SELECT " +
+            "COUNT(1) AS count, " +
+            "FROM_UNIXTIME( `create_time`, '%Y-%m-%d' ) AS days1  " +
+            "FROM " +
+            "punch_log  " +
             "WHERE " +
-            "create_time BETWEEN #{begin} AND #{end} " +
+            "create_time  BETWEEN #{begin} AND #{end} " +
             "GROUP BY " +
-            "days " +
+            "days1  " +
             "ORDER BY " +
-            "days ASC")
-    List<JSONObject> punchTimesStatistics(@Param("begin") Long begin, @Param("end") Long end);
+            "days1 ASC  " +
+            ") AS a  " +
+            "RIGHT JOIN " +
+            "( " +
+            "SELECT " +
+            "FROM_UNIXTIME( date, '%Y-%m-%d' ) AS days2  " +
+            "FROM " +
+            "date_statistics  " +
+            "WHERE " +
+            "date BETWEEN #{begin} AND #{end} " +
+            "GROUP BY " +
+            "days2  " +
+            "ORDER BY " +
+            "days2 ASC) as b  " +
+            "ON a.days1 = b.days2")
+    List<LineChartResponse> punchTimesStatistics(@Param("begin") Long begin, @Param("end") Long end);
 
     //活跃用户人数统计（时间）
     @Select("SELECT " +
-            "COUNT( DISTINCT ( user_id )) AS count," +
-            "FROM_UNIXTIME( `create_time`, '%Y-%m-%d' ) AS days " +
+            "count, days2 as days  " +
             "FROM " +
-            "punch_log " +
+            "( SELECT " +
+            "COUNT( " +
+            "DISTINCT ( user_id )) AS count, " +
+            "FROM_UNIXTIME( `create_time`, '%Y-%m-%d' ) AS days1  " +
+            "FROM " +
+            "punch_log  " +
             "WHERE " +
-            "create_time BETWEEN #{begin} AND #{end} " +
+            "create_time  BETWEEN #{begin} AND #{end} " +
             "GROUP BY " +
-            "days " +
+            "days1  " +
             "ORDER BY " +
-            "days ASC")
-    List<JSONObject> activePeopleStatistics(@Param("begin") Long begin, @Param("end") Long end);
+            "days1 ASC  " +
+            ") AS a  " +
+            "RIGHT JOIN " +
+            "( " +
+            "SELECT " +
+            "FROM_UNIXTIME( date, '%Y-%m-%d' ) AS days2  " +
+            "FROM " +
+            "date_statistics  " +
+            "WHERE " +
+            "date BETWEEN #{begin} AND #{end} " +
+            "GROUP BY " +
+            "days2  " +
+            "ORDER BY " +
+            "days2 ASC) as b  " +
+            "ON a.days1 = b.days2")
+    List<LineChartResponse> activePeopleStatistics(@Param("begin") Long begin, @Param("end") Long end);
 
     //新增用户统计
     @Select("SELECT " +
