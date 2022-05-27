@@ -140,7 +140,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
     }
 
     /**
-     * @param giftBagId      礼品包id
+     * @param giftBagId   礼品包id
      * @param type        礼品类型 1普通 2豪礼
      * @param voucherType 券类型 1: 实物兑换卷 2: 消费优惠卷
      * @return
@@ -181,14 +181,15 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         }
 
         // TODO 普通礼品兑换
+        int scoreSum = 0;
         if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
             List<Long> giftBagIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBag.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
             List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftBagIds)), Gift.class);
-            int scoreSum = gifts.stream().mapToInt(Gift::getGiftScore).sum();
+            scoreSum = gifts.stream().mapToInt(Gift::getGiftScore).sum();
             Long myScore = punchLogService.myScore();
             if (myScore.intValue() < scoreSum) {
 
-//                throw new BasicException("请完成打卡后兑换");
+//                throw new BasicException("签章不够");
             }
         }
 
@@ -249,8 +250,16 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             giftVoucher.setExchangeDeadline(giftBag.getValidDate());
             giftVoucher.setGiftName(giftBag.getName());
             giftVoucher.setState(0);
-            //TODO 兑换说明暂时为空
-            giftVoucher.setExchangeInstructions("");
+
+            if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
+                //卡片翻牌
+                giftVoucher.setExchangeInstructions(String.format("卡片翻牌" + "(%s)", giftBag.getPlaceElement().size()));
+            }
+            if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
+                //签章核销
+                giftVoucher.setExchangeInstructions(String.format("签章核销" + "(%s)", scoreSum));
+            }
+
             long second = Instant.now().getEpochSecond();
             giftVoucher.setCreateTime(second);
             giftVoucher.setUpdateTime(second);
