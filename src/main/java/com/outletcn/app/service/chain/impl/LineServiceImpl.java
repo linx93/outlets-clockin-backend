@@ -582,13 +582,17 @@ public class LineServiceImpl implements LineService {
         Destination destination = mongoTemplate.findById(id, Destination.class);
         DestinationVO destinationVO = new DestinationVO();
         //过滤上下架
-        if (destination != null && destination.getPutOn() != null && destination.getPutOn() == 0) {
+/*        if (destination != null && destination.getPutOn() != null && destination.getPutOn() == 0) {
             destinationVO = lineConverter.toDestinationVO(destination);
             DetailObjectType one = mongoTemplate.findOne(Query.query(Criteria.where("objectId").is(destination.getId()).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
             DestinationDetailsVO destinationDetailsVO = lineConverter.toDestinationDetailsVO(one, destination);
             destinationVO.setDestinationDetails(destinationDetailsVO);
 
-        }
+        }*/
+        destinationVO = lineConverter.toDestinationVO(destination);
+        DetailObjectType one = mongoTemplate.findOne(Query.query(Criteria.where("objectId").is(destination.getId()).and("objectType").is(ClockInType.Destination.getType())), DetailObjectType.class);
+        DestinationDetailsVO destinationDetailsVO = lineConverter.toDestinationDetailsVO(one, destination);
+        destinationVO.setDestinationDetails(destinationDetailsVO);
         return destinationVO;
     }
 
