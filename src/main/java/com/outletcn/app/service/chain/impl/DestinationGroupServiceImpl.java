@@ -196,6 +196,20 @@ public class DestinationGroupServiceImpl implements DestinationGroupService {
             destinationGroup.setUpdateTime(epochSecond);
             try {
                 mongoTemplate.save(destinationGroup);
+                // 更新关联目的地
+                List<Long> destinations = baseInfo.getDestinations();
+                mongoTemplate.findAllAndRemove(Query.query(
+                        Criteria.where("groupId").is(id)), DestinationGroupRelation.class);
+                DestinationGroupRelation destinationGroupRelation = new DestinationGroupRelation();
+                for (Long destinationId : destinations) {
+                    destinationGroupRelation.setId(sequence.nextId());
+                    destinationGroupRelation.setDestinationId(destinationId);
+                    destinationGroupRelation.setGroupId(id);
+                    destinationGroupRelation.setCreateTime(epochSecond);
+                    destinationGroupRelation.setUpdateTime(epochSecond);
+                    mongoTemplate.save(destinationGroupRelation);
+                }
+
             } catch (Exception ex) {
                 log.error("更新目的地群失败：" + ex.getMessage());
                 LogRecordContext.putVariable("fail", "更新目的地群失败：" + ex.getMessage());
