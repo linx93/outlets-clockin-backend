@@ -68,6 +68,13 @@ public class ClockInUserController {
         return ApiResult.ok(exchangeRecordResponses);
     }
 
+    @ApiOperation(value = "我的兑换记录的详情接口")
+    @GetMapping(value = "/my-exchange-record-details")
+    public ApiResult<MyExchangeRecordResponse> myExchangeRecordDetails(@ApiParam(value = "详情id", name = "id") @RequestParam(value = "id") Long id) {
+        MyExchangeRecordResponse details = punchLogService.myExchangeRecordDetails(id);
+        return ApiResult.ok(details);
+    }
+
     @ApiOperation(value = "用户打卡")
     @PostMapping(value = "/execute")
     public ApiResult<ClockInRecords> executeClockIn(@RequestBody @Valid ClockInRequest clockInRequest) {

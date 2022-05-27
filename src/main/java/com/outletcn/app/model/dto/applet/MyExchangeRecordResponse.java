@@ -59,6 +59,10 @@ public class MyExchangeRecordResponse {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long exchangeUserId;
 
+    @ApiModelProperty(value = "创建时间")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long createTime;
+
    /* @JsonSerialize(using = ToStringSerializer.class)
     private Long createTime;
 

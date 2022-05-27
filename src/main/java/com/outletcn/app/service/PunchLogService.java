@@ -51,4 +51,6 @@ public interface PunchLogService extends IService<PunchLog> {
      * @return 用户打卡记录
      */
     List<ClockInRecords> clockInRecords(String flag);
+
+    MyExchangeRecordResponse myExchangeRecordDetails(Long id);
 }
