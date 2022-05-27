@@ -1,5 +1,6 @@
 package com.outletcn.app.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.QRCodeContent;
 import com.outletcn.app.model.dto.gift.GiftTypeCreator;
@@ -29,7 +30,7 @@ public class GiftVoucherController {
 
     @GetMapping("/getWriteOffVoucherList")
     @ApiOperation(value = "获取核销礼品券列表")
-    public ApiResult<List<GiftVoucher>> getWriteOffVoucherList() {
+    public ApiResult<List<JSONObject>> getWriteOffVoucherList() {
         return ApiResult.ok(giftVoucherService.getListByUserId());
     }
 }

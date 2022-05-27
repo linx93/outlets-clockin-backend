@@ -1,9 +1,11 @@
 package com.outletcn.app.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.outletcn.app.model.dto.applet.ClockInRecords;
 import com.outletcn.app.common.QRCodeContent;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.baomidou.mybatisplus.extension.service.IService;
+import netscape.javascript.JSObject;
 
 import java.util.List;
 
@@ -20,7 +22,7 @@ public interface GiftVoucherService extends IService<GiftVoucher> {
     //核销礼品券
     void writeOffGiftVoucher(QRCodeContent codeContent);
 
-    List<GiftVoucher> getListByUserId();
+    List<JSONObject> getListByUserId();
     /**
      * 已兑换(已经核销了的次数统计)
      *
