@@ -1,6 +1,7 @@
 package com.outletcn.app.controller.chain;
 
 
+import com.outletcn.app.annotation.PassToken;
 import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.common.DestinationQRCode;
 import com.outletcn.app.exception.BasicException;
@@ -213,6 +214,7 @@ public class DestinationController {
      */
     @ApiOperation(value = "目的地二维码生成")
     @GetMapping(value = "destinationQRCode")
+    @PassToken
     public void destinationQRCode(@RequestParam("id") String id, HttpServletResponse response) {
         try {
             destinationService.findDestinationById(Long.parseLong(id));

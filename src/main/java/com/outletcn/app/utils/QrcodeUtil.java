@@ -36,12 +36,12 @@ public class QrcodeUtil {
         }
     }
 
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         try {
             System.out.println(getQrcodeBase64("https://baidu.com"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 }
