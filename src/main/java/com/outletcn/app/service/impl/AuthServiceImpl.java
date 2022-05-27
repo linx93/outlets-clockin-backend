@@ -12,6 +12,7 @@ import com.outletcn.app.model.dto.LoginResponse;
 import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.AppletLoginRequest;
 import com.outletcn.app.model.dto.applet.Code2Session;
+import com.outletcn.app.model.dto.applet.ModifyPasswordRequest;
 import com.outletcn.app.model.mysql.Auth;
 import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.model.mysql.WriteOffUser;
@@ -24,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * <p>
@@ -115,6 +117,28 @@ public class AuthServiceImpl extends ServiceImpl<AuthMapper, Auth> implements Au
         // 处理逻辑构建LoginResponse
         LoginResponse loginResponse = buildLoginResponse(clockInUser, auth);
         return ApiResult.ok(loginResponse);
+    }
+
+    @Override
+    public ApiResult<Boolean> modifyPassword(ModifyPasswordRequest modifyPasswordRequest) {
+        if (!Objects.equals(modifyPasswordRequest.getConfirmPassword(), modifyPasswordRequest.getNewPassword())) {
+            throw new BasicException("新密码和确认密码不一致");
+        }
+        String id = JwtUtil.getInfo(UserInfo.class).getId();
+        WriteOffUser writeOffUser = writeOffUserMapper.selectById(id);
+        if (writeOffUser == null) {
+            throw new BasicException("用户不存在");
+        }
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        if (!bCryptPasswordEncoder.matches(modifyPasswordRequest.getOldPassword(), writeOffUser.getPassword())) {
+            throw new BasicException("您输入的旧密码有误");
+        }
+        //修改密码
+        WriteOffUser update = new WriteOffUser();
+        update.setId(Long.parseLong(id));
+        update.setPassword(bCryptPasswordEncoder.encode(modifyPasswordRequest.getNewPassword()));
+        writeOffUserMapper.updateById(update);
+        return ApiResult.ok(Boolean.TRUE);
     }
 
     private LoginResponse buildLoginResponse(ClockInUser clockInUser, Auth auth) {

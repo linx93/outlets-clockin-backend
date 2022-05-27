@@ -6,6 +6,7 @@ import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.LoginRequest;
 import com.outletcn.app.model.dto.LoginResponse;
 import com.outletcn.app.model.dto.applet.AppletLoginRequest;
+import com.outletcn.app.model.dto.applet.ModifyPasswordRequest;
 import com.outletcn.app.service.AuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,6 +48,13 @@ public class WriteOffUserController {
     @PostMapping(value = "/login")
     public ApiResult<LoginResponse> operatorLogin(@RequestBody @Valid AppletLoginRequest appletLoginRequest) {
         ApiResult<LoginResponse> apiResult = authService.writeOffLogin(appletLoginRequest);
+        return apiResult;
+    }
+
+    @ApiOperation(value = "核销小程序登录修改密码")
+    @PostMapping(value = "/modify-password")
+    public ApiResult<Boolean> modifyPassword(@RequestBody @Valid ModifyPasswordRequest modifyPasswordRequest) {
+        ApiResult<Boolean> apiResult = authService.modifyPassword(modifyPasswordRequest);
         return apiResult;
     }
 }

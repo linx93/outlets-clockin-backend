@@ -4,6 +4,7 @@ import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.LoginRequest;
 import com.outletcn.app.model.dto.LoginResponse;
 import com.outletcn.app.model.dto.applet.AppletLoginRequest;
+import com.outletcn.app.model.dto.applet.ModifyPasswordRequest;
 import com.outletcn.app.model.mysql.Auth;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -41,4 +42,12 @@ public interface AuthService extends IService<Auth> {
      * @return
      */
     ApiResult<LoginResponse> clockInLogin(AppletLoginRequest appletLoginRequest);
+
+    /**
+     * 核销小程序修改密码
+     *
+     * @param modifyPasswordRequest
+     * @return
+     */
+    ApiResult<Boolean> modifyPassword(ModifyPasswordRequest modifyPasswordRequest);
 }
