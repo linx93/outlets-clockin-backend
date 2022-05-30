@@ -343,8 +343,9 @@ public class LineServiceImpl implements LineService {
         }
         query.addCriteria(Criteria.where("putOn").is(putOn));
         query.with(Sort.by(
-                Sort.Order.desc("stickTime"),
-                Sort.Order.asc("stick")));
+                Sort.Order.asc("stick"),
+                Sort.Order.desc("stickTime")
+                ));
 
         PageInfo<Line> linePageInfo = lineMongoRepository.findObjForPage(query, pageInfo);
         List<QueryLineResponse> queryLineResponses = new ArrayList<>();
