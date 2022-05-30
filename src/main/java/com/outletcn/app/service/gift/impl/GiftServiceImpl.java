@@ -302,7 +302,7 @@ public class GiftServiceImpl implements GiftService {
 
     //更新豪华礼品包
     @Override
-    public void updateLuxuryGiftBag(LuxuryGiftBagCreator luxuryGiftBagCreator) {
+    public Long updateLuxuryGiftBag(LuxuryGiftBagCreator luxuryGiftBagCreator) {
         if (luxuryGiftBagCreator.getId().equals(0L) || luxuryGiftBagCreator.getId() == null) {
             throw new BasicException("id不能为空");
         }
@@ -334,6 +334,7 @@ public class GiftServiceImpl implements GiftService {
         } catch (Exception e) {
             throw new BasicException("更新出错");
         }
+        return giftBag.getId();
     }
 
     //创建普通礼品包
@@ -366,7 +367,7 @@ public class GiftServiceImpl implements GiftService {
 
     //更新普通礼品包
     @Override
-    public void updateOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator) {
+    public Long updateOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator) {
         if (ordinaryGiftBagCreator.getId().equals(0L) || ordinaryGiftBagCreator.getId() == null) {
             throw new BasicException("id不能为空");
         }
@@ -394,6 +395,8 @@ public class GiftServiceImpl implements GiftService {
         } catch (Exception e) {
             throw new BasicException("更新出错");
         }
+
+        return giftBag.getId();
     }
 
     //更改上架状态
@@ -490,6 +493,13 @@ public class GiftServiceImpl implements GiftService {
             throw new BasicException("插入出错");
         }
 
+    }
+
+    //删除礼品包及礼品关系
+    public void deleteGiftBagRelation(Long giftBagId, Long giftId){
+        Query query = new Query();
+        Criteria criteria = Criteria.where("giftId").is(giftId).and("giftBagId").is(giftBagId);
+        mongoTemplate.findAllAndRemove(query.addCriteria(criteria),GiftBagRelation.class);
     }
 
     //创建礼品类型

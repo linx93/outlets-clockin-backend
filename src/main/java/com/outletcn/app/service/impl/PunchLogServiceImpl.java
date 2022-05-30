@@ -111,8 +111,12 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         Assert.notNull(byId, "二维码代表的打卡点不存在");
         double distance = GeoUtil.getDistance(Double.parseDouble(clockInRequest.getLongitude()), Double.parseDouble(clockInRequest.getLatitude()), Double.parseDouble(byId.getLongitude()), Double.parseDouble(byId.getLatitude()));
         Assert.isTrue(distance <= clockInDistance, "你距离打卡点太远，请到打卡点再打卡");
-        List<PunchLog> punchLogs = getBaseMapper().selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, info.getId()).eq(PunchLog::getDestinationId, byId.getDestinationId()));
-        if (!punchLogs.isEmpty()){
+        List<PunchLog> punchLogs = getBaseMapper().selectList(
+                new QueryWrapper<PunchLog>().lambda()
+                        .eq(PunchLog::getUserId, info.getId())
+                        .eq(PunchLog::getDestinationId, byId.getId())
+        );
+        if (!punchLogs.isEmpty()) {
             throw new BasicException("不能重复打卡");
         }
         //保存打卡记录

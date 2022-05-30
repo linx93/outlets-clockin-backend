@@ -24,17 +24,19 @@ public interface GiftService {
 
     Long createLuxuryGiftBag(LuxuryGiftBagCreator luxuryGiftBagCreator);
 
-    void updateLuxuryGiftBag(LuxuryGiftBagCreator luxuryGiftBagCreator);
+    Long updateLuxuryGiftBag(LuxuryGiftBagCreator luxuryGiftBagCreator);
 
     Long createOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator);
 
-    void updateOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator);
+    Long updateOrdinaryGiftBag(OrdinaryGiftBagCreator ordinaryGiftBagCreator);
 
     void changeGiftBagState(GiftBagStateUpdateRequest request);
 
     GiftBagInfoResponse getGiftBagById (Long id );
 
     void createGiftBagRelation(Long giftBagId, Long giftId);
+
+    void deleteGiftBagRelation(Long giftBagId, Long giftId);
 
     void createGiftType(GiftTypeCreator giftTypeCreator);
 

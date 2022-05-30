@@ -98,7 +98,15 @@ public class GiftController {
     @PostMapping("/updateLuxuryGiftBag")
     @ApiOperation(value = "礼品包-更新豪华礼品包")
     public ApiResult updateRealTypeGift(@Valid @RequestBody LuxuryGiftBagRequest luxuryGiftBagRequest) {
-        giftService.updateLuxuryGiftBag(luxuryGiftBagRequest.getLuxuryGiftBagCreator());
+        Long giftBagId = giftService.updateLuxuryGiftBag(luxuryGiftBagRequest.getLuxuryGiftBagCreator());
+        for (Long giftId : luxuryGiftBagRequest.getGiftList()
+             ) {
+            giftService.deleteGiftBagRelation(giftBagId, giftId);
+        }
+        for (Long giftId : luxuryGiftBagRequest.getGiftList()
+        ) {
+            giftService.createGiftBagRelation(giftBagId, giftId);
+        }
         return ApiResult.ok(null);
     }
 
@@ -116,7 +124,15 @@ public class GiftController {
     @PostMapping("/updateOrdinaryGiftBag")
     @ApiOperation(value = "礼品包-更新普通礼品包")
     public ApiResult updateOrdinaryGiftBag(@Valid @RequestBody OrdinaryGiftBagRequest ordinaryGiftBagRequest) {
-        giftService.updateOrdinaryGiftBag(ordinaryGiftBagRequest.getOrdinaryGiftBagCreator());
+        Long giftBagId = giftService.updateOrdinaryGiftBag(ordinaryGiftBagRequest.getOrdinaryGiftBagCreator());
+        for (Long giftId : ordinaryGiftBagRequest.getGiftList()
+        ) {
+            giftService.deleteGiftBagRelation(giftBagId, giftId);
+        }
+        for (Long giftId : ordinaryGiftBagRequest.getGiftList()
+        ) {
+            giftService.createGiftBagRelation(giftBagId, giftId);
+        }
         return ApiResult.ok(null);
     }
 
