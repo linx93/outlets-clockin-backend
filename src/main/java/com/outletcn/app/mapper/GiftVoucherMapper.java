@@ -3,6 +3,7 @@ package com.outletcn.app.mapper;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * @author linx
  * @since 2022-05-12
  */
+@Component
 public interface GiftVoucherMapper extends BaseMapper<GiftVoucher> {
 
 
