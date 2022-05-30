@@ -20,6 +20,7 @@ import com.outletcn.app.utils.GeoUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -272,7 +273,9 @@ public class LineServiceImpl implements LineService {
     public boolean stickLine(StickRequest stickRequest) {
         Line line = mongoTemplate.findById(stickRequest.getId(), Line.class);
         line.setStick(stickRequest.getStick());
-        line.setStickTime(Instant.now().getEpochSecond());
+        if (stickRequest.getStick().equals(0)) {
+            line.setStickTime(Instant.now().getEpochSecond());
+        }
         try {
             mongoTemplate.save(line);
             return Boolean.TRUE;
@@ -339,6 +342,7 @@ public class LineServiceImpl implements LineService {
             query.addCriteria(Criteria.where("lineName").regex(pattern));
         }
         query.addCriteria(Criteria.where("putOn").is(putOn));
+        query.with(Sort.by(Sort.Order.desc("stickTime")));
 
         PageInfo<Line> linePageInfo = lineMongoRepository.findObjForPage(query, pageInfo);
         List<QueryLineResponse> queryLineResponses = new ArrayList<>();
@@ -366,6 +370,7 @@ public class LineServiceImpl implements LineService {
                     .score(scoreSum)
                     .putOn(line.getPutOn())
                     .lineAttrs(line.getLineAttrs())
+                    .stick(line.getStick())
                     .createTime(line.getCreateTime())
                     .updateTime(line.getUpdateTime()).build();
             queryLineResponses.add(queryLineResponse);
