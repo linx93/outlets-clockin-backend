@@ -74,8 +74,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         Query query = new Query();
         Criteria criteria = Criteria.where("type").
                 is(GiftTypeEnum.NORMAL.getCode()).
-                and("validDate").gt(Instant.now().getEpochSecond()).
-                and("putOn").is(0);
+                and("validDate").gt(Instant.now().getEpochSecond());
         query.addCriteria(criteria);
         PageInfo<GiftBag> bagPageInfo = punchSignatureMongoRepository.findObjForPage(query, pageInfo);
         List<GiftPunchSignatureResponse> signatureResponses = giftConverter.toGiftPunch(bagPageInfo.getRecords());
@@ -85,12 +84,18 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftBagId)), Gift.class);
             int scoreSum = gifts.stream().mapToInt(Gift::getGiftScore).sum();
             item.setScoreSum(scoreSum);
+            //默认全部不是hot
+            item.setHot(1);
         });
         //判断是否hot礼包
         //1.查询兑换已的礼品包
         List<Long> giftIds = signatureResponses.stream().map(GiftPunchSignatureResponse::getId).collect(Collectors.toList());
+        responsePageInfo.setCurrent(page);
+        responsePageInfo.setSize(size);
+        responsePageInfo.setTotal(pageInfo.getTotal());
         if (giftIds.isEmpty()) {
-            giftIds.add(-1L);
+            //从未有人兑换过
+            responsePageInfo.setRecords(signatureResponses);
         }
         List<GiftVoucher> giftVouchers = giftVoucherMapper.selectList(new QueryWrapper<GiftVoucher>().lambda().in(GiftVoucher::getGiftId, giftIds));
         //2 统计每个礼品包兑换次数
@@ -119,9 +124,6 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
 
         //排序 hot礼包在第一个
         List<GiftPunchSignatureResponse> responses = signatureResponses.stream().sorted(Comparator.comparing(GiftPunchSignatureResponse::getHot)).collect(Collectors.toList());
-        responsePageInfo.setCurrent(page);
-        responsePageInfo.setSize(size);
-        responsePageInfo.setTotal(pageInfo.getTotal());
         responsePageInfo.setRecords(responses);
         return responsePageInfo;
 
