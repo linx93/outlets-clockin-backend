@@ -62,7 +62,8 @@ public class ApplicationConfig implements WebMvcConfigurer {
                         "/v1/api/applet/operator/normal-login",
                         "/v1/api/applet/clock-in/login",
                         "/v1/api/applet/write-off/normal-login",
-                        "/v1/api/operator/login"
+                        "/v1/api/operator/login",
+                        "/v1/api/applet/clock-in-page/*"
                 );
     }
 

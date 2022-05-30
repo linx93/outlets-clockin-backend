@@ -545,7 +545,7 @@ public class LineServiceImpl implements LineService {
             lineVO.parse(tempDestinationAttr);
         });
         //排序 按置顶排序  再按修改时间排序
-        return result.stream().sorted(Comparator.comparingInt(LineVO::getStick)).sorted(Comparator.comparing(LineVO::getStickTime).reversed()).collect(Collectors.toList());
+        return result.stream().sorted(Comparator.comparing(LineVO::getStickTime).reversed()).sorted(Comparator.comparingInt(LineVO::getStick)).collect(Collectors.toList());
     }
 
     @Override
