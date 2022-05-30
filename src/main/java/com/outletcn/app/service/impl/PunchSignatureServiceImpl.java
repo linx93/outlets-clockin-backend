@@ -72,9 +72,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         pageInfo.setCurrent(page);
         pageInfo.setSize(size);
         Query query = new Query();
-        Criteria criteria = Criteria.where("type").
-                is(GiftTypeEnum.NORMAL.getCode()).
-                and("validDate").gt(Instant.now().getEpochSecond());
+        Criteria criteria = Criteria.where("type").is(GiftTypeEnum.NORMAL.getCode()).and("validDate").gt(Instant.now().getEpochSecond()).and("putOn").is(0);
         query.addCriteria(criteria);
         PageInfo<GiftBag> bagPageInfo = punchSignatureMongoRepository.findObjForPage(query, pageInfo);
         List<GiftPunchSignatureResponse> signatureResponses = giftConverter.toGiftPunch(bagPageInfo.getRecords());
@@ -233,11 +231,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             }
         }
         long id = sequence.nextId();
-        String content = QRCodeContent.builder()
-                .id(String.valueOf(id))
-                .appId(UserTypeEnum.WRITE_OFF.name())
-                .type(type)
-                .build().toString();
+        String content = QRCodeContent.builder().id(String.valueOf(id)).appId(UserTypeEnum.WRITE_OFF.name()).type(type).build().toString();
 
         try {
             String qrcodeBase64 = QrcodeUtil.getQrcodeBase64(content);
