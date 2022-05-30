@@ -181,7 +181,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             }
             if (destinationIds.size() != tempDestinationIdPunchLogs.size()) {
 
-//                throw new BasicException("请完成打卡后兑换");
+                throw new BasicException("请完成打卡后兑换");
             }
         }
 
@@ -194,7 +194,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             Long myScore = punchLogService.myScore();
             if (myScore.intValue() < scoreSum) {
 
-//                throw new BasicException("签章不够");
+                throw new BasicException("签章不够");
             }
         }
 
