@@ -1,5 +1,6 @@
 package com.outletcn.app.service.chain.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.mongodb.client.result.DeleteResult;
 import com.mzt.logapi.context.LogRecordContext;
@@ -503,14 +504,14 @@ public class LineServiceImpl implements LineService {
             return result;
         }
         lines.forEach(line -> result.add(lineConverter.toLineVO(line)));
-        //路线包含的所有目的地的属性
-        Set<String> tempDestinationAttr = new HashSet<>();
         //计算每条线路 包含打卡目的地的总数，同时累加每个打卡点的积分值
-        //打卡签章数量
-        AtomicReference<Long> clockInSignSum = new AtomicReference<>(0L);
-        //打卡点数量
-        AtomicReference<Integer> clockInDestinationSum = new AtomicReference<>(0);
         result.forEach(lineVO -> {
+            //路线包含的所有目的地的属性
+            Set<String> tempDestinationAttr = new HashSet<>();
+            //打卡签章数量
+            AtomicReference<Long> clockInSignSum = new AtomicReference<>(0L);
+            //打卡点数量
+            AtomicReference<Integer> clockInDestinationSum = new AtomicReference<>(0);
             List<Line.Attribute> lineElements = lineVO.getLineElements();
             lineElements.forEach(item -> {
                 Long id_ = item.getId();
