@@ -1,5 +1,6 @@
 package com.outletcn.app.converter;
 
+import com.outletcn.app.common.UserTypeEnum;
 import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.AddWriteOffUserRequest;
 import com.outletcn.app.model.dto.applet.NewOrModifyRequest;

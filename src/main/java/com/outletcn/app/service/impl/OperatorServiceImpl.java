@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -174,9 +175,17 @@ public class OperatorServiceImpl extends ServiceImpl<OperatorMapper, Operator> i
         List<Operator> operators = getBaseMapper().selectList(operatorQueryWrapper);
         //查询write_off_user
         List<WriteOffUser> writeOffUsers = writeOffUserMapper.selectList(writeOffUserQueryWrapper);
-        List<UserManagementResponse> result = userConverter.operatorsToUserManagementResponseList(operators);
+        List<UserManagementResponse> result = new ArrayList<>();
+        List<UserManagementResponse> operatorList = userConverter.operatorsToUserManagementResponseList(operators);
+        for (int i = 0; i < operatorList.size(); i++) {
+            operatorList.get(i).setUserTypeEnum(UserTypeEnum.PC);
+        }
         List<UserManagementResponse> writeOffUserList = userConverter.writeOffUsersToUserManagementResponseList(writeOffUsers);
+        for (int i = 0; i < writeOffUserList.size(); i++) {
+            writeOffUserList.get(i).setUserTypeEnum(UserTypeEnum.WRITE_OFF);
+        }
         result.addAll(writeOffUserList);
+        result.addAll(operatorList);
         return result;
     }
 

@@ -351,6 +351,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setExchangeLimit(ordinaryGiftBagCreator.getExchangeLimit());
         giftBag.setImage(ordinaryGiftBagCreator.getImage());
         giftBag.setRecommendImage(ordinaryGiftBagCreator.getRecommendImage());
+        giftBag.setPutOn(0);
 
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
@@ -536,10 +537,8 @@ public class GiftServiceImpl implements GiftService {
     public PageInfo<GiftBagListResponse> getGiftBagList(GiftBagListRequest giftBagListRequest) {
         PageInfo<GiftBagListResponse> pageInfo = new PageInfo<>();
         Query query = new Query();
-        Criteria criteria = new Criteria();
-        if (giftBagListRequest.getPutOn() != null) {
-            criteria = Criteria.where("putOn").is(giftBagListRequest.getPutOn());
-        }
+        Criteria criteria = Criteria.where("putOn").is(giftBagListRequest.getPutOn());
+
         if (giftBagListRequest.getType() != null) {
             criteria = criteria.and("type").is(giftBagListRequest.getType());
         }
