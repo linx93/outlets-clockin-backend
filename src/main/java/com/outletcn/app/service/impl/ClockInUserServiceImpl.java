@@ -69,7 +69,7 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
 
     @Override
     public List<GiftBag> buildGiftBag() {
-        Query type = Query.query(Criteria.where("type").is(2));
+        Query type = Query.query(Criteria.where("type").is(2).and("putOn").is(0));
         return mongoTemplate.find(type, GiftBag.class);
     }
 
