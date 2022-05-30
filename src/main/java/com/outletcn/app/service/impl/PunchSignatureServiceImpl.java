@@ -89,6 +89,9 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         //判断是否hot礼包
         //1.查询兑换已的礼品包
         List<Long> giftIds = signatureResponses.stream().map(GiftPunchSignatureResponse::getId).collect(Collectors.toList());
+        if (giftIds.isEmpty()) {
+            giftIds.add(-1L);
+        }
         List<GiftVoucher> giftVouchers = giftVoucherMapper.selectList(new QueryWrapper<GiftVoucher>().lambda().in(GiftVoucher::getGiftId, giftIds));
         //2 统计每个礼品包兑换次数
         Map<Long, List<GiftVoucher>> collect = giftVouchers.stream().collect(Collectors.groupingBy(GiftVoucher::getGiftId));
