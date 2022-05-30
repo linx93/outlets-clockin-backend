@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.LongBinaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -69,7 +70,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
             Long giftBagId = item.getGiftId();
             List<Long> giftIdList = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBagId)), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
             List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIdList)), Gift.class);
-            consumptionScore.set(gifts.stream().mapToLong(Gift::getGiftScore).sum());
+            consumptionScore.accumulateAndGet(gifts.stream().mapToLong(Gift::getGiftScore).sum(), Long::sum);
         });
         return sumScore - consumptionScore.get();
     }
