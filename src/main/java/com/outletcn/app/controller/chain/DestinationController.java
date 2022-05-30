@@ -2,8 +2,7 @@ package com.outletcn.app.controller.chain;
 
 
 import com.outletcn.app.annotation.PassToken;
-import com.outletcn.app.common.ClockInType;
-import com.outletcn.app.common.DestinationQRCode;
+import com.outletcn.app.common.*;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.mongo.DestinationAttribute;
 import com.outletcn.app.model.mongo.DestinationType;
@@ -11,7 +10,6 @@ import com.outletcn.app.utils.QrcodeUtil;
 import com.outletcn.app.validation.AddGroup;
 import com.outletcn.app.validation.UpdateGroup;
 import net.phadata.app.common.ApiResult;
-import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.chain.*;
 import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.service.chain.DestinationService;
@@ -219,10 +217,11 @@ public class DestinationController {
         try {
             destinationService.findDestinationById(Long.parseLong(id));
 
-            String content = DestinationQRCode.builder()
+            //生成用于打卡的目的地二维码
+            String content = QRCodeContent.builder()
                     .id(id)
-                    .app("outlets")
-                    .type(ClockInType.Destination.name())
+                    .appId(UserTypeEnum.CLOCK_IN.name())
+                    .type(QRCodeSceneEnum.CHOCK_IN.name())
                     .build().toString();
             ByteArrayOutputStream outputStream = QrcodeUtil.outputStream(content);
 

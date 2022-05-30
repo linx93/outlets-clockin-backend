@@ -68,10 +68,15 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         }
         AtomicLong consumptionScore = new AtomicLong(0L);
         giftVouchers.forEach(item -> {
+            //礼品包的id
             Long giftBagId = item.getGiftId();
-            List<Long> giftIdList = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBagId)), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
-            List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIdList)), Gift.class);
-            consumptionScore.accumulateAndGet(gifts.stream().mapToLong(Gift::getGiftScore).sum(), Long::sum);
+            //判断排除豪华礼品包
+            GiftBag byId = mongoTemplate.findById(giftBagId, GiftBag.class);
+            if (byId.getType() != 2) {
+                List<Long> giftIdList = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBagId)), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+                List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIdList)), Gift.class);
+                consumptionScore.accumulateAndGet(gifts.stream().mapToLong(Gift::getGiftScore).sum(), Long::sum);
+            }
         });
         return sumScore - consumptionScore.get();
     }
