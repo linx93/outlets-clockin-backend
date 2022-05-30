@@ -11,6 +11,7 @@ import lombok.Data;
  */
 @Data
 @Builder
+@Deprecated
 public class DestinationQRCode {
 
     /**

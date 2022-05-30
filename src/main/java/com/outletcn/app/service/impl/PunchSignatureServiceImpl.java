@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
-import com.outletcn.app.common.GiftTypeEnum;
-import com.outletcn.app.common.PageInfo;
-import com.outletcn.app.common.QRCodeContent;
-import com.outletcn.app.common.UserTypeEnum;
+import com.outletcn.app.common.*;
 import com.outletcn.app.converter.GiftConverter;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.mapper.GiftVoucherMapper;
@@ -231,7 +228,8 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             }
         }
         long id = sequence.nextId();
-        String content = QRCodeContent.builder().id(String.valueOf(id)).appId(UserTypeEnum.WRITE_OFF.name()).type(type).build().toString();
+        //生成用于核销的礼品券二维码
+        String content = QRCodeContent.builder().id(String.valueOf(id)).appId(UserTypeEnum.WRITE_OFF.name()).type(QRCodeSceneEnum.WRITE_OFF.name()).build().toString();
 
         try {
             String qrcodeBase64 = QrcodeUtil.getQrcodeBase64(content);
