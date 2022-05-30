@@ -68,10 +68,15 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         }
         AtomicLong consumptionScore = new AtomicLong(0L);
         giftVouchers.forEach(item -> {
+            //礼品包的id
             Long giftBagId = item.getGiftId();
-            List<Long> giftIdList = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBagId)), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
-            List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIdList)), Gift.class);
-            consumptionScore.accumulateAndGet(gifts.stream().mapToLong(Gift::getGiftScore).sum(), Long::sum);
+            //判断排除豪华礼品包
+            GiftBag byId = mongoTemplate.findById(giftBagId, GiftBag.class);
+            if (byId.getType() != 2) {
+                List<Long> giftIdList = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBagId)), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+                List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIdList)), Gift.class);
+                consumptionScore.accumulateAndGet(gifts.stream().mapToLong(Gift::getGiftScore).sum(), Long::sum);
+            }
         });
         return sumScore - consumptionScore.get();
     }
@@ -112,7 +117,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         double distance = GeoUtil.getDistance(Double.parseDouble(clockInRequest.getLongitude()), Double.parseDouble(clockInRequest.getLatitude()), Double.parseDouble(byId.getLongitude()), Double.parseDouble(byId.getLatitude()));
         Assert.isTrue(distance <= clockInDistance, "你距离打卡点太远，请到打卡点再打卡");
         List<PunchLog> punchLogs = getBaseMapper().selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, info.getId()).eq(PunchLog::getDestinationId, byId.getDestinationId()));
-        if (!punchLogs.isEmpty()){
+        if (!punchLogs.isEmpty()) {
             throw new BasicException("不能重复打卡");
         }
         //保存打卡记录
