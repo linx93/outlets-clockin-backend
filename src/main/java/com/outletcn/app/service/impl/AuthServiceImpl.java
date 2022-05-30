@@ -71,7 +71,7 @@ public class AuthServiceImpl extends ServiceImpl<AuthMapper, Auth> implements Au
             throw new BasicException("用户名或密码错误");
         }
         if (writeOffUser.getState() == null || writeOffUser.getState() == AccountStateEnum.LOGOUT.getCode()) {
-            throw new BasicException("改账户已注销");
+            throw new BasicException("该账户已注销");
         }
         // if (writeOffUser.getAuthId() == null) {
         //     throw new BasicException("未进行秘袋儿实人认证");
