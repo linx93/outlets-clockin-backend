@@ -1,6 +1,7 @@
 package com.outletcn.app;
 
 import com.alibaba.fastjson.JSON;
+import com.outletcn.app.model.dto.map.CityAreaSearchRequest;
 import com.outletcn.app.model.dto.map.Location;
 import com.outletcn.app.model.dto.map.MapResult;
 import com.outletcn.app.network.TencentMapApi;
@@ -26,5 +27,15 @@ public class TencentMapApiTest {
         location.setLng(116.32082959714444);
         MapResult geocoder = tencentMapApi.geocoder(location);
         System.out.println(JSON.toJSONString(geocoder,true));
+    }
+
+    @Test
+    void cityAreaSearch() {
+        CityAreaSearchRequest cityAreaSearchRequest = new CityAreaSearchRequest();
+        cityAreaSearchRequest.setBoundary("region(北京,0)");
+        cityAreaSearchRequest.setKeyword("颐和园");
+        cityAreaSearchRequest.setFilter("category=旅游景点");
+        Object o = tencentMapApi.cityAreaSearch(cityAreaSearchRequest);
+        System.out.println(o);
     }
 }

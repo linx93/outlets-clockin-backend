@@ -1,9 +1,11 @@
 package com.outletcn.app.network;
 
 
-import com.outletcn.app.model.dto.map.GeocoderResponse;
+import com.outletcn.app.model.dto.map.CityAreaSearchRequest;
 import com.outletcn.app.model.dto.map.Location;
 import com.outletcn.app.model.dto.map.MapResult;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * 腾讯地图相关请求
@@ -20,4 +22,13 @@ public interface TencentMapApi {
      * @return
      */
     MapResult geocoder(Location location);
+
+
+    /**
+     * 城市区域搜索
+     *
+     * @param cityAreaSearchRequest cityAreaSearchRequest
+     * @return data
+     */
+    Object cityAreaSearch(CityAreaSearchRequest cityAreaSearchRequest);
 }

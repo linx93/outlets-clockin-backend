@@ -1,7 +1,9 @@
 package com.outletcn.app.controller;
 
 
+import com.outletcn.app.annotation.PassToken;
 import com.outletcn.app.common.ApiResult;
+import com.outletcn.app.model.dto.map.CityAreaSearchRequest;
 import com.outletcn.app.model.dto.map.Location;
 import com.outletcn.app.model.dto.map.MapResult;
 import com.outletcn.app.network.TencentMapApi;
@@ -31,6 +33,7 @@ import javax.validation.Valid;
 public class MapController {
     private final TencentMapApi tencentMapApi;
 
+    @PassToken
     @ApiOperation(value = "逆地址解析（坐标位置描述）")
     @PostMapping(value = "/geocoder")
     public ApiResult<MapResult> geocoder(@RequestBody @Valid Location location) {
@@ -38,5 +41,13 @@ public class MapController {
         return ApiResult.ok(geocoder);
     }
 
+
+    @PassToken
+    @ApiOperation(value = "城市区域搜索")
+    @PostMapping(value = "/city-area-search")
+    public ApiResult<Object> cityAreaSearch(@RequestBody @Valid CityAreaSearchRequest cityAreaSearchRequest) {
+        Object mapData = tencentMapApi.cityAreaSearch(cityAreaSearchRequest);
+        return ApiResult.ok(mapData);
+    }
 }
 
