@@ -499,9 +499,9 @@ public class GiftServiceImpl implements GiftService {
     }
 
     //删除礼品包及礼品关系
-    public void deleteGiftBagRelation(Long giftBagId, Long giftId) {
+    public void deleteGiftBagRelation(Long giftBagId) {
         Query query = new Query();
-        Criteria criteria = Criteria.where("giftId").is(giftId).and("giftBagId").is(giftBagId);
+        Criteria criteria = Criteria.where("giftBagId").is(giftBagId);
         mongoTemplate.findAllAndRemove(query.addCriteria(criteria), GiftBagRelation.class);
     }
 
