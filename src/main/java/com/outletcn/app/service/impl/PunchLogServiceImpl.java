@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongBinaryOperator;
@@ -100,6 +101,14 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
                 giftBagVO.setScoreSum(gifts.stream().mapToDouble(Gift::getGiftScore).sum());
             }
         });
+        //0:未兑换代表未核销 按生成时间排序
+        if (state == 0) {
+            return exchangeRecordResponses.stream().sorted(Comparator.comparingLong(MyExchangeRecordResponse::getCreateTime).reversed()).collect(Collectors.toList());
+        }
+        //1:已兑换代表已核销 按核销时间排
+        if (state == 1) {
+            return exchangeRecordResponses.stream().sorted(Comparator.comparingLong(MyExchangeRecordResponse::getExchangeTime).reversed()).collect(Collectors.toList());
+        }
         return exchangeRecordResponses;
     }
 
@@ -152,7 +161,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         } else {
             punchLogs = getBaseMapper().selectList(null);
         }
-        List<ClockInRecords> clockInRecordsList = clockInConverter.toClockInRecordsList(punchLogs);
+        List<ClockInRecords> clockInRecordsList = clockInConverter.toClockInRecordsList(punchLogs).stream().sorted(Comparator.comparingLong(ClockInRecords::getPunchTime).reversed()).collect(Collectors.toList());
         return clockInRecordsList;
     }
 
