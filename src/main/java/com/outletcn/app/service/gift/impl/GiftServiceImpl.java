@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 @AllArgsConstructor
@@ -498,10 +499,10 @@ public class GiftServiceImpl implements GiftService {
     }
 
     //删除礼品包及礼品关系
-    public void deleteGiftBagRelation(Long giftBagId, Long giftId){
+    public void deleteGiftBagRelation(Long giftBagId, Long giftId) {
         Query query = new Query();
         Criteria criteria = Criteria.where("giftId").is(giftId).and("giftBagId").is(giftBagId);
-        mongoTemplate.findAllAndRemove(query.addCriteria(criteria),GiftBagRelation.class);
+        mongoTemplate.findAllAndRemove(query.addCriteria(criteria), GiftBagRelation.class);
     }
 
     //创建礼品类型
@@ -765,6 +766,12 @@ public class GiftServiceImpl implements GiftService {
                 luxuryGiftBagResponse.setGiftBagInfo(giftBagInfo);
                 giftBagInfo.setName(giftBag.getName());
                 giftBagInfo.setType(giftBag.getType());
+                List<GiftBagRelation> bagRelations = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBag.getId())), GiftBagRelation.class);
+                List<Long> giftIds = bagRelations.stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+                List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
+                List<String> giftNames = gifts.stream().map(Gift::getGiftName).collect(Collectors.toList());
+                giftBagInfo.setGiftNames(giftNames);
+                giftBagInfo.setExchangeCount(giftBag.getExchangeCount());
                 giftBagInfo.setDescription(giftBag.getDescription());
                 giftBagInfo.setImage(giftBag.getImage());
                 giftBagInfo.setId(giftBag.getId());

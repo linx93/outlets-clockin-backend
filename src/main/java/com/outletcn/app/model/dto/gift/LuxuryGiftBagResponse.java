@@ -44,6 +44,15 @@ public class LuxuryGiftBagResponse {
         private String description;
 
         /**
+         * 兑换次数
+         */
+        @ApiModelProperty(value = "兑换次数")
+        private Integer exchangeCount;
+
+        @ApiModelProperty(value = "礼品名称")
+        private List<String> giftNames;
+
+        /**
          * 礼品包图片（列表页长方形缩略图）
          */
         @ApiModelProperty(value = "礼品包图片（列表页长方形缩略图）")
