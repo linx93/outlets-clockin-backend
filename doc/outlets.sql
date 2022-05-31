@@ -11,7 +11,7 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 23/05/2022 15:48:59
+ Date: 31/05/2022 17:03:11
 */
 
 SET NAMES utf8mb4;
@@ -52,6 +52,16 @@ CREATE TABLE `clock_in_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='打卡用户表';
 
 -- ----------------------------
+-- Table structure for date_statistics
+-- ----------------------------
+DROP TABLE IF EXISTS `date_statistics`;
+CREATE TABLE `date_statistics` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `date` bigint NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ----------------------------
 -- Table structure for gift_voucher
 -- ----------------------------
 DROP TABLE IF EXISTS `gift_voucher`;
@@ -85,6 +95,9 @@ CREATE TABLE `operator` (
   `password` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '密码',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `role_id` int DEFAULT NULL COMMENT '角色id[0:内置的管理员     1:运营人员]',
+  `state` int DEFAULT NULL COMMENT '注销状态[0:未注销 1:已注销]',
+  `nick_name` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '昵称',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='运营人员表[pc端的管理人员表]\n';
 
@@ -125,7 +138,7 @@ CREATE TABLE `t_log_record` (
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `idx_biz_key` (`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=407 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='操作日志表';
 
 -- ----------------------------
 -- Table structure for write_off_user
@@ -145,6 +158,7 @@ CREATE TABLE `write_off_user` (
   `auth_id` bigint DEFAULT NULL COMMENT '认证ID，关联认证表的主键',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `state` int DEFAULT NULL COMMENT '注销状态[0:未注销 1:已注销]',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='核销用户表';
 
