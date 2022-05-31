@@ -33,7 +33,7 @@ public class Gift implements Serializable {
 
     /**
      * 礼品类别
-     * 0:实物/1:消费优惠卷
+     * 0:实物/1:消费优惠券
      */
     private Integer giftType;
 
@@ -112,11 +112,11 @@ public class Gift implements Serializable {
     private String giftUnit;
 
 
-    /***************仅在“礼品类别“选择”消费优惠卷”时，可填写以下内容********************/
+    /***************仅在“礼品类别“选择”消费优惠券”时，可填写以下内容********************/
 
 
     /**
-     * 优惠卷承兑商家
+     * 优惠券承兑商家
      */
     private List<String> couponAcceptor;
 

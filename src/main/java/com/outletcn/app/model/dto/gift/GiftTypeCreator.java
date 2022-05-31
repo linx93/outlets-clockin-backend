@@ -11,7 +11,7 @@ public class GiftTypeCreator {
     /**
      * 礼品类别
      */
-    @ApiModelProperty(value = "礼品类别；0:实物/1:消费优惠卷")
+    @ApiModelProperty(value = "礼品类别；0:实物/1:消费优惠券")
     @NotNull
     private Integer category;
 

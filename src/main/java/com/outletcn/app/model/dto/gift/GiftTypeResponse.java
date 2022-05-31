@@ -13,9 +13,9 @@ public class GiftTypeResponse {
     private Long id;
 
     /**
-     * 礼品类别 0:实物/1:消费优惠卷
+     * 礼品类别 0:实物/1:消费优惠券
      */
-    @ApiModelProperty(value = "礼品类别；0:实物/1:消费优惠卷")
+    @ApiModelProperty(value = "礼品类别；0:实物/1:消费优惠券")
     private Integer category;
 
     /**
