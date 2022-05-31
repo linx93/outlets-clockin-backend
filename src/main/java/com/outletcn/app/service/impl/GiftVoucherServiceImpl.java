@@ -83,7 +83,9 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
         UserInfo info = JwtUtil.getInfo(UserInfo.class);
         List<GiftVoucher> list = baseMapper.selectList(new QueryWrapper<GiftVoucher>().lambda()
                 .eq(GiftVoucher::getExchangeUserId, info.getId())
-                .eq(GiftVoucher::getState, 1));
+                .eq(GiftVoucher::getState, 1)
+                .orderByDesc(GiftVoucher::getExchangeTime)
+        );
         for (GiftVoucher v : list
         ) {
             GiftBag giftBag = mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(v.getGiftId())), GiftBag.class);
