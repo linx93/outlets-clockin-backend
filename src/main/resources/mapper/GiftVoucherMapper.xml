@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.outletcn.app.mapper.GiftVoucherMapper">
-    <select id="findAllBy" resultType="com.outletcn.app.model.mysql.GiftVoucher">
+    <select id="findAllByCreateTimeAndUserId" resultType="com.outletcn.app.model.mysql.GiftVoucher">
         select *
         from gift_voucher
         where gift_id = #{giftId,jdbcType=BIGINT}
           and user_id = #{userId,jdbcType=BIGINT}
-          and FROM_UNIXTIME(create_time, '%Y-%m-%d') = FROM_UNIXTIME(#{sencond,jdbcType=BIGINT}, '%Y-%m-%d')
+          and FROM_UNIXTIME(create_time, '%Y-%m-%d') = FROM_UNIXTIME(#{second,jdbcType=BIGINT}, '%Y-%m-%d')
     </select>
 </mapper>

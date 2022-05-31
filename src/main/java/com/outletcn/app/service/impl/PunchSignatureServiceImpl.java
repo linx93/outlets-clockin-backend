@@ -225,7 +225,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
 
 
         long epochSecond = Instant.now().getEpochSecond();
-        List<GiftVoucher> exchangeLimitVoucher = giftVoucherMapper.findAllBy(Long.parseLong(giftBagId), Long.parseLong(userInfo.getId()), epochSecond);
+        List<GiftVoucher> exchangeLimitVoucher = giftVoucherMapper.findAllByCreateTimeAndUserId(Long.parseLong(giftBagId), Long.parseLong(userInfo.getId()), epochSecond);
         //4查询礼品每日单次限制兑换次数
         Integer exchangeLimit = giftBag.getExchangeLimit();
 

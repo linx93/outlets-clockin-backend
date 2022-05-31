@@ -19,6 +19,14 @@ import java.util.List;
 public interface GiftVoucherMapper extends BaseMapper<GiftVoucher> {
 
 
-    List<GiftVoucher> findAllBy(@Param("giftId") Long giftId, @Param("userId") Long userId, @Param("sencond") Long sencond);
+    /**
+     * 查询当天礼品劵
+     *
+     * @param giftId 礼品包id
+     * @param userId 用户id
+     * @param second 当前时间戳
+     * @return
+     */
+    List<GiftVoucher> findAllByCreateTimeAndUserId(@Param("giftId") Long giftId, @Param("userId") Long userId, @Param("second") Long second);
 
 }
