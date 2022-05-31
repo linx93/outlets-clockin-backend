@@ -292,6 +292,7 @@ public class GiftServiceImpl implements GiftService {
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
         giftBag.setUpdateTime(time);
+        giftBag.setStateUpdateTime(time);
         try {
             mongoTemplate.save(giftBag);
         } catch (Exception e) {
@@ -357,6 +358,7 @@ public class GiftServiceImpl implements GiftService {
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
         giftBag.setUpdateTime(time);
+        giftBag.setStateUpdateTime(time);
         try {
             mongoTemplate.save(giftBag);
         } catch (Exception e) {
