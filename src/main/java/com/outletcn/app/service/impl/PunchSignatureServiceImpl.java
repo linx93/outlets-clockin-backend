@@ -142,7 +142,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
     /**
      * @param giftBagId   礼品包id
      * @param type        礼品类型 1普通 2豪礼
-     * @param voucherType 券类型 1: 实物兑换卷 2: 消费优惠卷
+     * @param voucherType 券类型 1: 实物兑换券 2: 消费优惠券
      * @return
      */
     private Boolean exchange(String giftBagId, String type, Integer voucherType) {
@@ -210,7 +210,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         if (voucher != null) {
             if (voucher.size() >= exchangeCount) {
                 log.info("礼品已兑换次数 {},礼品限制次数 {} ", voucher.size(), exchangeCount);
-                throw new BasicException("该礼品已兑换完毕");
+                throw new BasicException("该礼品您已兑换");
             }
         }
 

@@ -78,13 +78,13 @@ public class VoucherTypeGiftCreator {
 
 
 
-    /***************仅在“礼品类别“选择”消费优惠卷”时，可填写以下内容********************/
+    /***************仅在“礼品类别“选择”消费优惠券”时，可填写以下内容********************/
 
 
     /**
-     * 优惠卷承兑商家
+     * 优惠券承兑商家
      */
     @NotBlank
-    @ApiModelProperty(value = "优惠卷承兑商家")
+    @ApiModelProperty(value = "优惠券承兑商家")
     private List<String> couponAcceptor;
 }

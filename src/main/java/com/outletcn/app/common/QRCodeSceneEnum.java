@@ -8,7 +8,7 @@ package com.outletcn.app.common;
  */
 public enum QRCodeSceneEnum {
     /**
-     * 礼品卷核销
+     * 礼品券核销
      */
     WRITE_OFF(),
 
