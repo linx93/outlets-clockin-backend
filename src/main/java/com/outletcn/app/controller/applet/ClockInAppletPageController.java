@@ -7,6 +7,7 @@ import com.outletcn.app.model.dto.gift.LuxuryGiftBagResponse;
 import com.outletcn.app.model.mongo.GiftBag;
 import com.outletcn.app.model.mongo.Line;
 import com.outletcn.app.service.ClockInUserService;
+import com.outletcn.app.service.PunchLogService;
 import com.outletcn.app.service.chain.LineService;
 import com.outletcn.app.service.gift.GiftService;
 import io.swagger.annotations.Api;
@@ -32,6 +33,8 @@ import java.util.List;
 public class ClockInAppletPageController {
     private final LineService lineService;
     private final ClockInUserService clockInUserService;
+
+    private final PunchLogService punchLogService;
 
     @ApiOperation(value = "通过线路id查询线路下的目的地和目的地群")
     @GetMapping(value = "/line-elements")

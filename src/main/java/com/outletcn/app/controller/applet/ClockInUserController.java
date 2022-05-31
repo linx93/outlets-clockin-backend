@@ -126,5 +126,13 @@ public class ClockInUserController {
         ActivityRuleResponse activityRuleResponse = clockInUserService.activity();
         return ApiResult.ok(activityRuleResponse);
     }
+
+
+    @ApiOperation(value = "我的签章打卡总次数")
+    @GetMapping(value = "/clock-in-count")
+    public ApiResult<Integer> clockInCount() {
+        int count = punchLogService.clockInRecords("my").size();
+        return ApiResult.ok(count);
+    }
 }
 

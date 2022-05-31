@@ -13,18 +13,25 @@ import lombok.Data;
 @Data
 @Builder
 public class QRCodeContent {
-    @ApiModelProperty(value = "WRITE_OFF:核销小程序用户 CLOCK_IN:打卡小程序用户")
-    private String appId;
+
+    @ApiModelProperty(value = "outlets:奥特莱斯应用")
+    private String app;
+
     /**
-     * 标记二维码使用场景   EXCHANGED:核销礼品券  CHOCKIN:目的地打卡
+     * 标记二维码使用场景   WRITE_OFF:核销礼品券  CHOCK_IN:目的地打卡
      */
-    @ApiModelProperty(value = "WRITE_OFF:核销礼品券  CHOCKIN:目的地打卡")
+    @ApiModelProperty(value = "WRITE_OFF:核销礼品券  CHOCK_IN:目的地打卡")
     private String type;
+
     /**
-     * 礼品券ID
+     * 二维码id
      */
     @ApiModelProperty(value = "唯一id")
     private String id;
+
+
+    @ApiModelProperty(value = "二维码的生成源")
+    private String source;
 
     @Override
     public String toString() {

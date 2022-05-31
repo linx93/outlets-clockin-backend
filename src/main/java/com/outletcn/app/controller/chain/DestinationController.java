@@ -220,8 +220,9 @@ public class DestinationController {
             //生成用于打卡的目的地二维码
             String content = QRCodeContent.builder()
                     .id(id)
-                    .appId(UserTypeEnum.CLOCK_IN.name())
+                    .app(AppEnum.outlets.name())
                     .type(QRCodeSceneEnum.CHOCK_IN.name())
+                    .source(UserTypeEnum.PC.name())
                     .build().toString();
             ByteArrayOutputStream outputStream = QrcodeUtil.outputStream(content);
 

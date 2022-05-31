@@ -1,6 +1,5 @@
 package com.outletcn.app.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
@@ -10,7 +9,6 @@ import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.mapper.GiftVoucherMapper;
 import com.outletcn.app.mapper.PunchLogMapper;
 import com.outletcn.app.model.dto.UserInfo;
-import com.outletcn.app.model.dto.gift.GiftListResponse;
 import com.outletcn.app.model.dto.gift.GiftPunchSignatureResponse;
 import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.Gift;
@@ -25,7 +23,6 @@ import com.outletcn.app.utils.JwtUtil;
 import com.outletcn.app.utils.QrcodeUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -229,7 +226,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         }
         long id = sequence.nextId();
         //生成用于核销的礼品券二维码
-        String content = QRCodeContent.builder().id(String.valueOf(id)).appId(UserTypeEnum.WRITE_OFF.name()).type(QRCodeSceneEnum.WRITE_OFF.name()).build().toString();
+        String content = QRCodeContent.builder().id(String.valueOf(id)).app(AppEnum.outlets.name()).type(QRCodeSceneEnum.WRITE_OFF.name()).source(UserTypeEnum.CLOCK_IN.name()).build().toString();
 
         try {
             String qrcodeBase64 = QrcodeUtil.getQrcodeBase64(content);
