@@ -60,6 +60,9 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
         if (Objects.isNull(voucher)) {
             throw new BasicException("未找到兑换券数据");
         }
+        if (voucher.getState().equals(1)){
+            throw new BasicException("兑换券已被使用");
+        }
         Long time = Instant.now().getEpochSecond();
         if (voucher.getExchangeDeadline() < time) {
             throw new BasicException("兑换券已过期");
