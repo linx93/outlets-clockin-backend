@@ -204,10 +204,22 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         //3查询礼品是否已经兑换
         Integer exchangeCount = giftBag.getExchangeCount();
 
-        if (voucher != null) {
-            if (voucher.size() >= exchangeCount) {
-                log.info("礼品已兑换次数 {},礼品限制次数 {} ", voucher.size(), exchangeCount);
-                throw new BasicException("该礼品您已兑换");
+        if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
+            if (voucher != null) {
+                if (voucher.size() >= exchangeCount) {
+                    log.info("礼品已兑换次数 {},礼品限制次数 {} ", voucher.size(), exchangeCount);
+                    throw new BasicException("该礼品您已兑换");
+                }
+            }
+        }
+
+        if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
+            //普通礼品可以兑换次数
+            if (voucher != null) {
+                if (voucher.size() >= exchangeCount) {
+                    log.info("礼品已兑换次数 {},礼品限制次数 {} ", voucher.size(), exchangeCount);
+                    throw new BasicException("该礼品兑换次数已用完");
+                }
             }
         }
 
@@ -217,13 +229,15 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         //4查询礼品每日单次限制兑换次数
         Integer exchangeLimit = giftBag.getExchangeLimit();
 
-
-        if (exchangeLimitVoucher != null) {
-            log.info("礼品每日单次限制兑换次数 {},礼品限制次数 {} ", exchangeLimitVoucher.size(), exchangeLimit);
-            if (exchangeLimitVoucher.size() >= exchangeLimit) {
-                throw new BasicException("该礼品每日单次兑换次数已用完");
+        if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
+            if (exchangeLimitVoucher != null) {
+                log.info("礼品每日单次限制兑换次数 {},礼品限制次数 {} ", exchangeLimitVoucher.size(), exchangeLimit);
+                if (exchangeLimitVoucher.size() >= exchangeLimit) {
+                    throw new BasicException("该礼品每日兑换次数已用完");
+                }
             }
         }
+
         long id = sequence.nextId();
         //生成用于核销的礼品券二维码
         String content = QRCodeContent.builder().id(String.valueOf(id)).app(AppEnum.outlets.name()).type(QRCodeSceneEnum.WRITE_OFF.name()).source(UserTypeEnum.CLOCK_IN.name()).build().toString();
