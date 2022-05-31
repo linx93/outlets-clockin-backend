@@ -2,6 +2,7 @@ package com.outletcn.app.network;
 
 
 import com.outletcn.app.model.dto.map.CityAreaSearchRequest;
+import com.outletcn.app.model.dto.map.KeywordSearchRequest;
 import com.outletcn.app.model.dto.map.Location;
 import com.outletcn.app.model.dto.map.MapResult;
 
@@ -31,4 +32,12 @@ public interface TencentMapApi {
      * @return data
      */
     Object cityAreaSearch(CityAreaSearchRequest cityAreaSearchRequest);
+
+    /**
+     * 关键词输入提示
+     *
+     * @param keywordSearchRequest
+     * @return
+     */
+    Object keywordSearch(KeywordSearchRequest keywordSearchRequest);
 }

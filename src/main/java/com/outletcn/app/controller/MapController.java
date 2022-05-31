@@ -4,6 +4,7 @@ package com.outletcn.app.controller;
 import com.outletcn.app.annotation.PassToken;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.model.dto.map.CityAreaSearchRequest;
+import com.outletcn.app.model.dto.map.KeywordSearchRequest;
 import com.outletcn.app.model.dto.map.Location;
 import com.outletcn.app.model.dto.map.MapResult;
 import com.outletcn.app.network.TencentMapApi;
@@ -47,6 +48,15 @@ public class MapController {
     @PostMapping(value = "/city-area-search")
     public ApiResult<Object> cityAreaSearch(@RequestBody @Valid CityAreaSearchRequest cityAreaSearchRequest) {
         Object mapData = tencentMapApi.cityAreaSearch(cityAreaSearchRequest);
+        return ApiResult.ok(mapData);
+    }
+
+
+    @PassToken
+    @ApiOperation(value = "关键词输入提示")
+    @PostMapping(value = "/keyword-search")
+    public ApiResult<Object> keywordSearch(@RequestBody @Valid KeywordSearchRequest keywordSearchRequest) {
+        Object mapData = tencentMapApi.keywordSearch(keywordSearchRequest);
         return ApiResult.ok(mapData);
     }
 }

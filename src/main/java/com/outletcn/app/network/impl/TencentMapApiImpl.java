@@ -4,10 +4,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.outletcn.app.model.dto.map.CityAreaSearchRequest;
-import com.outletcn.app.model.dto.map.GeocoderResponse;
-import com.outletcn.app.model.dto.map.Location;
-import com.outletcn.app.model.dto.map.MapResult;
+import com.outletcn.app.model.dto.map.*;
 import com.outletcn.app.network.TencentMapApi;
 import com.tencent.cloud.cos.util.MD5;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +61,20 @@ public class TencentMapApiImpl implements TencentMapApi {
         return jsonObject;
     }
 
+    @Override
+    public Object keywordSearch(KeywordSearchRequest keywordSearchRequest) {
+        String url = buildKeywordSearch(keywordSearchRequest);
+        HttpResponse execute = HttpRequest.get(url).execute();
+        if (!execute.isOk()) {
+            log.error("请求腾讯地图，关键词输入提示出错");
+        }
+        JSONObject jsonObject = JSON.parseObject(execute.body());
+        if (jsonObject == null || jsonObject.get("status") == null || !"0".equals(jsonObject.get("status").toString())) {
+            log.error("请求腾讯地图，关键词输入提示出错：{}", jsonObject.get("message").toString());
+        }
+        return jsonObject;
+    }
+
     /**
      * 构建url
      *
@@ -89,6 +100,19 @@ public class TencentMapApiImpl implements TencentMapApi {
             String sign = MD5.stringToMD5(text);
             url = String.format("https://apis.map.qq.com" + format + "&sig=%s", URLEncoder.encode(cityAreaSearchRequest.getBoundary(), StandardCharsets.UTF_8), appKey, URLEncoder.encode(cityAreaSearchRequest.getKeyword(), StandardCharsets.UTF_8), cityAreaSearchRequest.getPage_index(), cityAreaSearchRequest.getPage_size(), sign);
         }
+        return url;
+    }
+
+    /**
+     * 构建关键字搜索url
+     *
+     * @return
+     */
+    private String buildKeywordSearch(KeywordSearchRequest keywordSearchRequest) {
+        String format = "/ws/place/v1/suggestion?key=%s&keyword=%s&region=%s";
+        String text = String.format(format + "%s", appKey, keywordSearchRequest.getKeyword(), keywordSearchRequest.getRegion(), secretKey);
+        String sign = MD5.stringToMD5(text);
+        String url = String.format("https://apis.map.qq.com" + format + "&sig=%s", appKey, URLEncoder.encode(keywordSearchRequest.getKeyword(), StandardCharsets.UTF_8), URLEncoder.encode(keywordSearchRequest.getRegion(), StandardCharsets.UTF_8), sign);
         return url;
     }
 }
