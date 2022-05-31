@@ -210,7 +210,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         if (voucher != null) {
             if (voucher.size() >= exchangeCount) {
                 log.info("礼品已兑换次数 {},礼品限制次数 {} ", voucher.size(), exchangeCount);
-                throw new BasicException("该礼品已兑换完毕");
+                throw new BasicException("该礼品您已兑换");
             }
         }
 
