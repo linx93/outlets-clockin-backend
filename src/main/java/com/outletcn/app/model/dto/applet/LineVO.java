@@ -130,22 +130,17 @@ public class LineVO {
         }
         Set<String> destinationAttr = new HashSet<>();
         set.forEach(item -> {
-            if (Objects.equals(item, DestinationAttrsEnum.VIEW_POINT.getMsg())) {
-                destinationAttr.add(DestinationAttrsEnum.VIEW_POINT.getParse());
-            } else if (Objects.equals(item, DestinationAttrsEnum.REPAST.getMsg())) {
-                destinationAttr.add(DestinationAttrsEnum.REPAST.getParse());
-            } else if (Objects.equals(item, DestinationAttrsEnum.ENTERTAINMENT.getMsg())) {
+            boolean notFind = true;
+            for (DestinationAttrsEnum value : DestinationAttrsEnum.values()) {
+                if (Objects.equals(value.getMsg(), item)) {
+                    notFind = false;
+                    destinationAttr.add(value.getParse());
+                    break;
+                }
+            }
+            if (notFind) {
+                //默认处理 没有匹配的全部处理为 景
                 destinationAttr.add(DestinationAttrsEnum.ENTERTAINMENT.getParse());
-            } else if (Objects.equals(item, DestinationAttrsEnum.PUBLIC_HOUSE.getMsg())) {
-                destinationAttr.add(DestinationAttrsEnum.PUBLIC_HOUSE.getParse());
-            } else if (Objects.equals(item, DestinationAttrsEnum.HOME_STAY.getMsg())) {
-                destinationAttr.add(DestinationAttrsEnum.HOME_STAY.getParse());
-            } else if (Objects.equals(item, DestinationAttrsEnum.SHOPPING.getMsg())) {
-                destinationAttr.add(DestinationAttrsEnum.SHOPPING.getParse());
-            } else if (Objects.equals(item, DestinationAttrsEnum.PUBLIC_UTILITIES.getMsg())) {
-                destinationAttr.add(DestinationAttrsEnum.PUBLIC_UTILITIES.getParse());
-            } else {
-                //暂无处理
             }
         });
         this.destinationAttr = destinationAttr;
