@@ -133,7 +133,6 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
         descriptions.add(description4);
 
 
-        //2.构建活动2
         Map<String, Object> description5 = new LinkedHashMap<>();
         description5.put("type", "title");
         description5.put("content", "活动二：打卡游关岭");
@@ -148,8 +147,7 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
         description7.put("type", "text");
         description7.put("content", "参与方式：\n" +
                 "1、所有用户均可参与，每个用户限参与一次；\n" +
-                "2、在指定地点扫码打卡，可点亮卡牌。点亮所有卡牌，可领取礼品兑换券，凭券兑换礼品；\n" +
-                "3、本活动需在指定礼品兑换点进行兑换，详见礼品活动详情页；");
+                "2、在指定地点扫码打卡，可得指定数量签章。签章可领取礼品兑换券，凭券兑换礼品；");
         descriptions.add(description7);
 
         Map<String, Object> description8 = new LinkedHashMap<>();
