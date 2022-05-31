@@ -36,7 +36,7 @@ public interface GiftService {
 
     void createGiftBagRelation(Long giftBagId, Long giftId);
 
-    void deleteGiftBagRelation(Long giftBagId, Long giftId);
+    void deleteGiftBagRelation(Long giftBagId);
 
     void createGiftType(GiftTypeCreator giftTypeCreator);
 
