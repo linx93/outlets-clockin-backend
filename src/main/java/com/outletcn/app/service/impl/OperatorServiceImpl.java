@@ -57,7 +57,7 @@ public class OperatorServiceImpl extends ServiceImpl<OperatorMapper, Operator> i
             throw new BasicException("用户名或密码错误");
         }
         if (one.getState() == null || one.getState() == AccountStateEnum.LOGOUT.getCode()) {
-            throw new BasicException("改账户已注销");
+            throw new BasicException("该账户已注销");
         }
         LoginResponse loginResponse = buildLoginResponse(one);
         return ApiResult.ok(loginResponse);
