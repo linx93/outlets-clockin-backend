@@ -51,8 +51,8 @@ public class StatisticsServiceImpl implements StatisticsService {
         activePeopleResponse.setDays(strList2);
 
         //新增用户统计
-        Date begin_date = new Date(begin);
-        Date end_date = new Date(end);
+        Date begin_date = new Date(begin *1000);
+        Date end_date = new Date(end *1000);
         Integer newUsers = punchLogMapper.countNewUser(begin_date, end_date);
 
         //总用户数量统计
