@@ -29,7 +29,6 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.LongBinaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -73,7 +72,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
             Long giftBagId = item.getGiftId();
             //判断排除豪华礼品包
             GiftBag byId = mongoTemplate.findById(giftBagId, GiftBag.class);
-            if (byId.getType() != 2) {
+            if (byId !=null && byId.getType() != 2) {
                 List<Long> giftIdList = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBagId)), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
                 List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIdList)), Gift.class);
                 consumptionScore.accumulateAndGet(gifts.stream().mapToLong(Gift::getGiftScore).sum(), Long::sum);
@@ -149,8 +148,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         getBaseMapper().insert(punchLog);
         Long id = punchLog.getId();
         PunchLog punchLogNew = getBaseMapper().selectById(id);
-        ClockInRecords clockInResponse = clockInConverter.toClockInRecords(punchLogNew);
-        return clockInResponse;
+        return clockInConverter.toClockInRecords(punchLogNew);
     }
 
     @Override
@@ -161,8 +159,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         } else {
             punchLogs = getBaseMapper().selectList(null);
         }
-        List<ClockInRecords> clockInRecordsList = clockInConverter.toClockInRecordsList(punchLogs).stream().sorted(Comparator.comparingLong(ClockInRecords::getPunchTime).reversed()).collect(Collectors.toList());
-        return clockInRecordsList;
+        return clockInConverter.toClockInRecordsList(punchLogs).stream().sorted(Comparator.comparingLong(ClockInRecords::getPunchTime).reversed()).collect(Collectors.toList());
     }
 
     @Override

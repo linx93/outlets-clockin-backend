@@ -2,7 +2,6 @@ package com.outletcn.app.service;
 
 import com.outletcn.app.model.dto.applet.ClockInRecords;
 import com.outletcn.app.model.dto.applet.ClockInRequest;
-import com.outletcn.app.model.dto.applet.ClockInResponse;
 import com.outletcn.app.model.dto.applet.MyExchangeRecordResponse;
 import com.outletcn.app.model.mysql.PunchLog;
 import com.baomidou.mybatisplus.extension.service.IService;
