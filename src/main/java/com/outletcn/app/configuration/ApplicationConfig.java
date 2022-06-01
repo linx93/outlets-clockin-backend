@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
+import com.outletcn.app.configuration.model.SystemConfig;
 import com.outletcn.app.interceptor.TokenInterceptor;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -37,13 +37,13 @@ import java.util.function.Predicate;
 @EnableSwagger2WebMvc
 public class ApplicationConfig implements WebMvcConfigurer {
 
-    @Value("${system.check-token:true}")
-    private boolean checkToken;
+    private final SystemConfig systemConfig;
 
     private final OpenApiExtensionResolver openApiExtensionResolver;
 
     @Autowired
-    public ApplicationConfig(OpenApiExtensionResolver openApiExtensionResolver) {
+    public ApplicationConfig(SystemConfig systemConfig, OpenApiExtensionResolver openApiExtensionResolver) {
+        this.systemConfig = systemConfig;
         this.openApiExtensionResolver = openApiExtensionResolver;
     }
 
@@ -52,7 +52,7 @@ public class ApplicationConfig implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TokenInterceptor(checkToken))
+        registry.addInterceptor(new TokenInterceptor(systemConfig.getCheckToken()))
                 .addPathPatterns("/v1/api/**")
                 .excludePathPatterns("/doc.html",
                         "/favicon.ico",

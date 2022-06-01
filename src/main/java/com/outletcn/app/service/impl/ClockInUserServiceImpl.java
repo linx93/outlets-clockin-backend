@@ -2,6 +2,7 @@ package com.outletcn.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.outletcn.app.common.ApiResult;
+import com.outletcn.app.configuration.model.SystemConfig;
 import com.outletcn.app.converter.UserConverter;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.UserInfo;
@@ -14,7 +15,7 @@ import com.outletcn.app.mapper.ClockInUserMapper;
 import com.outletcn.app.service.ClockInUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.outletcn.app.utils.JwtUtil;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -37,16 +38,13 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
     private final UserConverter userConverter;
     private final MongoTemplate mongoTemplate;
 
-    public ClockInUserServiceImpl(UserConverter userConverter, MongoTemplate mongoTemplate) {
+    private final SystemConfig systemConfig;
+
+    public ClockInUserServiceImpl(UserConverter userConverter, MongoTemplate mongoTemplate, SystemConfig systemConfig) {
         this.userConverter = userConverter;
         this.mongoTemplate = mongoTemplate;
+        this.systemConfig = systemConfig;
     }
-
-    /**
-     * 客服电话
-     */
-    @Value("${system.phone}")
-    private String phone;
 
     @Override
     public ApiResult<Boolean> updateUser(UpdateUserRequest updateUserRequest) {
@@ -75,7 +73,8 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
 
     @Override
     public String contactCustomerService() {
-        if (phone == null) {
+        String phone = systemConfig.getPhone();
+        if (StringUtils.isBlank(phone)) {
             throw new BasicException("联系客户电话未配置");
         }
         return phone;

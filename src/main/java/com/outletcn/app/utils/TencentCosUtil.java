@@ -1,6 +1,7 @@
 package com.outletcn.app.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.outletcn.app.configuration.model.TencentConfig;
 import com.outletcn.app.exception.BasicException;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
@@ -21,10 +22,11 @@ import com.tencent.cloud.Response;
 import com.tencent.cloud.Scope;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,43 +52,21 @@ public class TencentCosUtil {
      * SecretKey: 7xVmmW2HFxPaU8VbPwDF0UifLjriIbdP
      */
 
-    private static String REGION;
+    private TencentConfig autoTencentConfig;
 
-    private static String ACCESS_KEY_ID;
+    private static TencentConfig tencentConfig;
 
-    private static String ACCESS_KEY_SECRET;
 
-    private static String APP_ID;
-    /**
-     * 存储桶的命名格式为 BucketName-APPID，此处填写的存储桶名称必须为此格式
-     */
-
-    private static String BUCKET_NAME;
-
-    @Value("${tencent.cos.region}")
-    public void setREGION(String REGION) {
-        TencentCosUtil.REGION = REGION;
+    @PostConstruct
+    public void init() {
+        TencentCosUtil.tencentConfig = autoTencentConfig;
     }
 
-    @Value("${tencent.cos.secret-id}")
-    public void setAccessKeyId(String accessKeyId) {
-        ACCESS_KEY_ID = accessKeyId;
+    @Autowired
+    public void setAutoTencentConfig(TencentConfig autoTencentConfig) {
+        this.autoTencentConfig = autoTencentConfig;
     }
 
-    @Value("${tencent.cos.secret-key}")
-    public void setAccessKeySecret(String accessKeySecret) {
-        ACCESS_KEY_SECRET = accessKeySecret;
-    }
-
-    @Value("${tencent.cos.appid}")
-    public void setAppId(String appId) {
-        APP_ID = appId;
-    }
-
-    @Value("${tencent.cos.bucket-name}")
-    public void setBucketName(String bucketName) {
-        BUCKET_NAME = bucketName;
-    }
 
     public static COSClient cosClient() {
         // 创建 COSClient 实例，这个实例用来后续调用请求
@@ -94,14 +74,14 @@ public class TencentCosUtil {
         // 设置用户身份信息。
         // SECRETID 和 SECRETKEY 请登录访问管理控制台 https://console.cloud.tencent.com/cam/capi 进行查看和管理
 
-        COSCredentials cred = new BasicCOSCredentials(ACCESS_KEY_ID, ACCESS_KEY_SECRET);
+        COSCredentials cred = new BasicCOSCredentials(tencentConfig.getCos().getSecretId(), tencentConfig.getCos().getSecretKey());
 
         // ClientConfig 中包含了后续请求 COS 的客户端设置：
         ClientConfig clientConfig = new ClientConfig();
 
         // 设置 bucket 的地域
         // COS_REGION 请参照 https://cloud.tencent.com/document/product/436/6224
-        clientConfig.setRegion(new Region(REGION));
+        clientConfig.setRegion(new Region(tencentConfig.getCos().getRegion()));
 
         // 设置请求协议, http 或者 https
         // 5.6.53 及更低的版本，建议设置使用 https 协议
@@ -166,9 +146,9 @@ public class TencentCosUtil {
 
         try {
             // 云 api 密钥 SecretId
-            config.put("secretId", ACCESS_KEY_ID);
+            config.put("secretId", tencentConfig.getCos().getSecretId());
             // 云 api 密钥 SecretKey
-            config.put("secretKey", ACCESS_KEY_SECRET);
+            config.put("secretKey", tencentConfig.getCos().getSecretKey());
 
             // 设置域名
 //            config.put("host", "sts.internal.tencentcloudapi.com");
@@ -177,9 +157,9 @@ public class TencentCosUtil {
             config.put("durationSeconds", 1800);
 
             // 换成你的 bucket
-            config.put("bucket", BUCKET_NAME);
+            config.put("bucket", tencentConfig.getCos().getBucketName());
             // 换成 bucket 所在地区
-            config.put("region", REGION);
+            config.put("region", tencentConfig.getCos().getRegion());
 
             // 可以通过 allowPrefixes 指定前缀数组, 例子： a.jpg 或者 a/* 或者 * (使用通配符*存在重大安全风险, 请谨慎评估使用)
             config.put("allowPrefixes", new String[]{"*"});
@@ -187,15 +167,9 @@ public class TencentCosUtil {
             // 密钥的权限列表。简单上传和分片需要以下的权限，其他权限列表请看 https://cloud.tencent.com/document/product/436/31923
             String[] allowActions = new String[]{
                     // 简单上传
-                    "name/cos:PutObject",
-                    "name/cos:PostObject",
+                    "name/cos:PutObject", "name/cos:PostObject",
                     // 分片上传
-                    "name/cos:InitiateMultipartUpload",
-                    "name/cos:ListMultipartUploads",
-                    "name/cos:ListParts",
-                    "name/cos:UploadPart",
-                    "name/cos:CompleteMultipartUpload"
-            };
+                    "name/cos:InitiateMultipartUpload", "name/cos:ListMultipartUploads", "name/cos:ListParts", "name/cos:UploadPart", "name/cos:CompleteMultipartUpload"};
             config.put("allowActions", allowActions);
 
             Response response = CosStsClient.getCredential(config);
@@ -214,16 +188,16 @@ public class TencentCosUtil {
         TreeMap<String, Object> config = new TreeMap<>();
         try {
             // 固定密钥 SecretId
-            config.put("secretId", ACCESS_KEY_ID);
+            config.put("secretId", tencentConfig.getCos().getSecretId());
             // 固定密钥 SecretKey
-            config.put("secretKey", ACCESS_KEY_SECRET);
+            config.put("secretKey", tencentConfig.getCos().getSecretKey());
             // 临时密钥有效时长，单位是秒
             config.put("durationSeconds", 1800);
             //设置 policy
             List<Scope> scopes = new ArrayList<>();
-            Scope scope = new Scope("name/cos:PutObject", BUCKET_NAME, REGION, "");
+            Scope scope = new Scope("name/cos:PutObject", tencentConfig.getCos().getBucketName(), tencentConfig.getCos().getRegion(), "");
             scopes.add(scope);
-            scopes.add(new Scope("name/cos:GetObject", BUCKET_NAME, REGION, ""));
+            scopes.add(new Scope("name/cos:GetObject", tencentConfig.getCos().getBucketName(), tencentConfig.getCos().getRegion(), ""));
             config.put("policy", CosStsClient.getPolicy(scopes));
             return CosStsClient.getCredential(config);
         } catch (Exception e) {
@@ -240,7 +214,7 @@ public class TencentCosUtil {
         // 使用高级接口必须先保证本进程存在一个 TransferManager 实例，如果没有则创建
         // 详细代码参见本页：高级接口 -> 创建 TransferManager
         TransferManager transferManager = createTransferManager();
-        PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET_NAME, key, file);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(tencentConfig.getCos().getBucketName(), key, file);
         try {
             // 高级接口会返回一个异步结果Upload
             // 可同步地调用 waitForUploadResult 方法等待上传完成，成功返回UploadResult, 失败抛出异常
@@ -266,14 +240,14 @@ public class TencentCosUtil {
      */
     public static String simpleUpload(File file, String key) {
         COSClient client = cosClient();
-        PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET_NAME, key, file);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(tencentConfig.getCos().getBucketName(), key, file);
         try {
             PutObjectResult putObjectResult = client.putObject(putObjectRequest);
             System.out.println(putObjectResult.getRequestId());
         } catch (CosClientException e) {
             log.error("cosClientException", e);
         }
-        URL url = client.getObjectUrl(BUCKET_NAME, key);
+        URL url = client.getObjectUrl(tencentConfig.getCos().getBucketName(), key);
         return url.toString();
     }
 
@@ -289,14 +263,14 @@ public class TencentCosUtil {
         // 如果确实没办法获取到，则下面这行可以省略，但同时高级接口也没办法使用分块上传了
         try {
             objectMetadata.setContentLength(inputStream.available());
-            PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET_NAME, key, inputStream, objectMetadata);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(tencentConfig.getCos().getBucketName(), key, inputStream, objectMetadata);
             PutObjectResult putObjectResult = client.putObject(putObjectRequest);
             log.info("requestID: {}", putObjectResult.getRequestId());
         } catch (CosClientException | IOException e) {
             log.error("cosClientException {}", e.getMessage(), e);
             throw new BasicException(e.getMessage());
         }
-        URL url = client.getObjectUrl(BUCKET_NAME, key);
+        URL url = client.getObjectUrl(tencentConfig.getCos().getBucketName(), key);
         client.shutdown();
         return url.toString();
     }
@@ -319,7 +293,7 @@ public class TencentCosUtil {
             e.printStackTrace();
         }
 
-        PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET_NAME, key, inputStream, objectMetadata);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(tencentConfig.getCos().getBucketName(), key, inputStream, objectMetadata);
 
         try {
             // 高级接口会返回一个异步结果Upload
@@ -348,7 +322,7 @@ public class TencentCosUtil {
      */
     public static String getUrl(String key) {
         COSClient cosClient = cosClient();
-        URL objectUrl = cosClient.getObjectUrl(BUCKET_NAME, key);
+        URL objectUrl = cosClient.getObjectUrl(tencentConfig.getCos().getBucketName(), key);
         cosClient.shutdown();
         return objectUrl.toString();
     }
@@ -469,10 +443,7 @@ public class TencentCosUtil {
      */
     public static class OnlyIOExceptionRetryPolicy extends RetryPolicy {
         @Override
-        public <X extends CosServiceRequest> boolean shouldRetry(CosHttpRequest<X> request,
-                                                                 HttpResponse response,
-                                                                 Exception exception,
-                                                                 int retryIndex) {
+        public <X extends CosServiceRequest> boolean shouldRetry(CosHttpRequest<X> request, HttpResponse response, Exception exception, int retryIndex) {
             // 如果是客户端的 IOException 异常则重试，否则不重试
             if (exception.getCause() instanceof IOException) {
                 return true;

@@ -3,7 +3,7 @@ package com.outletcn.app.network.impl;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
-import com.outletcn.app.common.AppletConfig;
+import com.outletcn.app.configuration.model.AppletConfig;
 import com.outletcn.app.common.UserTypeEnum;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.applet.Code2Session;

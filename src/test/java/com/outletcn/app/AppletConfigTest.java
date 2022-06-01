@@ -1,6 +1,6 @@
 package com.outletcn.app;
 
-import com.outletcn.app.common.AppletConfig;
+import com.outletcn.app.configuration.model.AppletConfig;
 import com.outletcn.app.common.UserTypeEnum;
 import com.outletcn.app.model.dto.applet.Code2Session;
 import com.outletcn.app.network.WeChatApi;
@@ -31,4 +31,5 @@ public class AppletConfigTest {
         //todo 暂时不能测试，需要和前端联调
         Code2Session jscode = weChatApi.jscode2session(UserTypeEnum.WRITE_OFF, "JSCODE");
     }
+
 }

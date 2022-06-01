@@ -1,6 +1,7 @@
 package com.outletcn.app;
 
 import com.alibaba.fastjson.JSON;
+import com.outletcn.app.configuration.model.TencentConfig;
 import com.outletcn.app.model.dto.map.CityAreaSearchRequest;
 import com.outletcn.app.model.dto.map.Location;
 import com.outletcn.app.model.dto.map.MapResult;
@@ -18,6 +19,9 @@ public class TencentMapApiTest {
     @Autowired
     TencentMapApi tencentMapApi;
 
+    @Autowired
+    TencentConfig tencentConfig;
+
     @Test
     void geocoder() {
         //lat: 39.89560521109854
@@ -26,7 +30,7 @@ public class TencentMapApiTest {
         location.setLat(39.89560521109854);
         location.setLng(116.32082959714444);
         MapResult geocoder = tencentMapApi.geocoder(location);
-        System.out.println(JSON.toJSONString(geocoder,true));
+        System.out.println(JSON.toJSONString(geocoder, true));
     }
 
     @Test
@@ -37,5 +41,11 @@ public class TencentMapApiTest {
         cityAreaSearchRequest.setFilter("category=旅游景点");
         Object o = tencentMapApi.cityAreaSearch(cityAreaSearchRequest);
         System.out.println(o);
+    }
+
+
+    @Test
+    void tencentConfigTest() {
+        System.out.println(JSON.toJSONString(tencentConfig,true));
     }
 }

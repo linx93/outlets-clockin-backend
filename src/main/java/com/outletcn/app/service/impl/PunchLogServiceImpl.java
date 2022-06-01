@@ -1,6 +1,7 @@
 package com.outletcn.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.outletcn.app.configuration.model.SystemConfig;
 import com.outletcn.app.converter.ClockInConverter;
 import com.outletcn.app.converter.GiftConverter;
 import com.outletcn.app.exception.BasicException;
@@ -18,7 +19,6 @@ import com.outletcn.app.service.PunchLogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.outletcn.app.utils.GeoUtil;
 import com.outletcn.app.utils.JwtUtil;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -47,11 +47,14 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
     private final GiftConverter giftConverter;
     private final ClockInConverter clockInConverter;
 
-    public PunchLogServiceImpl(GiftVoucherMapper giftVoucherMapper, MongoTemplate mongoTemplate, GiftConverter giftConverter, ClockInConverter clockInConverter) {
+    private final SystemConfig systemConfig;
+
+    public PunchLogServiceImpl(GiftVoucherMapper giftVoucherMapper, MongoTemplate mongoTemplate, GiftConverter giftConverter, ClockInConverter clockInConverter, SystemConfig systemConfig) {
         this.giftVoucherMapper = giftVoucherMapper;
         this.mongoTemplate = mongoTemplate;
         this.giftConverter = giftConverter;
         this.clockInConverter = clockInConverter;
+        this.systemConfig = systemConfig;
     }
 
     @Override
@@ -111,11 +114,6 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         return exchangeRecordResponses;
     }
 
-    /**
-     * 打卡距离判断 单位米
-     */
-    @Value("${system.clock-in-distance}")
-    private int clockInDistance;
 
     @Override
     public ClockInRecords executeClockIn(ClockInRequest clockInRequest) {
@@ -123,7 +121,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         Destination byId = mongoTemplate.findById(clockInRequest.getId(), Destination.class);
         Assert.notNull(byId, "二维码代表的打卡点不存在");
         double distance = GeoUtil.getDistance(Double.parseDouble(clockInRequest.getLongitude()), Double.parseDouble(clockInRequest.getLatitude()), Double.parseDouble(byId.getLongitude()), Double.parseDouble(byId.getLatitude()));
-        Assert.isTrue(distance <= clockInDistance, "你距离打卡点太远，请到打卡点再打卡");
+        Assert.isTrue(distance <= systemConfig.getClockInDistance(), "你距离打卡点太远，请到打卡点再打卡");
         List<PunchLog> punchLogs = getBaseMapper().selectList(
                 new QueryWrapper<PunchLog>().lambda()
                         .eq(PunchLog::getUserId, info.getId())

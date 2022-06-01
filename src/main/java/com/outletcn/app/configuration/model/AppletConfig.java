@@ -1,4 +1,4 @@
-package com.outletcn.app.common;
+package com.outletcn.app.configuration.model;
 
 import com.outletcn.app.model.dto.applet.ClockIn;
 import com.outletcn.app.model.dto.applet.WriteOff;
