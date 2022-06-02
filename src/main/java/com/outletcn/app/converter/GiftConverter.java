@@ -5,6 +5,7 @@ package com.outletcn.app.converter;
 import com.outletcn.app.model.dto.applet.GiftBagVO;
 import com.outletcn.app.model.dto.applet.GiftVO;
 import com.outletcn.app.model.dto.applet.MyExchangeRecordResponse;
+import com.outletcn.app.model.dto.gift.GiftBagDetail;
 import com.outletcn.app.model.dto.gift.GiftPunchSignatureResponse;
 import com.outletcn.app.model.dto.gift.LuxuryGiftBagResponse;
 import com.outletcn.app.model.mongo.Destination;
@@ -45,6 +46,8 @@ public interface GiftConverter {
      * @return
      */
     List<GiftPunchSignatureResponse> toGiftPunch(List<GiftBag> gifts);
+
+    GiftBagDetail toGiftBagDetail(GiftBag giftBag);
 
 
 

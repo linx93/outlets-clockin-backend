@@ -35,11 +35,11 @@ public class GiftListResponse {
      */
     private List<String> giftTypeName;
 
-//    /**
-//     * 兑换所需打卡分值
-//     */
-//    private Integer giftScore;
-//
+    /**
+     * 兑换所需打卡分值
+     */
+    private Integer giftScore;
+
 //    /**
 //     * 供货商名称
 //     */

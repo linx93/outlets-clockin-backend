@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.outletcn.app.common.GiftTypeEnum;
 import com.outletcn.app.common.PageInfo;
+import com.outletcn.app.converter.GiftConverter;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.mapper.PunchLogMapper;
 import com.outletcn.app.model.dto.UserInfo;
+import com.outletcn.app.model.dto.applet.GiftBagVO;
 import com.outletcn.app.model.dto.gift.*;
 import com.outletcn.app.model.mongo.*;
 import com.outletcn.app.model.mysql.PunchLog;
@@ -39,6 +41,7 @@ public class GiftServiceImpl implements GiftService {
     MongoTemplate mongoTemplate;
     Sequence sequence;
     GiftBagMongoRepository giftBagMongoRepository;
+    GiftConverter giftConverter;
 
     PunchLogMapper punchLogMapper;
 
@@ -434,7 +437,14 @@ public class GiftServiceImpl implements GiftService {
         if (Objects.isNull(giftBag)) {
             throw new BasicException("记录不存在");
         }
-        giftBagInfoResponse.setGiftBag(giftBag);
+        GiftBagDetail giftBagDetail = giftConverter.toGiftBagDetail(giftBag);
+
+        List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBagDetail.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+        if (!giftIds.isEmpty()) {
+            List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
+            giftBagDetail.setScoreSum(gifts.stream().mapToDouble(Gift::getGiftScore).sum());
+        }
+        giftBagInfoResponse.setGiftBag(giftBagDetail);
 
         if (giftBag.getType() == 2) {
             if (Objects.isNull(giftBag.getPlaceElement())) {
@@ -574,6 +584,12 @@ public class GiftServiceImpl implements GiftService {
             giftBagListResponse.setStateUpdateTime(g.getStateUpdateTime());
             giftBagListResponse.setCreateTime(g.getCreateTime());
             giftBagListResponse.setUpdateTime(g.getUpdateTime());
+            List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(g.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+            if (!giftIds.isEmpty()) {
+                List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
+                giftBagListResponse.setScoreSum(gifts.stream().mapToDouble(Gift::getGiftScore).sum());
+            }
+
             records.add(giftBagListResponse);
         }
 
@@ -633,6 +649,7 @@ public class GiftServiceImpl implements GiftService {
             giftListResponse.setGiftTypeName(g.getGiftTypeName());
             giftListResponse.setCreateTime(g.getCreateTime());
             giftListResponse.setUpdateTime(g.getUpdateTime());
+            giftListResponse.setGiftScore(g.getGiftScore());
             records.add(giftListResponse);
         }
 
