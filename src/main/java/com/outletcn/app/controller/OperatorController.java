@@ -77,5 +77,11 @@ public class OperatorController {
         return ApiResult.ok(list);
     }
 
+    @ApiOperation(value = "pc端用户修改自己的密码")
+    @PostMapping(value = "/modify-password")
+    public ApiResult<Boolean> modifyPassword(@RequestBody @Valid ModifyPasswordRequest modifyPasswordRequest) {
+        Boolean bool = operatorService.modifyPassword(modifyPasswordRequest);
+        return ApiResult.ok(bool);
+    }
 }
 

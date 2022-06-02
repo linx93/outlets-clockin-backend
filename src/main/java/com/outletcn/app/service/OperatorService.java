@@ -32,4 +32,5 @@ public interface OperatorService extends IService<Operator> {
 
     List<UserManagementResponse> userManagementList(UserMangeQuery userMangeQuery);
 
+    Boolean modifyPassword(ModifyPasswordRequest modifyPasswordRequest);
 }
