@@ -2,7 +2,9 @@ package com.outletcn.app.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.outletcn.app.common.ApiResult;
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.common.QRCodeContent;
+import com.outletcn.app.model.dto.WriteOffListRequest;
 import com.outletcn.app.model.dto.gift.GiftTypeCreator;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.outletcn.app.service.GiftVoucherService;
@@ -32,5 +34,11 @@ public class GiftVoucherController {
     @ApiOperation(value = "获取核销礼品券列表")
     public ApiResult<List<JSONObject>> getWriteOffVoucherList() {
         return ApiResult.ok(giftVoucherService.getListByUserId());
+    }
+
+    @GetMapping("/getWriteOffListByCondition")
+    @ApiOperation(value = "获取核销礼品券列表(条件搜索)")
+    public ApiResult<PageInfo<JSONObject>> getWriteOffListByCondition(WriteOffListRequest request) {
+        return ApiResult.ok(giftVoucherService.getWriteIffList(request));
     }
 }

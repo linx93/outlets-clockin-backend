@@ -3,11 +3,16 @@ package com.outletcn.app.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.common.QRCodeContent;
 import com.outletcn.app.common.QRCodeSceneEnum;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.UserInfo;
+import com.outletcn.app.model.dto.WriteOffListRequest;
+import com.outletcn.app.model.mongo.Gift;
 import com.outletcn.app.model.mongo.GiftBag;
+import com.outletcn.app.model.mongo.GiftBagRelation;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.outletcn.app.mapper.GiftVoucherMapper;
 import com.outletcn.app.service.GiftVoucherService;
@@ -24,6 +29,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -60,7 +66,7 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
         if (Objects.isNull(voucher)) {
             throw new BasicException("未找到兑换券数据");
         }
-        if (voucher.getState().equals(1)){
+        if (voucher.getState().equals(1)) {
             throw new BasicException("兑换券已被使用");
         }
         Long time = Instant.now().getEpochSecond();
@@ -99,6 +105,41 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
             response.add(object);
         }
         return response;
+    }
+
+    @Override
+    public PageInfo<JSONObject> getWriteIffList(WriteOffListRequest request) {
+        PageInfo<JSONObject> result = new PageInfo<>();
+        List<JSONObject> response = new ArrayList<>();
+        Page<GiftVoucher> page = new Page<>(request.getPageNum(),request.getPageSize());
+        Page<GiftVoucher> vouchers = baseMapper.selectPage(page,new QueryWrapper<GiftVoucher>().lambda()
+                .eq(GiftVoucher::getState, 1)
+                .between(GiftVoucher::getExchangeTime, request.getBegin(),request.getEnd())
+                .like(GiftVoucher::getGiftName, request.getCondition())
+                .or()
+                .like(GiftVoucher::getAccount, request.getCondition())
+                .orderByDesc(GiftVoucher::getExchangeTime)
+        );
+        for (GiftVoucher v : vouchers.getRecords()
+        ) {
+            GiftBag giftBag = mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(v.getGiftId())), GiftBag.class);
+            if (Objects.isNull(giftBag)) {
+                throw new BasicException("找不到对应礼包");
+            }
+            JSONObject object = JSON.parseObject(JSON.toJSONString(v));
+            object.remove("giftVoucherQrcode");
+            List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBag.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+            if (!giftIds.isEmpty()) {
+                List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
+                object.put("scoreSum",gifts.stream().mapToDouble(Gift::getGiftScore).sum());
+            }
+            response.add(object);
+        }
+        result.setRecords(response);
+        result.setCurrent(vouchers.getCurrent());
+        result.setSize(vouchers.getSize());
+        result.setTotal(vouchers.getTotal());
+        return result;
     }
 
 }
