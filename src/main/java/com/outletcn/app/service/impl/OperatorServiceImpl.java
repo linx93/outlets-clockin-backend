@@ -136,7 +136,7 @@ public class OperatorServiceImpl extends ServiceImpl<OperatorMapper, Operator> i
         if (UserTypeEnum.PC.name().equals(userTypeEnum.name())) {
             //PC
             Operator one = getOne(new QueryWrapper<Operator>().lambda().eq(Operator::getAccount, newOrModifyRequest.getAccount()));
-            if (one != null) {
+            if (newOrModifyRequest.getId() == null && one != null) {
                 throw new BasicException(String.format("用户【%s】已存在", newOrModifyRequest.getAccount()));
             }
             Operator operator = userConverter.toOperator(newOrModifyRequest);
@@ -147,7 +147,7 @@ public class OperatorServiceImpl extends ServiceImpl<OperatorMapper, Operator> i
         } else if (UserTypeEnum.WRITE_OFF.name().equals(userTypeEnum.name())) {
             //核销小程序
             WriteOffUser one = writeOffUserService.getOne(new QueryWrapper<WriteOffUser>().lambda().eq(WriteOffUser::getAccount, newOrModifyRequest.getAccount()));
-            if (one != null) {
+            if (newOrModifyRequest.getId() == null && one != null) {
                 throw new BasicException(String.format("用户【%s】已存在", newOrModifyRequest.getAccount()));
             }
             WriteOffUser writeOffUser = userConverter.toWriteOffUser(newOrModifyRequest);
