@@ -259,6 +259,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             giftVoucher.setGiftName(giftBag.getName());
             giftVoucher.setState(0);
 
+            //修改需要前端同步修改！！！！！！！！！！！！！！！！！！
             if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
                 //卡片翻牌
                 giftVoucher.setExchangeInstructions(String.format("卡片翻牌" + "(%s)", giftBag.getPlaceElement().size()));
