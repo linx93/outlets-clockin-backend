@@ -1,6 +1,8 @@
 package com.outletcn.app.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.outletcn.app.common.PageInfo;
+import com.outletcn.app.model.dto.WriteOffListRequest;
 import com.outletcn.app.model.dto.applet.ClockInRecords;
 import com.outletcn.app.common.QRCodeContent;
 import com.outletcn.app.model.mysql.GiftVoucher;
@@ -23,6 +25,8 @@ public interface GiftVoucherService extends IService<GiftVoucher> {
     void writeOffGiftVoucher(QRCodeContent codeContent);
 
     List<JSONObject> getListByUserId();
+
+    PageInfo<JSONObject> getWriteIffList(WriteOffListRequest request);
     /**
      * 已兑换(已经核销了的次数统计)
      *
