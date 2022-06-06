@@ -2,6 +2,8 @@ package com.outletcn.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.outletcn.app.common.PageInfo;
@@ -25,6 +27,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -111,15 +114,20 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
     public PageInfo<JSONObject> getWriteIffList(WriteOffListRequest request) {
         PageInfo<JSONObject> result = new PageInfo<>();
         List<JSONObject> response = new ArrayList<>();
-        Page<GiftVoucher> page = new Page<>(request.getPageNum(),request.getPageSize());
-        Page<GiftVoucher> vouchers = baseMapper.selectPage(page,new QueryWrapper<GiftVoucher>().lambda()
+        Page<GiftVoucher> page = new Page<>(request.getPageNum(), request.getPageSize());
+
+        LambdaQueryWrapper<GiftVoucher> queryWrapper = new QueryWrapper<GiftVoucher>().lambda()
                 .eq(GiftVoucher::getState, 1)
-                .between(GiftVoucher::getExchangeTime, request.getBegin(),request.getEnd())
-                .like(GiftVoucher::getGiftName, request.getKeyword())
-                .or()
-                .like(GiftVoucher::getAccount, request.getKeyword())
-                .orderByDesc(GiftVoucher::getExchangeTime)
-        );
+                .between(GiftVoucher::getExchangeTime, request.getBegin(), request.getEnd());
+
+        if (!Objects.isNull(request.getKeyword()) && !Objects.equals(request.getKeyword(), "")) {
+            queryWrapper = queryWrapper.like(GiftVoucher::getGiftName, request.getKeyword())
+                    .or()
+                    .like(GiftVoucher::getAccount, request.getKeyword());
+        }
+        queryWrapper = queryWrapper.orderByDesc(GiftVoucher::getExchangeTime);
+
+        Page<GiftVoucher> vouchers = baseMapper.selectPage(page, queryWrapper);
         for (GiftVoucher v : vouchers.getRecords()
         ) {
             GiftBag giftBag = mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(v.getGiftId())), GiftBag.class);
@@ -131,7 +139,12 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
             List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBag.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
             if (!giftIds.isEmpty()) {
                 List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
-                object.put("scoreSum",gifts.stream().mapToDouble(Gift::getGiftScore).sum());
+                object.put("scoreSum", gifts.stream().mapToDouble(Gift::getGiftScore).sum());
+               BigDecimal count = new BigDecimal("0");
+                for (Gift gift : gifts) {
+                    count = count.add(gift.getGiftCost());
+                }
+                object.put("money", count);
             }
             response.add(object);
         }
