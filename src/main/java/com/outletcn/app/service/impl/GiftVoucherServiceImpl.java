@@ -115,9 +115,9 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
         Page<GiftVoucher> vouchers = baseMapper.selectPage(page,new QueryWrapper<GiftVoucher>().lambda()
                 .eq(GiftVoucher::getState, 1)
                 .between(GiftVoucher::getExchangeTime, request.getBegin(),request.getEnd())
-                .like(GiftVoucher::getGiftName, request.getCondition())
+                .like(GiftVoucher::getGiftName, request.getKeyword())
                 .or()
-                .like(GiftVoucher::getAccount, request.getCondition())
+                .like(GiftVoucher::getAccount, request.getKeyword())
                 .orderByDesc(GiftVoucher::getExchangeTime)
         );
         for (GiftVoucher v : vouchers.getRecords()

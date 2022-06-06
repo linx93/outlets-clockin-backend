@@ -6,7 +6,7 @@ import lombok.Data;
 public class WriteOffListRequest {
     private Long begin;
     private Long end;
-    private String condition;
+    private String keyword;
     private Integer pageNum;
     private Integer pageSize;
 }
