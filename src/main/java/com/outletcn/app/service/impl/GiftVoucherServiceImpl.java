@@ -82,6 +82,7 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
         voucher.setExchangeTime(time);
         voucher.setUpdateTime(time);
         voucher.setExchangeUserId(Long.parseLong(info.getId()));
+        voucher.setAccount(info.getAccount());
         baseMapper.updateById(voucher);
     }
 

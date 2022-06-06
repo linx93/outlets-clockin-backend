@@ -253,7 +253,6 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             giftVoucher.setGiftVoucherType(voucherType);
             giftVoucher.setGiftVoucherQrcode(qrcodeBase64);
             giftVoucher.setUserId(Long.parseLong(userInfo.getId()));
-            giftVoucher.setAccount(userInfo.getAccount());
             //礼品券名称
             giftVoucher.setGiftVoucherName(giftBag.getName());
             giftVoucher.setExchangeDeadline(giftBag.getValidDate());
