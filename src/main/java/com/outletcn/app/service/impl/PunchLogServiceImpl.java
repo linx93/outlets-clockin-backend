@@ -1,6 +1,7 @@
 package com.outletcn.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.outletcn.app.common.GiftTypeEnum;
 import com.outletcn.app.configuration.model.SystemConfig;
 import com.outletcn.app.converter.ClockInConverter;
 import com.outletcn.app.converter.GiftConverter;
@@ -26,8 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -75,7 +75,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
             Long giftBagId = item.getGiftId();
             //判断排除豪华礼品包
             GiftBag byId = mongoTemplate.findById(giftBagId, GiftBag.class);
-            if (byId !=null && byId.getType() != 2) {
+            if (byId != null && byId.getType() != 2) {
                 List<Long> giftIdList = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBagId)), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
                 List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIdList)), Gift.class);
                 consumptionScore.accumulateAndGet(gifts.stream().mapToLong(Gift::getGiftScore).sum(), Long::sum);
@@ -122,11 +122,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         Assert.notNull(byId, "二维码代表的打卡点不存在");
         double distance = GeoUtil.getDistance(Double.parseDouble(clockInRequest.getLongitude()), Double.parseDouble(clockInRequest.getLatitude()), Double.parseDouble(byId.getLongitude()), Double.parseDouble(byId.getLatitude()));
         Assert.isTrue(distance <= systemConfig.getClockInDistance(), "你距离打卡点太远，请到打卡点再打卡");
-        List<PunchLog> punchLogs = getBaseMapper().selectList(
-                new QueryWrapper<PunchLog>().lambda()
-                        .eq(PunchLog::getUserId, info.getId())
-                        .eq(PunchLog::getDestinationId, byId.getId())
-        );
+        List<PunchLog> punchLogs = getBaseMapper().selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, info.getId()).eq(PunchLog::getDestinationId, byId.getId()));
         if (!punchLogs.isEmpty()) {
             throw new BasicException("不能重复打卡");
         }
@@ -177,6 +173,40 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
             giftBagVO.setScoreSum(gifts.stream().mapToDouble(Gift::getGiftScore).sum());
         }
         return myExchangeRecordResponse;
+    }
+
+    @Override
+    public RecommendResponse recommend(Long score) {
+        RecommendResponse recommendResponse = new RecommendResponse();
+        recommendResponse.setScore(score);
+        //查询所有的礼品包
+        Criteria criteria = Criteria.where("type").is(GiftTypeEnum.NORMAL.getCode()).and("validDate").gt(Instant.now().getEpochSecond()).and("putOn").is(0);
+        List<GiftBag> giftBagList = mongoTemplate.find(Query.query(criteria), GiftBag.class);
+        List<GiftBagVO> giftBagVOS = giftConverter.toGiftBagVOList(giftBagList);
+        giftBagVOS.forEach(item -> {
+            Criteria c = Criteria.where("giftBagId").is(item.getId());
+            List<Long> giftBagId = mongoTemplate.find(Query.query(c), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+            List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftBagId)), Gift.class);
+            double scoreSum = gifts.stream().mapToDouble(Gift::getGiftScore).sum();
+            item.setScoreSum(scoreSum);
+
+        });
+        //按scoreSum排序 asc
+        List<GiftBagVO> collect = giftBagVOS.stream().sorted(Comparator.comparingDouble(GiftBagVO::getScoreSum)).collect(Collectors.toList());
+        boolean find = Boolean.FALSE;
+        for (GiftBagVO item : collect) {
+            if (score < item.getScoreSum()) {
+                find = Boolean.TRUE;
+                recommendResponse.setGiftBag(item);
+                break;
+            }
+        }
+        //没匹配到说明当前用户拥有的积分值比任何礼品包的积分都要大
+        if (!find) {
+            // todo 等设计出来再具体分析
+            recommendResponse.setGiftBag(collect.get(collect.size() - 1));
+        }
+        return recommendResponse;
     }
 
 }

@@ -3,6 +3,7 @@ package com.outletcn.app.service;
 import com.outletcn.app.model.dto.applet.ClockInRecords;
 import com.outletcn.app.model.dto.applet.ClockInRequest;
 import com.outletcn.app.model.dto.applet.MyExchangeRecordResponse;
+import com.outletcn.app.model.dto.applet.RecommendResponse;
 import com.outletcn.app.model.mysql.PunchLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -52,4 +53,13 @@ public interface PunchLogService extends IService<PunchLog> {
     List<ClockInRecords> clockInRecords(String flag);
 
     MyExchangeRecordResponse myExchangeRecordDetails(Long id);
+
+    /**
+     * 用户推荐
+     *
+     * @param score 积分
+     * @return 推荐结果
+     */
+    RecommendResponse recommend(Long score);
+
 }
