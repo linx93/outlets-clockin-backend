@@ -1,23 +1,21 @@
 package com.outletcn.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.outletcn.app.common.AccountStateEnum;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.UserTypeEnum;
 import com.outletcn.app.converter.UserConverter;
 import com.outletcn.app.exception.BasicException;
+import com.outletcn.app.mapper.OperatorMapper;
 import com.outletcn.app.mapper.WriteOffUserMapper;
 import com.outletcn.app.model.dto.LoginRequest;
 import com.outletcn.app.model.dto.LoginResponse;
 import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.*;
-import com.outletcn.app.model.mysql.Auth;
-import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.model.mysql.Operator;
-import com.outletcn.app.mapper.OperatorMapper;
 import com.outletcn.app.model.mysql.WriteOffUser;
 import com.outletcn.app.service.OperatorService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.outletcn.app.service.WriteOffUserService;
 import com.outletcn.app.utils.BCryptPasswordEncoder;
 import com.outletcn.app.utils.JwtUtil;
@@ -25,10 +23,9 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -187,6 +184,28 @@ public class OperatorServiceImpl extends ServiceImpl<OperatorMapper, Operator> i
         result.addAll(writeOffUserList);
         result.addAll(operatorList);
         return result;
+    }
+
+    @Override
+    public Boolean modifyPassword(ModifyPasswordRequest modifyPasswordRequest) {
+        if (!Objects.equals(modifyPasswordRequest.getConfirmPassword(), modifyPasswordRequest.getNewPassword())) {
+            throw new BasicException("新密码和确认密码不一致");
+        }
+        String id = JwtUtil.getInfo(UserInfo.class).getId();
+        Operator operator = getBaseMapper().selectById(id);
+        if (operator == null) {
+            throw new BasicException("用户不存在");
+        }
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        if (!bCryptPasswordEncoder.matches(modifyPasswordRequest.getOldPassword(), operator.getPassword())) {
+            throw new BasicException("您输入的旧密码有误");
+        }
+        //modify password
+        Operator modify = new Operator();
+        modify.setPassword(bCryptPasswordEncoder.encode(modifyPasswordRequest.getNewPassword()));
+        modify.setId(Long.parseLong(id));
+        updateById(modify);
+        return Boolean.TRUE;
     }
 
 
