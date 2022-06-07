@@ -1,8 +1,9 @@
 package com.outletcn.app.model.dto.applet;
 
-import com.outletcn.app.model.mongo.GiftBag;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * 用户推荐响应
@@ -16,5 +17,5 @@ public class RecommendResponse {
     private Long score;
 
     @ApiModelProperty(value = "礼品包信息")
-    private GiftBagVO giftBag;
+    private List<GiftBagVO> giftBags;
 }

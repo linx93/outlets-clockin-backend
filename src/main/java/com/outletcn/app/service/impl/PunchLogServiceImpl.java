@@ -189,22 +189,38 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
             List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftBagId)), Gift.class);
             double scoreSum = gifts.stream().mapToDouble(Gift::getGiftScore).sum();
             item.setScoreSum(scoreSum);
-
         });
         //按scoreSum排序 asc
         List<GiftBagVO> collect = giftBagVOS.stream().sorted(Comparator.comparingDouble(GiftBagVO::getScoreSum)).collect(Collectors.toList());
+        int returnNumber = 3;
+        if (collect.isEmpty()) {
+            recommendResponse.setGiftBags(new ArrayList<>());
+            return recommendResponse;
+        }
+        if (collect.size() <= returnNumber) {
+            recommendResponse.setGiftBags(collect);
+            return recommendResponse;
+        }
         boolean find = Boolean.FALSE;
-        for (GiftBagVO item : collect) {
-            if (score < item.getScoreSum()) {
+        Integer findIndex = 0;
+        for (int i = 0; i < collect.size(); i++) {
+            if (score < collect.get(i).getScoreSum()) {
                 find = Boolean.TRUE;
-                recommendResponse.setGiftBag(item);
+                findIndex = i;
                 break;
             }
         }
-        //没匹配到说明当前用户拥有的积分值比任何礼品包的积分都要大
-        if (!find) {
-            // todo 等设计出来再具体分析
-            recommendResponse.setGiftBag(collect.get(collect.size() - 1));
+        if (find) {
+            if (collect.size() - findIndex < returnNumber) {
+                //取最后3个
+                recommendResponse.setGiftBags(List.of(collect.get(collect.size() - 1), collect.get(collect.size() - 2), collect.get(collect.size() - 3)));
+            } else {
+                //从当前位置开始取3个
+                recommendResponse.setGiftBags(List.of(collect.get(findIndex), collect.get(findIndex + 1), collect.get(findIndex + 2)));
+            }
+        } else {
+            //没匹配到说明当前用户拥有的积分值比任何礼品包的积分都要大, 取最后3个
+            recommendResponse.setGiftBags(List.of(collect.get(collect.size() - 1), collect.get(collect.size() - 2), collect.get(collect.size() - 3)));
         }
         return recommendResponse;
     }
