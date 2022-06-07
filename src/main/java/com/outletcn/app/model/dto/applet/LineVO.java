@@ -125,10 +125,11 @@ public class LineVO {
     private Set<String> destinationAttr;
 
     public void parse(Set<String> set) {
+        Set<String> destinationAttr = new HashSet<>();
         if (set.isEmpty()) {
+            this.destinationAttr = destinationAttr;
             return;
         }
-        Set<String> destinationAttr = new HashSet<>();
         set.forEach(item -> {
             boolean notFind = true;
             for (DestinationAttrsEnum value : DestinationAttrsEnum.values()) {

@@ -103,11 +103,7 @@ public class ClockInUserController {
         Integer exchanged = giftVoucherService.exchanged();
         Long score = punchLogService.myScore();
         Integer unused = giftVoucherService.unused();
-        ProfileResponse build = ProfileResponse.builder()
-                .exchanged(exchanged)
-                .score(score)
-                .unused(unused)
-                .build();
+        ProfileResponse build = ProfileResponse.builder().exchanged(exchanged).score(score).unused(unused).build();
         return ApiResult.ok(build);
     }
 
@@ -133,6 +129,15 @@ public class ClockInUserController {
     public ApiResult<Integer> clockInCount() {
         int count = punchLogService.clockInRecords("my").size();
         return ApiResult.ok(count);
+    }
+
+    @ApiOperation(value = "用户推荐")
+    @GetMapping(value = "/recommend")
+    public ApiResult<RecommendResponse> recommend() {
+        //用户积分和
+        Long score = punchLogService.myScore();
+        RecommendResponse recommendResponse = punchLogService.recommend(score);
+        return ApiResult.ok(recommendResponse);
     }
 }
 
