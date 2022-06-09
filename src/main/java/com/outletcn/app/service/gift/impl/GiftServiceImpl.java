@@ -598,7 +598,7 @@ public class GiftServiceImpl implements GiftService {
             giftBagListResponse.setCreateTime(g.getCreateTime());
             giftBagListResponse.setUpdateTime(g.getUpdateTime());
             giftBagListResponse.setMaxExNum(g.getMaxExNum());
-            giftBagListResponse.setExchangedNum(giftBagListResponse.getExchangedNum());
+            giftBagListResponse.setExchangedNum(g.getExchangedNum());
             List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(g.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
             if (!giftIds.isEmpty()) {
                 List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
