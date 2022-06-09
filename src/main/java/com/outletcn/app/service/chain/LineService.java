@@ -159,8 +159,16 @@ public interface LineService {
     /**
      * 搜索目的地，返回包含目的地的路线list和目的地list
      *
-     * @param searchDestinationRequest  keywords 目的地名
+     * @param searchDestinationRequest keywords 目的地名
      * @return
      */
     SearchDestinationResponse searchDestination(SearchDestinationRequest searchDestinationRequest);
+
+    /**
+     * 线路详情
+     *
+     * @param id 线路id
+     * @return 线路详情
+     */
+    LineItemsVO lineDetailsById(Long id);
 }

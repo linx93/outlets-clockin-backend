@@ -1,6 +1,5 @@
 package com.outletcn.app.service.chain.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.mongodb.client.result.DeleteResult;
 import com.mzt.logapi.context.LogRecordContext;
@@ -346,7 +345,7 @@ public class LineServiceImpl implements LineService {
         query.with(Sort.by(
                 Sort.Order.asc("stick"),
                 Sort.Order.desc("stickTime")
-                ));
+        ));
 
         PageInfo<Line> linePageInfo = lineMongoRepository.findObjForPage(query, pageInfo);
         List<QueryLineResponse> queryLineResponses = new ArrayList<>();
@@ -645,5 +644,62 @@ public class LineServiceImpl implements LineService {
         List<Destination> destinations = mongoTemplate.findAll(Destination.class);
         List<Destination> collect = destinations.stream().filter(item -> item.getDestinationName().contains(searchDestinationRequest.getKeywords()) && item.getPutOn() != null && item.getPutOn() == 0).collect(Collectors.toList());
         return SearchDestinationResponse.builder().lines(buildLineVOS(lines)).destinations(lineConverter.toDestinationVOList(collect)).build();
+    }
+
+    @Override
+    public LineItemsVO lineDetailsById(Long id) {
+        LineItemsVO lineItemsVO = new LineItemsVO();
+        //查询线路
+        Line line = mongoTemplate.findById(id, Line.class);
+        if (line == null) {
+            throw new BasicException("线路不存在");
+        }
+        DetailObjectType detailObjectTypes = mongoTemplate.findOne(Query.query(Criteria.where("objectId").is(line.getId()).and("objectType").is(ClockInType.Line.getType())), DetailObjectType.class);
+        LineDetailsVO lineDetailsVO = lineConverter.toLineDetailsVO(detailObjectTypes, line);
+        lineItemsVO.setLineDetails(lineDetailsVO);
+        ArrayList<LineItemsVO.Item> items = new ArrayList<>();
+        lineItemsVO.setItems(items);
+
+        List<Line.Attribute> lineElements = line.getLineElements();
+        //判空
+        if (lineElements.isEmpty()) {
+            return lineItemsVO;
+        }
+        lineElements.forEach(ele -> {
+            Long id_ = ele.getId();
+            if (LineElementType.DESTINATION.getCode() == ele.getType()) {
+                LineItemsVO.Item item = new LineItemsVO.Item();
+                item.setLineElementType(ele.getType());
+                Destination destination = mongoTemplate.findById(id_, Destination.class);
+                //过滤上下架
+                if (destination != null && destination.getPutOn() != null && destination.getPutOn() == 0) {
+                    LineItemsVO.LineElement lineElement = lineConverter.toLineElement(destination);
+                    item.setLineElement(lineElement);
+                    items.add(item);
+                }
+            } else if (LineElementType.DESTINATION_GROUP.getCode() == ele.getType()) {
+                LineItemsVO.Item item = new LineItemsVO.Item();
+                item.setLineElementType(ele.getType());
+                DestinationGroup destinationGroup = mongoTemplate.findById(id_, DestinationGroup.class);
+                LineItemsVO.LineElement lineElement = lineConverter.toLineElement(destinationGroup);
+                List<Long> destinationIds = mongoTemplate.find(Query.query(Criteria.where("groupId").is(id_)), DestinationGroupRelation.class).stream().map(DestinationGroupRelation::getDestinationId).collect(Collectors.toList());
+                List<Destination> destinationList = mongoTemplate.find(Query.query(Criteria.where("id").in(destinationIds).and("putOn").is(0)), Destination.class);
+                AtomicReference<Integer> clockIns = new AtomicReference<>(0);
+                AtomicReference<Integer> score = new AtomicReference<>(0);
+                destinationList.forEach(destination -> {
+                    if (destination != null && destination.getPutOn() != null && destination.getPutOn() == 0) {
+                        if (DestinationTypeEnum.CLOCK_IN_POINT.getMsg().equals(destination.getDestinationType())) {
+                            clockIns.updateAndGet(v -> v + 1);
+                            score.updateAndGet(v -> v + destination.getScore());
+                        }
+                    }
+                });
+                lineElement.setClockIns(clockIns.get());
+                lineElement.setScore(score.get());
+                item.setLineElement(lineElement);
+                items.add(item);
+            }
+        });
+        return lineItemsVO;
     }
 }

@@ -5,6 +5,7 @@ import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.DestinationGroup;
 import com.outletcn.app.model.mongo.DetailObjectType;
 import com.outletcn.app.model.mongo.Line;
+import io.swagger.annotations.ApiModelProperty;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -42,4 +43,19 @@ public interface LineConverter {
 
     DestinationGroupDetailsVO toDestinationGroupDetailsVO(DetailObjectType detailObjectTypes, DestinationGroup destinationGroup);
 
+
+    @Mappings({
+            @Mapping(target = "elementName", source = "destinationName"),
+            @Mapping(target = "recommendImage", source = "destinationRecommendImage")
+    })
+    LineItemsVO.LineElement toLineElement(Destination destination);
+
+    @Mappings({
+            @Mapping(target = "elementName", source = "groupName"),
+            @Mapping(target = "recommendImage", source = "groupRecommendImage"),
+            @Mapping(target = "longitude", source = "groupMainLongitude"),
+            @Mapping(target = "latitude", source = "groupMainLatitude"),
+            @Mapping(target = "address", source = "groupMainAddress"),
+    })
+    LineItemsVO.LineElement toLineElement(DestinationGroup destinationGroup);
 }
