@@ -294,6 +294,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setPutOn(luxuryGiftBagCreator.getPutOn());
         giftBag.setMaxExNum(luxuryGiftBagCreator.getMaxExNum());
         giftBag.setExchangedNum(0);
+        giftBag.setSub(giftBag.getMaxExNum()-giftBag.getExchangedNum());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
@@ -336,7 +337,7 @@ public class GiftServiceImpl implements GiftService {
             throw new BasicException("最大兑换数量不能小于已兑换数量");
         }
         giftBag.setExchangedNum(luxuryGiftBagCreator.getMaxExNum());
-
+        giftBag.setSub(giftBag.getMaxExNum()-giftBag.getExchangedNum());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setUpdateTime(time);
@@ -366,6 +367,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setPutOn(0);
         giftBag.setMaxExNum(ordinaryGiftBagCreator.getMaxExNum());
         giftBag.setExchangedNum(0);
+        giftBag.setSub(giftBag.getMaxExNum()-giftBag.getExchangedNum());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
@@ -405,6 +407,7 @@ public class GiftServiceImpl implements GiftService {
             throw new BasicException("最大兑换数量不能小于已兑换数量");
         }
         giftBag.setMaxExNum(ordinaryGiftBagCreator.getMaxExNum());
+        giftBag.setSub(giftBag.getMaxExNum()-giftBag.getExchangedNum());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setUpdateTime(time);
