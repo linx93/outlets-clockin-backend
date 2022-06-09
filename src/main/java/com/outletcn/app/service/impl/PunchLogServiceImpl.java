@@ -125,27 +125,29 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         }
         double distance = GeoUtil.getDistance(Double.parseDouble(clockInRequest.getLongitude()), Double.parseDouble(clockInRequest.getLatitude()), Double.parseDouble(byId.getLongitude()), Double.parseDouble(byId.getLatitude()));
         Assert.isTrue(distance <= systemConfig.getClockInDistance(), "你距离打卡点太远，请到打卡点再打卡");
-        List<PunchLog> punchLogs = getBaseMapper().selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, info.getId()).eq(PunchLog::getDestinationId, byId.getId()));
-        if (!punchLogs.isEmpty()) {
-            throw new BasicException("不能重复打卡");
+        synchronized (PunchLogServiceImpl.class) {
+            List<PunchLog> punchLogs = getBaseMapper().selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, info.getId()).eq(PunchLog::getDestinationId, byId.getId()));
+            if (!punchLogs.isEmpty()) {
+                throw new BasicException("不能重复打卡");
+            }
+            //保存打卡记录
+            PunchLog punchLog = new PunchLog();
+            punchLog.setCreateTime(Instant.now().getEpochSecond());
+            punchLog.setUpdateTime(Instant.now().getEpochSecond());
+            punchLog.setPunchTime(Instant.now().getEpochSecond());
+            punchLog.setDestinationId(byId.getId());
+            punchLog.setUserId(Long.parseLong(info.getId()));
+            punchLog.setPunchLatitude(byId.getLatitude());
+            punchLog.setPunchLongitude(byId.getLongitude());
+            punchLog.setIntegralValue(byId.getScore());
+            punchLog.setDestinationName(byId.getDestinationName());
+            punchLog.setDestinationRecommendSquareImage(byId.getDestinationRecommendSquareImage());
+            punchLog.setAddress(byId.getAddress());
+            getBaseMapper().insert(punchLog);
+            Long id = punchLog.getId();
+            PunchLog punchLogNew = getBaseMapper().selectById(id);
+            return clockInConverter.toClockInRecords(punchLogNew);
         }
-        //保存打卡记录
-        PunchLog punchLog = new PunchLog();
-        punchLog.setCreateTime(Instant.now().getEpochSecond());
-        punchLog.setUpdateTime(Instant.now().getEpochSecond());
-        punchLog.setPunchTime(Instant.now().getEpochSecond());
-        punchLog.setDestinationId(byId.getId());
-        punchLog.setUserId(Long.parseLong(info.getId()));
-        punchLog.setPunchLatitude(byId.getLatitude());
-        punchLog.setPunchLongitude(byId.getLongitude());
-        punchLog.setIntegralValue(byId.getScore());
-        punchLog.setDestinationName(byId.getDestinationName());
-        punchLog.setDestinationRecommendSquareImage(byId.getDestinationRecommendSquareImage());
-        punchLog.setAddress(byId.getAddress());
-        getBaseMapper().insert(punchLog);
-        Long id = punchLog.getId();
-        PunchLog punchLogNew = getBaseMapper().selectById(id);
-        return clockInConverter.toClockInRecords(punchLogNew);
     }
 
     @Override
