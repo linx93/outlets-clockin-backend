@@ -120,6 +120,9 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         UserInfo info = JwtUtil.getInfo(UserInfo.class);
         Destination byId = mongoTemplate.findById(clockInRequest.getId(), Destination.class);
         Assert.notNull(byId, "二维码代表的打卡点不存在");
+        if (byId.getPutOn() == 1) {
+            throw new BasicException("此目的地已下架");
+        }
         double distance = GeoUtil.getDistance(Double.parseDouble(clockInRequest.getLongitude()), Double.parseDouble(clockInRequest.getLatitude()), Double.parseDouble(byId.getLongitude()), Double.parseDouble(byId.getLatitude()));
         Assert.isTrue(distance <= systemConfig.getClockInDistance(), "你距离打卡点太远，请到打卡点再打卡");
         List<PunchLog> punchLogs = getBaseMapper().selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, info.getId()).eq(PunchLog::getDestinationId, byId.getId()));
