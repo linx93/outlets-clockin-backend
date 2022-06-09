@@ -143,154 +143,156 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
      * @return
      */
     private Boolean exchange(String giftBagId, String type, Integer voucherType) {
-        //1查询礼品是否存在
-        GiftBag giftBag = mongoTemplate.findOne(Query.query(Criteria.where("id").is(Long.parseLong(giftBagId))), GiftBag.class);
+        synchronized (PunchSignatureServiceImpl.class) {
+            //1查询礼品是否存在
+            GiftBag giftBag = mongoTemplate.findOne(Query.query(Criteria.where("id").is(Long.parseLong(giftBagId))), GiftBag.class);
 
-        //判断礼品兑换是否达到次数限制
-        if (giftBag.getMaxExNum()<=giftBag.getExchangedNum()) {
-            log.info("礼品{}兑次数换达到上限", giftBagId);
-            throw new BasicException("哎呀，最后一份刚刚被别人领走了，再逛逛其它的吧");
-        }
-
-        UserInfo userInfo = JwtUtil.getInfo(UserInfo.class);
-
-        if (giftBag == null) {
-            log.info("礼品不存在 {}", giftBagId);
-            throw new BasicException("礼品不存在");
-        }
-
-        //豪礼兑换
-        if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
-            //判断是否已完成所有打卡点
-            List<Long> placeElement = giftBag.getPlaceElement();
-            Query queryDestination = new Query();
-            Criteria criteriaDestination = Criteria.where("id").in(placeElement);
-            queryDestination.addCriteria(criteriaDestination);
-            List<Destination> destinations = mongoTemplate.find(queryDestination, Destination.class);
-            List<Long> destinationIds = destinations.stream().map(Destination::getId).collect(Collectors.toList());
-            List<PunchLog> punchLogs = punchLogMapper.selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, Long.parseLong(userInfo.getId())).in(PunchLog::getDestinationId, destinationIds));
-            List<Long> destinationIdPunchLogs = punchLogs.stream().map(PunchLog::getDestinationId).collect(Collectors.toList());
-            List<Long> tempDestinationIdPunchLogs = new ArrayList<>();
-            // 如果所需打卡点记录没有在日志表中说明未打卡
-            for (Long destinationIdPunchLog : destinationIdPunchLogs) {
-                if (destinationIds.contains(destinationIdPunchLog)) {
-                    tempDestinationIdPunchLogs.add(destinationIdPunchLog);
-                }
+            //判断礼品兑换是否达到次数限制
+            if (giftBag.getMaxExNum() <= giftBag.getExchangedNum()) {
+                log.info("礼品{}兑次数换达到上限", giftBagId);
+                throw new BasicException("哎呀，最后一份刚刚被别人领走了，再逛逛其它的吧");
             }
-            if (destinationIds.size() != tempDestinationIdPunchLogs.size()) {
 
-                throw new BasicException("请完成打卡后兑换");
+            UserInfo userInfo = JwtUtil.getInfo(UserInfo.class);
+
+            if (giftBag == null) {
+                log.info("礼品不存在 {}", giftBagId);
+                throw new BasicException("礼品不存在");
             }
-        }
 
-        // TODO 普通礼品兑换
-        int scoreSum = 0;
-        if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
-            List<Long> giftBagIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBag.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
-            List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftBagIds)), Gift.class);
-            scoreSum = gifts.stream().mapToInt(Gift::getGiftScore).sum();
-            Long myScore = punchLogService.myScore();
-            if (myScore.intValue() < scoreSum) {
-
-                throw new BasicException("签章不够");
-            }
-        }
-
-
-        //2查询礼品是否已经过期
-        LocalDateTime validDate = LocalDateTime.ofEpochSecond(giftBag.getValidDate(), 0, ZoneOffset.of("+8"));
-        if (validDate.isBefore(LocalDateTime.now())) {
-            log.info("礼品已过期 {}", giftBagId);
-            throw new BasicException("礼品已过期");
-        }
-
-
-        LambdaQueryWrapper<GiftVoucher> queryWrapper = new QueryWrapper<GiftVoucher>().lambda().eq(GiftVoucher::getGiftId, Long.parseLong(giftBagId)).eq(GiftVoucher::getUserId, Long.parseLong(userInfo.getId()));
-        List<GiftVoucher> voucher = giftVoucherMapper.selectList(queryWrapper);
-        //3查询礼品是否已经兑换
-        Integer exchangeCount = giftBag.getExchangeCount();
-
-        if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
-            if (voucher != null) {
-                if (voucher.size() >= exchangeCount) {
-                    log.info("礼品已兑换次数 {},礼品限制次数 {} ", voucher.size(), exchangeCount);
-                    throw new BasicException("该礼品您已兑换");
-                }
-            }
-        }
-
-        if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
-            //普通礼品可以兑换次数
-            if (voucher != null) {
-                if (voucher.size() >= exchangeCount) {
-                    log.info("礼品已兑换次数 {},礼品限制次数 {} ", voucher.size(), exchangeCount);
-                    throw new BasicException("该礼品兑换次数已用完");
-                }
-            }
-        }
-
-
-        long epochSecond = Instant.now().getEpochSecond();
-        List<GiftVoucher> exchangeLimitVoucher = giftVoucherMapper.findAllByCreateTimeAndUserId(Long.parseLong(giftBagId), Long.parseLong(userInfo.getId()), epochSecond);
-        //4查询礼品每日单次限制兑换次数
-        Integer exchangeLimit = giftBag.getExchangeLimit();
-
-        if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
-            if (exchangeLimitVoucher != null) {
-                log.info("礼品每日单次限制兑换次数 {},礼品限制次数 {} ", exchangeLimitVoucher.size(), exchangeLimit);
-                if (exchangeLimitVoucher.size() >= exchangeLimit) {
-                    throw new BasicException("该礼品每日兑换次数已用完");
-                }
-            }
-        }
-
-        long id = sequence.nextId();
-        //生成用于核销的礼品券二维码
-        String content = QRCodeContent.builder().id(String.valueOf(id)).app(AppEnum.outlets.name()).type(QRCodeSceneEnum.WRITE_OFF.name()).source(UserTypeEnum.CLOCK_IN.name()).build().toString();
-
-        try {
-            String qrcodeBase64 = QrcodeUtil.getQrcodeBase64(content);
-            GiftVoucher giftVoucher = new GiftVoucher();
-            giftVoucher.setId(id);
-            giftVoucher.setGiftId(Long.parseLong(giftBagId));
-            giftVoucher.setGiftName(giftBag.getName());
-            giftVoucher.setGiftVoucherId(UUID.randomUUID().toString());
-            //礼品券类型
-            giftVoucher.setGiftVoucherType(voucherType);
-            giftVoucher.setGiftVoucherQrcode(qrcodeBase64);
-            giftVoucher.setUserId(Long.parseLong(userInfo.getId()));
-            //礼品券名称
-            giftVoucher.setGiftVoucherName(giftBag.getName());
-            giftVoucher.setExchangeDeadline(giftBag.getValidDate());
-            giftVoucher.setGiftName(giftBag.getName());
-            giftVoucher.setState(0);
-
-            //这部分代码修改需要前端同步修改！！！！！！！！！！！！！！！！！！
+            //豪礼兑换
             if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
-                //卡片翻牌
-                giftVoucher.setExchangeInstructions(String.format("卡片翻牌" + "(%s)", giftBag.getPlaceElement().size()));
-            }
-            if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
-                //签章核销
-                giftVoucher.setExchangeInstructions(String.format("签章核销" + "(%s)", scoreSum));
+                //判断是否已完成所有打卡点
+                List<Long> placeElement = giftBag.getPlaceElement();
+                Query queryDestination = new Query();
+                Criteria criteriaDestination = Criteria.where("id").in(placeElement);
+                queryDestination.addCriteria(criteriaDestination);
+                List<Destination> destinations = mongoTemplate.find(queryDestination, Destination.class);
+                List<Long> destinationIds = destinations.stream().map(Destination::getId).collect(Collectors.toList());
+                List<PunchLog> punchLogs = punchLogMapper.selectList(new QueryWrapper<PunchLog>().lambda().eq(PunchLog::getUserId, Long.parseLong(userInfo.getId())).in(PunchLog::getDestinationId, destinationIds));
+                List<Long> destinationIdPunchLogs = punchLogs.stream().map(PunchLog::getDestinationId).collect(Collectors.toList());
+                List<Long> tempDestinationIdPunchLogs = new ArrayList<>();
+                // 如果所需打卡点记录没有在日志表中说明未打卡
+                for (Long destinationIdPunchLog : destinationIdPunchLogs) {
+                    if (destinationIds.contains(destinationIdPunchLog)) {
+                        tempDestinationIdPunchLogs.add(destinationIdPunchLog);
+                    }
+                }
+                if (destinationIds.size() != tempDestinationIdPunchLogs.size()) {
+
+                    throw new BasicException("请完成打卡后兑换");
+                }
             }
 
-            long second = Instant.now().getEpochSecond();
-            giftVoucher.setCreateTime(second);
-            giftVoucher.setUpdateTime(second);
-            int i = giftVoucherMapper.insert(giftVoucher);
-            if (i == 0) {
-                log.info("礼品兑换失败 {}", giftBagId);
-                return Boolean.FALSE;
+            // TODO 普通礼品兑换
+            int scoreSum = 0;
+            if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
+                List<Long> giftBagIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBag.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
+                List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftBagIds)), Gift.class);
+                scoreSum = gifts.stream().mapToInt(Gift::getGiftScore).sum();
+                Long myScore = punchLogService.myScore();
+                if (myScore.intValue() < scoreSum) {
+
+                    throw new BasicException("签章不够");
+                }
             }
-            //更新已兑换数量
-            giftBag.setExchangedNum(giftBag.getExchangedNum()+1);
-            giftBag.setSub(giftBag.getMaxExNum()-giftBag.getExchangedNum());
-            mongoTemplate.save(giftBag);
-        } catch (Exception e) {
-            log.info("生成二维码失败 {}", e.getMessage(), e);
-            throw new BasicException("兑换失败");
+
+
+            //2查询礼品是否已经过期
+            LocalDateTime validDate = LocalDateTime.ofEpochSecond(giftBag.getValidDate(), 0, ZoneOffset.of("+8"));
+            if (validDate.isBefore(LocalDateTime.now())) {
+                log.info("礼品已过期 {}", giftBagId);
+                throw new BasicException("礼品已过期");
+            }
+
+
+            LambdaQueryWrapper<GiftVoucher> queryWrapper = new QueryWrapper<GiftVoucher>().lambda().eq(GiftVoucher::getGiftId, Long.parseLong(giftBagId)).eq(GiftVoucher::getUserId, Long.parseLong(userInfo.getId()));
+            List<GiftVoucher> voucher = giftVoucherMapper.selectList(queryWrapper);
+            //3查询礼品是否已经兑换
+            Integer exchangeCount = giftBag.getExchangeCount();
+
+            if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
+                if (voucher != null) {
+                    if (voucher.size() >= exchangeCount) {
+                        log.info("礼品已兑换次数 {},礼品限制次数 {} ", voucher.size(), exchangeCount);
+                        throw new BasicException("该礼品您已兑换");
+                    }
+                }
+            }
+
+            if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
+                //普通礼品可以兑换次数
+                if (voucher != null) {
+                    if (voucher.size() >= exchangeCount) {
+                        log.info("礼品已兑换次数 {},礼品限制次数 {} ", voucher.size(), exchangeCount);
+                        throw new BasicException("该礼品兑换次数已用完");
+                    }
+                }
+            }
+
+
+            long epochSecond = Instant.now().getEpochSecond();
+            List<GiftVoucher> exchangeLimitVoucher = giftVoucherMapper.findAllByCreateTimeAndUserId(Long.parseLong(giftBagId), Long.parseLong(userInfo.getId()), epochSecond);
+            //4查询礼品每日单次限制兑换次数
+            Integer exchangeLimit = giftBag.getExchangeLimit();
+
+            if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
+                if (exchangeLimitVoucher != null) {
+                    log.info("礼品每日单次限制兑换次数 {},礼品限制次数 {} ", exchangeLimitVoucher.size(), exchangeLimit);
+                    if (exchangeLimitVoucher.size() >= exchangeLimit) {
+                        throw new BasicException("该礼品每日兑换次数已用完");
+                    }
+                }
+            }
+
+            long id = sequence.nextId();
+            //生成用于核销的礼品券二维码
+            String content = QRCodeContent.builder().id(String.valueOf(id)).app(AppEnum.outlets.name()).type(QRCodeSceneEnum.WRITE_OFF.name()).source(UserTypeEnum.CLOCK_IN.name()).build().toString();
+
+            try {
+                String qrcodeBase64 = QrcodeUtil.getQrcodeBase64(content);
+                GiftVoucher giftVoucher = new GiftVoucher();
+                giftVoucher.setId(id);
+                giftVoucher.setGiftId(Long.parseLong(giftBagId));
+                giftVoucher.setGiftName(giftBag.getName());
+                giftVoucher.setGiftVoucherId(UUID.randomUUID().toString());
+                //礼品券类型
+                giftVoucher.setGiftVoucherType(voucherType);
+                giftVoucher.setGiftVoucherQrcode(qrcodeBase64);
+                giftVoucher.setUserId(Long.parseLong(userInfo.getId()));
+                //礼品券名称
+                giftVoucher.setGiftVoucherName(giftBag.getName());
+                giftVoucher.setExchangeDeadline(giftBag.getValidDate());
+                giftVoucher.setGiftName(giftBag.getName());
+                giftVoucher.setState(0);
+
+                //这部分代码修改需要前端同步修改！！！！！！！！！！！！！！！！！！
+                if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
+                    //卡片翻牌
+                    giftVoucher.setExchangeInstructions(String.format("卡片翻牌" + "(%s)", giftBag.getPlaceElement().size()));
+                }
+                if (type.equals(String.valueOf(GiftTypeEnum.NORMAL.getCode()))) {
+                    //签章核销
+                    giftVoucher.setExchangeInstructions(String.format("签章核销" + "(%s)", scoreSum));
+                }
+
+                long second = Instant.now().getEpochSecond();
+                giftVoucher.setCreateTime(second);
+                giftVoucher.setUpdateTime(second);
+                int i = giftVoucherMapper.insert(giftVoucher);
+                if (i == 0) {
+                    log.info("礼品兑换失败 {}", giftBagId);
+                    return Boolean.FALSE;
+                }
+                //更新已兑换数量
+                giftBag.setExchangedNum(giftBag.getExchangedNum() + 1);
+                giftBag.setSub(giftBag.getMaxExNum() - giftBag.getExchangedNum());
+                mongoTemplate.save(giftBag);
+            } catch (Exception e) {
+                log.info("生成二维码失败 {}", e.getMessage(), e);
+                throw new BasicException("兑换失败");
+            }
+            return Boolean.TRUE;
         }
-        return Boolean.TRUE;
     }
 }
