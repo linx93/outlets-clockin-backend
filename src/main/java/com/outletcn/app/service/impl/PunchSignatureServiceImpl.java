@@ -146,6 +146,12 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         //1查询礼品是否存在
         GiftBag giftBag = mongoTemplate.findOne(Query.query(Criteria.where("id").is(Long.parseLong(giftBagId))), GiftBag.class);
 
+        //判断礼品兑换是否达到次数限制
+        if (giftBag.getMaxExNum()<=giftBag.getExchangedNum()) {
+            log.info("礼品{}兑次数换达到上限", giftBagId);
+            throw new BasicException("礼品兑次数换达到上限");
+        }
+
         UserInfo userInfo = JwtUtil.getInfo(UserInfo.class);
 
         if (giftBag == null) {
@@ -259,7 +265,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             giftVoucher.setGiftName(giftBag.getName());
             giftVoucher.setState(0);
 
-            //修改需要前端同步修改！！！！！！！！！！！！！！！！！！
+            //这部分代码修改需要前端同步修改！！！！！！！！！！！！！！！！！！
             if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
                 //卡片翻牌
                 giftVoucher.setExchangeInstructions(String.format("卡片翻牌" + "(%s)", giftBag.getPlaceElement().size()));
@@ -277,6 +283,9 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
                 log.info("礼品兑换失败 {}", giftBagId);
                 return Boolean.FALSE;
             }
+            //更新已兑换数量
+            giftBag.setExchangedNum(giftBag.getExchangedNum()+1);
+            mongoTemplate.save(giftBag);
         } catch (Exception e) {
             log.info("生成二维码失败 {}", e.getMessage(), e);
             throw new BasicException("兑换失败");

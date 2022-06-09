@@ -62,4 +62,7 @@ public class GiftBagListResponse {
     @ApiModelProperty(value = "礼品包中包含的礼品每项的积分求和")
     private Double scoreSum;
 
+
+    private Integer maxExNum;
+    private Integer exchangedNum;
 }

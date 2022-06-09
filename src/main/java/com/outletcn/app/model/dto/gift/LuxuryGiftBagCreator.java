@@ -83,4 +83,11 @@ public class LuxuryGiftBagCreator {
     @NotNull
     @ApiModelProperty(value = "是否上架；0:是/1:否")
     private Integer putOn;
+
+
+    /**
+     * 最大兑换数量
+     */
+    private Integer maxExNum;
+
 }

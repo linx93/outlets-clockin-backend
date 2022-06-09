@@ -292,6 +292,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setPlaceCount(luxuryGiftBagCreator.getPlaceCount());
         giftBag.setPlaceElement(luxuryGiftBagCreator.getPlaceElement());
         giftBag.setPutOn(luxuryGiftBagCreator.getPutOn());
+        giftBag.setMaxExNum(luxuryGiftBagCreator.getMaxExNum());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
@@ -330,6 +331,10 @@ public class GiftServiceImpl implements GiftService {
 
         giftBag.setPlaceCount(luxuryGiftBagCreator.getPlaceCount());
         giftBag.setPlaceElement(luxuryGiftBagCreator.getPlaceElement());
+        if (luxuryGiftBagCreator.getMaxExNum() < giftBag.getExchangedNum()) {
+            throw new BasicException("最大兑换数量不能小于已兑换数量");
+        }
+        giftBag.setExchangedNum(luxuryGiftBagCreator.getMaxExNum());
 
 
         long time = Instant.now().getEpochSecond();
@@ -358,6 +363,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setImage(ordinaryGiftBagCreator.getImage());
         giftBag.setRecommendImage(ordinaryGiftBagCreator.getRecommendImage());
         giftBag.setPutOn(0);
+        giftBag.setMaxExNum(ordinaryGiftBagCreator.getMaxExNum());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
@@ -393,6 +399,10 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setExchangeLimit(ordinaryGiftBagCreator.getExchangeLimit());
         giftBag.setImage(ordinaryGiftBagCreator.getImage());
         giftBag.setRecommendImage(ordinaryGiftBagCreator.getRecommendImage());
+        if (giftBag.getExchangedNum() > ordinaryGiftBagCreator.getMaxExNum()) {
+            throw new BasicException("最大兑换数量不能小于已兑换数量");
+        }
+        giftBag.setMaxExNum(ordinaryGiftBagCreator.getMaxExNum());
 
         long time = Instant.now().getEpochSecond();
         giftBag.setUpdateTime(time);
@@ -570,7 +580,7 @@ public class GiftServiceImpl implements GiftService {
         query.addCriteria(criteria).addCriteria(criteria1);
         Pageable pageable = PageRequest.of(giftBagListRequest.getPageNum() - 1, giftBagListRequest.getPageSize());
         Sort sort = Sort.by(Sort.Direction.DESC, "stateUpdateTime");
-        long totalCount = mongoTemplate.count(query, "id");
+        long totalCount = mongoTemplate.count(query, GiftBag.class);
         List<GiftBag> giftBags = mongoTemplate.find(query.with(sort).with(pageable), GiftBag.class);
         List<GiftBagListResponse> records = new ArrayList<>();
         for (GiftBag g : giftBags) {
@@ -584,6 +594,8 @@ public class GiftServiceImpl implements GiftService {
             giftBagListResponse.setStateUpdateTime(g.getStateUpdateTime());
             giftBagListResponse.setCreateTime(g.getCreateTime());
             giftBagListResponse.setUpdateTime(g.getUpdateTime());
+            giftBagListResponse.setMaxExNum(g.getMaxExNum());
+            giftBagListResponse.setExchangedNum(giftBagListResponse.getExchangedNum());
             List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(g.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
             if (!giftIds.isEmpty()) {
                 List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);

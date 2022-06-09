@@ -59,6 +59,12 @@ public class OrdinaryGiftBagCreator {
     private String recommendImage;
 
 
+    /**
+     * 最大兑换数量
+     */
+    private Integer maxExNum;
+
+
 //    /**
 //     * 是否上架
 //     * 0:是/1:否

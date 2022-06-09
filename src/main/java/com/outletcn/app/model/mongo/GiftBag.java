@@ -92,6 +92,16 @@ public class GiftBag implements Serializable {
      */
     private Integer putOn;
 
+    /**
+     * 最大兑换数量
+     */
+    private Integer maxExNum;
+
+    /**
+     * 已兑换数量
+     */
+    private Integer exchangedNum;
+
     /****仅在“是否为超级豪礼”选择为“是”时，可填写以下内容****/
 
     /**
