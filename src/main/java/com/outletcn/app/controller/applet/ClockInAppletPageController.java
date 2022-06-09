@@ -32,10 +32,18 @@ public class ClockInAppletPageController {
 
     private final PunchLogService punchLogService;
 
+    @Deprecated
     @ApiOperation(value = "通过线路id查询线路下的目的地和目的地群")
     @GetMapping(value = "/line-elements")
     public ApiResult<LineElementsVO> lineElementsById(@ApiParam(value = "路线id", name = "id") @RequestParam(value = "id") Long id) {
         LineElementsVO apiResult = lineService.lineElementsById(id);
+        return ApiResult.ok(apiResult);
+    }
+
+    @ApiOperation(value = "线路详情")
+    @GetMapping(value = "/line-details")
+    public ApiResult<LineItemsVO> lineDetailsById(@ApiParam(value = "路线id", name = "id") @RequestParam(value = "id") Long id) {
+        LineItemsVO apiResult = lineService.lineDetailsById(id);
         return ApiResult.ok(apiResult);
     }
 
