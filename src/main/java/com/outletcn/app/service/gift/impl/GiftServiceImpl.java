@@ -293,6 +293,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setPlaceElement(luxuryGiftBagCreator.getPlaceElement());
         giftBag.setPutOn(luxuryGiftBagCreator.getPutOn());
         giftBag.setMaxExNum(luxuryGiftBagCreator.getMaxExNum());
+        giftBag.setExchangedNum(0);
 
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);
@@ -364,6 +365,7 @@ public class GiftServiceImpl implements GiftService {
         giftBag.setRecommendImage(ordinaryGiftBagCreator.getRecommendImage());
         giftBag.setPutOn(0);
         giftBag.setMaxExNum(ordinaryGiftBagCreator.getMaxExNum());
+        giftBag.setExchangedNum(0);
 
         long time = Instant.now().getEpochSecond();
         giftBag.setCreateTime(time);

@@ -149,7 +149,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         //判断礼品兑换是否达到次数限制
         if (giftBag.getMaxExNum()<=giftBag.getExchangedNum()) {
             log.info("礼品{}兑次数换达到上限", giftBagId);
-            throw new BasicException("礼品兑次数换达到上限");
+            throw new BasicException("哎呀，最后一份刚刚被别人领走了，再逛逛其它的吧");
         }
 
         UserInfo userInfo = JwtUtil.getInfo(UserInfo.class);
