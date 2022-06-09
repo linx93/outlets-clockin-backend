@@ -519,6 +519,7 @@ public class GiftServiceImpl implements GiftService {
     }
 
     //删除礼品包及礼品关系
+    @Override
     public void deleteGiftBagRelation(Long giftBagId) {
         Query query = new Query();
         Criteria criteria = Criteria.where("giftBagId").is(giftBagId);
@@ -771,7 +772,7 @@ public class GiftServiceImpl implements GiftService {
         UserInfo info = JwtUtil.getInfo(UserInfo.class);
         //查询豪华礼包
         Query query = new Query();
-        Criteria criteria = Criteria.where("type").is(type.getCode()).and("putOn").is(0);
+        Criteria criteria = Criteria.where("type").is(type.getCode()).and("putOn").is(0).and("validDate").gt(Instant.now().getEpochSecond());
         query.addCriteria(criteria);
         PageInfo<GiftBag> pageInfo = new PageInfo<>();
         pageInfo.setCurrent(page);
