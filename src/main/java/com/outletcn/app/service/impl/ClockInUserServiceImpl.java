@@ -2,6 +2,7 @@ package com.outletcn.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.outletcn.app.common.ApiResult;
+import com.outletcn.app.common.GiftTypeEnum;
 import com.outletcn.app.configuration.model.SystemConfig;
 import com.outletcn.app.converter.UserConverter;
 import com.outletcn.app.exception.BasicException;
@@ -22,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,7 +69,7 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
 
     @Override
     public List<GiftBag> buildGiftBag() {
-        Query type = Query.query(Criteria.where("type").is(2).and("putOn").is(0));
+        Query type = Query.query(Criteria.where("type").is(GiftTypeEnum.LUXURY.getCode()).and("putOn").is(0).and("validDate").gt(Instant.now().getEpochSecond()));
         return mongoTemplate.find(type, GiftBag.class);
     }
 
