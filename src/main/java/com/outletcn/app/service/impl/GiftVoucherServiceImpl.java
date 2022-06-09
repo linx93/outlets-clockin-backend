@@ -69,21 +69,22 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
         if (Objects.isNull(voucher)) {
             throw new BasicException("未找到兑换券数据");
         }
-        if (voucher.getState().equals(1)) {
-            throw new BasicException("兑换券已被使用");
-        }
         Long time = Instant.now().getEpochSecond();
         if (voucher.getExchangeDeadline() < time) {
             throw new BasicException("兑换券已过期");
         }
         UserInfo info = JwtUtil.getInfo(UserInfo.class);
-
-        voucher.setState(1);
-        voucher.setExchangeTime(time);
-        voucher.setUpdateTime(time);
-        voucher.setExchangeUserId(Long.parseLong(info.getId()));
-        voucher.setAccount(info.getAccount());
-        baseMapper.updateById(voucher);
+        synchronized (GiftVoucherServiceImpl.class) {
+            if (voucher.getState().equals(1)) {
+                throw new BasicException("兑换券已被使用");
+            }
+            voucher.setState(1);
+            voucher.setExchangeTime(time);
+            voucher.setUpdateTime(time);
+            voucher.setExchangeUserId(Long.parseLong(info.getId()));
+            voucher.setAccount(info.getAccount());
+            baseMapper.updateById(voucher);
+        }
     }
 
     @Override
@@ -141,7 +142,7 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
             if (!giftIds.isEmpty()) {
                 List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
                 object.put("scoreSum", gifts.stream().mapToDouble(Gift::getGiftScore).sum());
-               BigDecimal count = new BigDecimal("0");
+                BigDecimal count = new BigDecimal("0");
                 for (Gift gift : gifts) {
                     count = count.add(gift.getGiftCost());
                 }
