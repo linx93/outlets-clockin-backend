@@ -83,6 +83,7 @@ public class GiftBagDetail {
 
     private Integer maxExNum;
     private Integer exchangedNum;
+    private Integer writeOffCount;
 
     /****仅在“是否为超级豪礼”选择为“是”时，可填写以下内容****/
 

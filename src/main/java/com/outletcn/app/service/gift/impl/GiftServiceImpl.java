@@ -11,8 +11,10 @@ import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.GiftBagVO;
 import com.outletcn.app.model.dto.gift.*;
 import com.outletcn.app.model.mongo.*;
+import com.outletcn.app.model.mysql.GiftVoucher;
 import com.outletcn.app.model.mysql.PunchLog;
 import com.outletcn.app.repository.GiftBagMongoRepository;
+import com.outletcn.app.service.GiftVoucherService;
 import com.outletcn.app.service.gift.GiftService;
 import com.outletcn.app.utils.JwtUtil;
 import lombok.AllArgsConstructor;
@@ -42,6 +44,7 @@ public class GiftServiceImpl implements GiftService {
     Sequence sequence;
     GiftBagMongoRepository giftBagMongoRepository;
     GiftConverter giftConverter;
+    GiftVoucherService giftVoucherService;
 
     PunchLogMapper punchLogMapper;
 
@@ -453,7 +456,12 @@ public class GiftServiceImpl implements GiftService {
             throw new BasicException("记录不存在");
         }
         GiftBagDetail giftBagDetail = giftConverter.toGiftBagDetail(giftBag);
-
+        //已核销数量
+        Integer writeOffCount = giftVoucherService.count(new QueryWrapper<GiftVoucher>().lambda()
+                .eq(GiftVoucher::getGiftId,giftBag.getId())
+                .eq(GiftVoucher::getState,1)
+        );
+        giftBagDetail.setWriteOffCount(writeOffCount);
         List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBagDetail.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
         if (!giftIds.isEmpty()) {
             List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
@@ -602,6 +610,12 @@ public class GiftServiceImpl implements GiftService {
             giftBagListResponse.setUpdateTime(g.getUpdateTime());
             giftBagListResponse.setMaxExNum(g.getMaxExNum());
             giftBagListResponse.setExchangedNum(g.getExchangedNum());
+            //已核销数量
+            Integer writeOffCount = giftVoucherService.count(new QueryWrapper<GiftVoucher>().lambda()
+                    .eq(GiftVoucher::getGiftId,g.getId())
+                    .eq(GiftVoucher::getState,1)
+            );
+            giftBagListResponse.setWriteOffCount(writeOffCount);
             List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(g.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
             if (!giftIds.isEmpty()) {
                 List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);

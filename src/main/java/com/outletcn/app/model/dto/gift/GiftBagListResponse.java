@@ -65,4 +65,6 @@ public class GiftBagListResponse {
 
     private Integer maxExNum;
     private Integer exchangedNum;
+
+    private Integer writeOffCount;
 }
