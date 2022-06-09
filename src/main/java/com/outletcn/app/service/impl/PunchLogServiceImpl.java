@@ -183,7 +183,7 @@ public class PunchLogServiceImpl extends ServiceImpl<PunchLogMapper, PunchLog> i
         RecommendResponse recommendResponse = new RecommendResponse();
         recommendResponse.setScore(score);
         //查询所有的礼品包
-        Criteria criteria = Criteria.where("type").is(GiftTypeEnum.NORMAL.getCode()).and("validDate").gt(Instant.now().getEpochSecond()).and("putOn").is(0);
+        Criteria criteria = Criteria.where("type").is(GiftTypeEnum.NORMAL.getCode()).and("validDate").gt(Instant.now().getEpochSecond()).and("putOn").is(0).and("sub").gt(0);
         List<GiftBag> giftBagList = mongoTemplate.find(Query.query(criteria), GiftBag.class);
         List<GiftBagVO> giftBagVOS = giftConverter.toGiftBagVOList(giftBagList);
         giftBagVOS.forEach(item -> {
