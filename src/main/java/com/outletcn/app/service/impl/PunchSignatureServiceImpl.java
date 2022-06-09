@@ -285,6 +285,7 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
             }
             //更新已兑换数量
             giftBag.setExchangedNum(giftBag.getExchangedNum()+1);
+            giftBag.setSub(giftBag.getMaxExNum()-giftBag.getExchangedNum());
             mongoTemplate.save(giftBag);
         } catch (Exception e) {
             log.info("生成二维码失败 {}", e.getMessage(), e);
