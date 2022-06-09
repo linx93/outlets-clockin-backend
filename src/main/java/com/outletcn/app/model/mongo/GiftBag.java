@@ -102,6 +102,11 @@ public class GiftBag implements Serializable {
      */
     private Integer exchangedNum;
 
+    /**
+     * sub = maxExNum - exchangedNum
+     */
+    private Integer sub;
+
     /****仅在“是否为超级豪礼”选择为“是”时，可填写以下内容****/
 
     /**
@@ -114,7 +119,6 @@ public class GiftBag implements Serializable {
      */
     @JsonSerialize(using = ListLongToStringArrayJsonSerializer.class)
     private List<Long> placeElement;
-
 
 
 }
