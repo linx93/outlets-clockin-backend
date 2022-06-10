@@ -146,20 +146,16 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
         synchronized (PunchSignatureServiceImpl.class) {
             //1查询礼品是否存在
             GiftBag giftBag = mongoTemplate.findOne(Query.query(Criteria.where("id").is(Long.parseLong(giftBagId))), GiftBag.class);
-
+            if (giftBag == null) {
+                log.info("礼品不存在 {}", giftBagId);
+                throw new BasicException("礼品不存在");
+            }
             //判断礼品兑换是否达到次数限制
             if (giftBag.getMaxExNum() <= giftBag.getExchangedNum()) {
                 log.info("礼品{}兑次数换达到上限", giftBagId);
                 throw new BasicException("哎呀，最后一份刚刚被别人领走了，再逛逛其它的吧");
             }
-
             UserInfo userInfo = JwtUtil.getInfo(UserInfo.class);
-
-            if (giftBag == null) {
-                log.info("礼品不存在 {}", giftBagId);
-                throw new BasicException("礼品不存在");
-            }
-
             //豪礼兑换
             if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
                 //判断是否已完成所有打卡点
@@ -192,11 +188,9 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
                 scoreSum = gifts.stream().mapToInt(Gift::getGiftScore).sum();
                 Long myScore = punchLogService.myScore();
                 if (myScore.intValue() < scoreSum) {
-
                     throw new BasicException("签章不够");
                 }
             }
-
 
             //2查询礼品是否已经过期
             LocalDateTime validDate = LocalDateTime.ofEpochSecond(giftBag.getValidDate(), 0, ZoneOffset.of("+8"));

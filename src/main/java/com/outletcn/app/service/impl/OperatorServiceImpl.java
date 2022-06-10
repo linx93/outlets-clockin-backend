@@ -129,35 +129,51 @@ public class OperatorServiceImpl extends ServiceImpl<OperatorMapper, Operator> i
 
     @Override
     public Boolean newOrModify(NewOrModifyRequest newOrModifyRequest) {
-        if (newOrModifyRequest.getId() == null || newOrModifyRequest.getId() == 0) {
-            newOrModifyRequest.setId(null);
-        }
         UserTypeEnum userTypeEnum = newOrModifyRequest.getUserTypeEnum();
         if (UserTypeEnum.PC.name().equals(userTypeEnum.name())) {
             //PC
-            Operator one = getOne(new QueryWrapper<Operator>().lambda().eq(Operator::getAccount, newOrModifyRequest.getAccount()));
-            if (newOrModifyRequest.getId() == null && one != null) {
-                throw new BasicException(String.format("用户【%s】已存在", newOrModifyRequest.getAccount()));
+            if (newOrModifyRequest.getId() == null || newOrModifyRequest.getId() == 0) {
+                //新增
+                Operator one = getOne(new QueryWrapper<Operator>().lambda().eq(Operator::getAccount, newOrModifyRequest.getAccount()));
+                //
+                if (one != null) {
+                    throw new BasicException(String.format("用户【%s】已存在", newOrModifyRequest.getAccount()));
+                }
+                Operator operator = userConverter.toOperator(newOrModifyRequest);
+                operator.setRoleId(1);
+                if (StringUtils.isBlank(operator.getPassword())) {
+                    operator.setPassword(new BCryptPasswordEncoder().encode("000000"));
+                }
+                operator.setState(AccountStateEnum.NORMAL.getCode());
+                save(operator);
+            } else {
+                //修改
+                Operator operator = userConverter.toOperator(newOrModifyRequest);
+                updateById(operator);
             }
-            Operator operator = userConverter.toOperator(newOrModifyRequest);
-            operator.setRoleId(1);
-            operator.setPassword(new BCryptPasswordEncoder().encode("000000"));
-            operator.setState(AccountStateEnum.NORMAL.getCode());
-            saveOrUpdate(operator);
         } else if (UserTypeEnum.WRITE_OFF.name().equals(userTypeEnum.name())) {
             //核销小程序
-            WriteOffUser one = writeOffUserService.getOne(new QueryWrapper<WriteOffUser>().lambda().eq(WriteOffUser::getAccount, newOrModifyRequest.getAccount()));
-            if (newOrModifyRequest.getId() == null && one != null) {
-                throw new BasicException(String.format("用户【%s】已存在", newOrModifyRequest.getAccount()));
+            if (newOrModifyRequest.getId() == null || newOrModifyRequest.getId() == 0) {
+                //新增
+                WriteOffUser one = writeOffUserService.getOne(new QueryWrapper<WriteOffUser>().lambda().eq(WriteOffUser::getAccount, newOrModifyRequest.getAccount()));
+                if (one != null) {
+                    throw new BasicException(String.format("用户【%s】已存在", newOrModifyRequest.getAccount()));
+                }
+                WriteOffUser writeOffUser = userConverter.toWriteOffUser(newOrModifyRequest);
+                if (StringUtils.isBlank(writeOffUser.getPassword())) {
+                    writeOffUser.setPassword(new BCryptPasswordEncoder().encode("000000"));
+                }
+                writeOffUser.setState(AccountStateEnum.NORMAL.getCode());
+                writeOffUserService.save(writeOffUser);
+            } else {
+                //修改
+                WriteOffUser writeOffUser = userConverter.toWriteOffUser(newOrModifyRequest);
+                writeOffUserService.updateById(writeOffUser);
             }
-            WriteOffUser writeOffUser = userConverter.toWriteOffUser(newOrModifyRequest);
-            writeOffUser.setPassword(new BCryptPasswordEncoder().encode("000000"));
-            writeOffUser.setState(AccountStateEnum.NORMAL.getCode());
-            writeOffUserService.saveOrUpdate(writeOffUser);
         } else {
             throw new BasicException("userTypeEnum传参错误");
         }
-        return true;
+        return Boolean.TRUE;
     }
 
     @Override
