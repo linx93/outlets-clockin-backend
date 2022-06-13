@@ -3,13 +3,16 @@ package com.outletcn.app.controller;
 
 import com.outletcn.app.annotation.PassToken;
 import com.outletcn.app.common.ApiResult;
+import com.outletcn.app.common.PageInfo;
+import com.outletcn.app.model.dto.ClockInUsersRequest;
 import com.outletcn.app.model.dto.LoginRequest;
 import com.outletcn.app.model.dto.LoginResponse;
 import com.outletcn.app.model.dto.applet.*;
+import com.outletcn.app.model.mysql.ClockInUser;
+import com.outletcn.app.service.ClockInUserService;
 import com.outletcn.app.service.OperatorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +34,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OperatorController {
     private final OperatorService operatorService;
+    private final ClockInUserService clockInUserService;
 
     @PassToken
     @ApiOperation(value = "pc端的管理人员用户名密码登录")
@@ -82,6 +86,15 @@ public class OperatorController {
     public ApiResult<Boolean> modifyPassword(@RequestBody @Valid ModifyPasswordRequest modifyPasswordRequest) {
         Boolean bool = operatorService.modifyPassword(modifyPasswordRequest);
         return ApiResult.ok(bool);
+    }
+
+
+    @ApiOperation(value = "打卡小程序用户分页查询、名字模糊搜索")
+    @PostMapping(value = "/clock-in-user-pages")
+    @PassToken
+    public ApiResult<PageInfo<ClockInUser>> clockInUserPage(@RequestBody @Valid ClockInUsersRequest clockInUsersRequest) {
+        PageInfo<ClockInUser> pageInfo = clockInUserService.clockInUserPage(clockInUsersRequest);
+        return ApiResult.ok(pageInfo);
     }
 }
 

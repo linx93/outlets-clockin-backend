@@ -1,11 +1,16 @@
 package com.outletcn.app.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.GiftTypeEnum;
+import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.configuration.model.SystemConfig;
 import com.outletcn.app.converter.UserConverter;
 import com.outletcn.app.exception.BasicException;
+import com.outletcn.app.model.dto.ClockInUsersRequest;
 import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.ActivityRule;
 import com.outletcn.app.model.dto.applet.ActivityRuleResponse;
@@ -80,6 +85,25 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
             throw new BasicException("联系客户电话未配置");
         }
         return phone;
+    }
+
+    @Override
+    public PageInfo<ClockInUser> clockInUserPage(ClockInUsersRequest clockInUsersRequest) {
+        if (clockInUsersRequest.getCurrent() == null || clockInUsersRequest.getCurrent() == 0) {
+            clockInUsersRequest.setCurrent(1);
+        }
+        if (clockInUsersRequest.getSize() == null || clockInUsersRequest.getSize() == 0) {
+            clockInUsersRequest.setSize(8);
+        }
+        LambdaQueryWrapper<ClockInUser> queryWrapper;
+        if (StringUtils.isNotBlank(clockInUsersRequest.getKeyword())) {
+            queryWrapper = new QueryWrapper<ClockInUser>().lambda().like(ClockInUser::getAccount, clockInUsersRequest.getKeyword()).or().like(ClockInUser::getNickName, clockInUsersRequest.getKeyword());
+        } else {
+            queryWrapper = new QueryWrapper<ClockInUser>().lambda();
+        }
+        Page<ClockInUser> page = new Page<>(clockInUsersRequest.getCurrent(), clockInUsersRequest.getSize());
+        Page<ClockInUser> clockInUserPage = getBaseMapper().selectPage(page, queryWrapper);
+        return new PageInfo<ClockInUser>().buildPageInfo(clockInUserPage);
     }
 
     private ActivityRule buildActivityRule() {
