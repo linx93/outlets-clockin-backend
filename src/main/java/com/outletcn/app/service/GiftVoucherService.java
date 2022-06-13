@@ -5,6 +5,8 @@ import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.WriteOffListRequest;
 import com.outletcn.app.model.dto.applet.ClockInRecords;
 import com.outletcn.app.common.QRCodeContent;
+import com.outletcn.app.model.dto.gift.GiftVoucherWriteOffInfo;
+import com.outletcn.app.model.dto.gift.WriteOffResponse;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.baomidou.mybatisplus.extension.service.IService;
 import netscape.javascript.JSObject;
@@ -24,7 +26,7 @@ public interface GiftVoucherService extends IService<GiftVoucher> {
     //核销礼品券
     void writeOffGiftVoucher(QRCodeContent codeContent);
 
-    List<JSONObject> getListByUserId();
+    List<GiftVoucherWriteOffInfo> getListByUserId();
 
     PageInfo<JSONObject> getWriteIffList(WriteOffListRequest request);
     /**
@@ -40,4 +42,6 @@ public interface GiftVoucherService extends IService<GiftVoucher> {
      * @return 未使用次数
      */
     Integer unused();
+
+    WriteOffResponse getWriteOffInfoByVoucherId(Long id);
 }

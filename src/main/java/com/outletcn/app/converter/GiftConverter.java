@@ -7,6 +7,7 @@ import com.outletcn.app.model.dto.applet.GiftVO;
 import com.outletcn.app.model.dto.applet.MyExchangeRecordResponse;
 import com.outletcn.app.model.dto.gift.GiftBagDetail;
 import com.outletcn.app.model.dto.gift.GiftPunchSignatureResponse;
+import com.outletcn.app.model.dto.gift.GiftVoucherWriteOffInfo;
 import com.outletcn.app.model.dto.gift.LuxuryGiftBagResponse;
 import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.Gift;
@@ -48,6 +49,8 @@ public interface GiftConverter {
     List<GiftPunchSignatureResponse> toGiftPunch(List<GiftBag> gifts);
 
     GiftBagDetail toGiftBagDetail(GiftBag giftBag);
+
+    GiftVoucherWriteOffInfo toGiftVoucherWriteOffInfo(GiftVoucher giftVoucher);
 
 
 

@@ -339,7 +339,7 @@ public class GiftServiceImpl implements GiftService {
         if (luxuryGiftBagCreator.getMaxExNum() < giftBag.getExchangedNum()) {
             throw new BasicException("最大兑换数量不能小于已兑换数量");
         }
-        giftBag.setExchangedNum(luxuryGiftBagCreator.getMaxExNum());
+        giftBag.setMaxExNum(luxuryGiftBagCreator.getMaxExNum());
         giftBag.setSub(giftBag.getMaxExNum()-giftBag.getExchangedNum());
 
         long time = Instant.now().getEpochSecond();

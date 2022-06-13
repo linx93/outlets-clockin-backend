@@ -9,9 +9,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.common.QRCodeContent;
 import com.outletcn.app.common.QRCodeSceneEnum;
+import com.outletcn.app.converter.GiftConverter;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.WriteOffListRequest;
+import com.outletcn.app.model.dto.gift.GiftInfoForGiftBagDetailResponse;
+import com.outletcn.app.model.dto.gift.GiftVoucherWriteOffInfo;
+import com.outletcn.app.model.dto.gift.WriteOffGiftsInfo;
+import com.outletcn.app.model.dto.gift.WriteOffResponse;
 import com.outletcn.app.model.mongo.Gift;
 import com.outletcn.app.model.mongo.GiftBag;
 import com.outletcn.app.model.mongo.GiftBagRelation;
@@ -21,8 +26,10 @@ import com.outletcn.app.service.GiftVoucherService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.outletcn.app.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -47,6 +54,9 @@ import java.util.stream.Collectors;
 public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftVoucher> implements GiftVoucherService {
     @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
+    GiftConverter giftConverter;
+
 
     @Override
     public Integer exchanged() {
@@ -56,6 +66,37 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
     @Override
     public Integer unused() {
         return getBaseMapper().selectCount(new QueryWrapper<GiftVoucher>().lambda().eq(GiftVoucher::getUserId, JwtUtil.getInfo(UserInfo.class).getId()).eq(GiftVoucher::getState, 0));
+    }
+
+    @Override
+    public WriteOffResponse getWriteOffInfoByVoucherId(Long id) {
+        WriteOffResponse responses = new WriteOffResponse();
+        GiftVoucher voucher = baseMapper.selectById(id);
+        if (Objects.isNull(voucher)) {
+            throw new BasicException("未找到兑换券数据");
+        }
+        voucher.setGiftVoucherQrcode("");
+        responses.setGiftVoucher(voucher);
+
+        LookupOperation lookupOperation = LookupOperation.newLookup()
+                .from("gift")
+                .localField("giftId")
+                .foreignField("_id")
+                .as("giftInfo");
+        ProjectionOperation projection = new ProjectionOperation()
+                .andInclude("giftId")
+                .andInclude("giftInfo.giftName")
+                .andExclude("_id");
+        MatchOperation match = Aggregation.match(Criteria.where("giftBagId").is(voucher.getGiftId()));
+        Aggregation agg = Aggregation.newAggregation(lookupOperation, match, projection, Aggregation.unwind("giftName"));
+        try {
+            AggregationResults<WriteOffGiftsInfo> aggregation =
+                    mongoTemplate.aggregate(agg, "gift_bag_relation", WriteOffGiftsInfo.class);
+            responses.setGiftList(aggregation.getMappedResults());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return responses;
     }
 
     @Override
@@ -88,8 +129,8 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
     }
 
     @Override
-    public List<JSONObject> getListByUserId() {
-        List<JSONObject> response = new ArrayList<>();
+    public List<GiftVoucherWriteOffInfo> getListByUserId() {
+        List<GiftVoucherWriteOffInfo> response = new ArrayList<>();
 
         UserInfo info = JwtUtil.getInfo(UserInfo.class);
         List<GiftVoucher> list = baseMapper.selectList(new QueryWrapper<GiftVoucher>().lambda()
@@ -103,11 +144,10 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
             if (Objects.isNull(giftBag)) {
                 throw new BasicException("找不到对应礼包");
             }
-            JSONObject object = JSON.parseObject(JSON.toJSONString(v));
-            object.put("image", giftBag.getImage());
-            object.put("recommendImage", giftBag.getRecommendImage());
-            object.remove("giftVoucherQrcode");
-            response.add(object);
+            GiftVoucherWriteOffInfo voucherWriteOffInfo = giftConverter.toGiftVoucherWriteOffInfo(v);
+            voucherWriteOffInfo.setImage(giftBag.getImage());
+            voucherWriteOffInfo.setRecommendImage(giftBag.getRecommendImage());
+            response.add(voucherWriteOffInfo);
         }
         return response;
     }
