@@ -68,17 +68,14 @@ public class GiftVoucher implements Serializable {
     private Integer state;
 
     @ApiModelProperty(value = "核销时间")
-    @JsonSerialize(using = ToStringSerializer.class)
     private Long exchangeTime;
 
     @ApiModelProperty(value = "核销人id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long exchangeUserId;
 
-    @JsonSerialize(using = ToStringSerializer.class)
     private Long createTime;
 
-    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateTime;
 
 
