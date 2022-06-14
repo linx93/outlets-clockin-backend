@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AdServiceImpl extends ServiceImpl<AdMapper, Ad> implements AdService {
@@ -55,6 +56,9 @@ public class AdServiceImpl extends ServiceImpl<AdMapper, Ad> implements AdServic
                             .addCriteria(Criteria.where("id")
                                     .is(ad.getAdUrl())
                                     .and("type").is(1)), GiftBag.class);
+                    if(Objects.isNull(giftBag1)){
+                        break;
+                    }
                     adResponse.setName(giftBag1.getName());
                     break;
                 case 2:
@@ -62,24 +66,36 @@ public class AdServiceImpl extends ServiceImpl<AdMapper, Ad> implements AdServic
                             .addCriteria(Criteria.where("id")
                                     .is(ad.getAdUrl())
                                     .and("type").is(2)), GiftBag.class);
+                    if(Objects.isNull(giftBag2)){
+                        break;
+                    }
                     adResponse.setName(giftBag2.getName());
                     break;
                 case 3:
                     Destination destination = mongoTemplate.findOne(new Query()
                             .addCriteria(Criteria.where("id")
                                     .is(ad.getAdUrl())),Destination.class);
+                    if(Objects.isNull(destination)){
+                        break;
+                    }
                     adResponse.setName(destination.getDestinationName());
                     break;
                 case 4:
                     DestinationGroup destinationGroup = mongoTemplate.findOne(new Query()
                             .addCriteria(Criteria.where("id")
                                     .is(ad.getAdUrl())),DestinationGroup.class);
+                    if(Objects.isNull(destinationGroup)){
+                        break;
+                    }
                     adResponse.setName(destinationGroup.getGroupName());
                     break;
                 case 5:
                     Line line = mongoTemplate.findOne(new Query()
                             .addCriteria(Criteria.where("id")
                                     .is(ad.getAdUrl())),Line.class);
+                    if(Objects.isNull(line)){
+                        break;
+                    }
                     adResponse.setName(line.getLineName());
                     break;
                 default:

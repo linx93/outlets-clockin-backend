@@ -6,7 +6,6 @@ import com.outletcn.app.model.mysql.Ad;
 import com.outletcn.app.service.AdService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,9 +36,9 @@ public class AdController {
         return ApiResult.ok(adService.removeById(id));
     }
 
-    @GetMapping("/update")
+    @PostMapping("/update")
     @ApiOperation(value = "更新广告")
-    public ApiResult<Boolean> update(Ad ad) {
+    public ApiResult<Boolean> update(@RequestBody Ad ad) {
        return ApiResult.ok(adService.updateById(ad));
     }
 }
