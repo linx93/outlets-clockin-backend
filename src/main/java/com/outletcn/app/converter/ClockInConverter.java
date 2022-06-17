@@ -2,7 +2,9 @@ package com.outletcn.app.converter;
 
 import com.outletcn.app.model.dto.applet.ClockInRecords;
 import com.outletcn.app.model.dto.applet.ClockInResponse;
+import com.outletcn.app.model.dto.applet.auth.AuthInfoBindRequest;
 import com.outletcn.app.model.mongo.Destination;
+import com.outletcn.app.model.mysql.Auth;
 import com.outletcn.app.model.mysql.PunchLog;
 import org.mapstruct.Mapper;
 
@@ -19,5 +21,7 @@ public interface ClockInConverter {
     ClockInRecords toClockInRecords(PunchLog punchLog);
 
     List<ClockInRecords> toClockInRecordsList(List<PunchLog> punchLogs);
+
+    Auth toAuth(AuthInfoBindRequest authInfoBindRequest);
 
 }

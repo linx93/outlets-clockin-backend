@@ -5,6 +5,7 @@ import com.outletcn.app.model.dto.LoginRequest;
 import com.outletcn.app.model.dto.LoginResponse;
 import com.outletcn.app.model.dto.applet.AppletLoginRequest;
 import com.outletcn.app.model.dto.applet.ModifyPasswordRequest;
+import com.outletcn.app.model.dto.applet.auth.AuthInfoBindRequest;
 import com.outletcn.app.model.mysql.Auth;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -50,4 +51,12 @@ public interface AuthService extends IService<Auth> {
      * @return
      */
     ApiResult<Boolean> modifyPassword(ModifyPasswordRequest modifyPasswordRequest);
+
+    /**
+     * 秘袋儿认证绑定实名信息
+     *
+     * @param authInfoBindRequest
+     * @return
+     */
+    boolean bindAuthInfo(AuthInfoBindRequest authInfoBindRequest);
 }

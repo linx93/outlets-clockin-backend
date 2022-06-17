@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.outletcn.app.common.AccountStateEnum;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.UserTypeEnum;
+import com.outletcn.app.converter.ClockInConverter;
 import com.outletcn.app.converter.UserConverter;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.mapper.*;
@@ -13,6 +14,7 @@ import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.AppletLoginRequest;
 import com.outletcn.app.model.dto.applet.Code2Session;
 import com.outletcn.app.model.dto.applet.ModifyPasswordRequest;
+import com.outletcn.app.model.dto.applet.auth.AuthInfoBindRequest;
 import com.outletcn.app.model.mysql.Auth;
 import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.model.mysql.WriteOffUser;
@@ -23,8 +25,11 @@ import com.outletcn.app.utils.BCryptPasswordEncoder;
 import com.outletcn.app.utils.JwtUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -43,13 +48,15 @@ public class AuthServiceImpl extends ServiceImpl<AuthMapper, Auth> implements Au
     private final UserConverter userConverter;
     private final AuthMapper authMapper;
     private final ClockInUserMapper clockInUserMapper;
+    private final ClockInConverter clockInConverter;
 
-    public AuthServiceImpl(WeChatApi weChatApi, WriteOffUserMapper writeOffUserMapper, UserConverter userConverter, AuthMapper authMapper, ClockInUserMapper clockInUserMapper) {
+    public AuthServiceImpl(WeChatApi weChatApi, WriteOffUserMapper writeOffUserMapper, UserConverter userConverter, AuthMapper authMapper, ClockInUserMapper clockInUserMapper, ClockInConverter clockInConverter) {
         this.weChatApi = weChatApi;
         this.writeOffUserMapper = writeOffUserMapper;
         this.userConverter = userConverter;
         this.authMapper = authMapper;
         this.clockInUserMapper = clockInUserMapper;
+        this.clockInConverter = clockInConverter;
     }
 
 
@@ -139,6 +146,31 @@ public class AuthServiceImpl extends ServiceImpl<AuthMapper, Auth> implements Au
         update.setPassword(bCryptPasswordEncoder.encode(modifyPasswordRequest.getNewPassword()));
         writeOffUserMapper.updateById(update);
         return ApiResult.ok(Boolean.TRUE);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean bindAuthInfo(AuthInfoBindRequest authInfoBindRequest) {
+        Auth auth = clockInConverter.toAuth(authInfoBindRequest);
+        //判重
+        List<Auth> auths = getBaseMapper().selectList(new QueryWrapper<Auth>().lambda().eq(Auth::getIdCard, auth.getIdCard()));
+        if (!auths.isEmpty()) {
+            throw new BasicException("您已认证，不能重复认证");
+        }
+        auth.setCreateTime(new Date());
+        auth.setUpdateTime(new Date());
+        getBaseMapper().insert(auth);
+        Long authId = auth.getId();
+        if (authId == null) {
+            throw new BasicException("保存授权信息失败");
+        }
+        //绑定认证信息+用户信息
+        UserInfo info = JwtUtil.getInfo(UserInfo.class);
+        ClockInUser clockInUser = new ClockInUser();
+        clockInUser.setId(Long.parseLong(info.getId()));
+        clockInUser.setAuthId(authId);
+        clockInUserMapper.updateById(clockInUser);
+        return true;
     }
 
     private LoginResponse buildLoginResponse(ClockInUser clockInUser, Auth auth) {
