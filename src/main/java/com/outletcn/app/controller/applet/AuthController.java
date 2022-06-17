@@ -1,10 +1,11 @@
-package com.outletcn.app.controller;
+package com.outletcn.app.controller.applet;
 
 
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.QRCodeContent;
 import com.outletcn.app.model.dto.applet.auth.AuthInfoBindRequest;
 import com.outletcn.app.service.AuthService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,7 @@ import javax.validation.Valid;
  * @author linx
  * @since 2022-05-16
  */
+@Api(tags = "秘袋儿认证")
 @AllArgsConstructor
 @RestController
 @RequestMapping("/v1/api/auth")
