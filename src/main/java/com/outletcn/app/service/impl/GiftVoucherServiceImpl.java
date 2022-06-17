@@ -20,12 +20,17 @@ import com.outletcn.app.model.dto.gift.WriteOffResponse;
 import com.outletcn.app.model.mongo.Gift;
 import com.outletcn.app.model.mongo.GiftBag;
 import com.outletcn.app.model.mongo.GiftBagRelation;
+import com.outletcn.app.model.mysql.Auth;
+import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.outletcn.app.mapper.GiftVoucherMapper;
+import com.outletcn.app.service.AuthService;
+import com.outletcn.app.service.ClockInUserService;
 import com.outletcn.app.service.GiftVoucherService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.outletcn.app.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -53,9 +58,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftVoucher> implements GiftVoucherService {
     @Autowired
-    MongoTemplate mongoTemplate;
+    private MongoTemplate mongoTemplate;
     @Autowired
-    GiftConverter giftConverter;
+    private GiftConverter giftConverter;
+
+    @Autowired
+    private ClockInUserService clockInUserService;
+
+
+    @Autowired
+    private AuthService authService;
 
 
     @Override
@@ -160,24 +172,29 @@ public class GiftVoucherServiceImpl extends ServiceImpl<GiftVoucherMapper, GiftV
 
         LambdaQueryWrapper<GiftVoucher> queryWrapper = new QueryWrapper<GiftVoucher>().lambda()
                 .eq(GiftVoucher::getState, 1)
-                .between(GiftVoucher::getExchangeTime, request.getBegin(), request.getEnd());
-
-        if (!Objects.isNull(request.getKeyword()) && !Objects.equals(request.getKeyword(), "")) {
-            queryWrapper = queryWrapper.like(GiftVoucher::getGiftName, request.getKeyword())
-                    .or()
-                    .like(GiftVoucher::getAccount, request.getKeyword());
-        }
-        queryWrapper = queryWrapper.orderByDesc(GiftVoucher::getExchangeTime);
-
+                .between(GiftVoucher::getExchangeTime, request.getBegin(), request.getEnd())
+                .and(StringUtils.isNotBlank(request.getKeyword()), q -> q.like(GiftVoucher::getGiftName, request.getKeyword())
+                        .or()
+                        .like(GiftVoucher::getAccount, request.getKeyword()))
+                .orderByDesc(GiftVoucher::getExchangeTime);
         Page<GiftVoucher> vouchers = baseMapper.selectPage(page, queryWrapper);
-        for (GiftVoucher v : vouchers.getRecords()
-        ) {
+        for (GiftVoucher v : vouchers.getRecords()) {
             GiftBag giftBag = mongoTemplate.findOne(new Query().addCriteria(Criteria.where("_id").is(v.getGiftId())), GiftBag.class);
             if (Objects.isNull(giftBag)) {
                 throw new BasicException("找不到对应礼包");
             }
             JSONObject object = JSON.parseObject(JSON.toJSONString(v));
             object.remove("giftVoucherQrcode");
+            //处理返回兑换人名字
+            String userName = "";
+            ClockInUser byId = clockInUserService.getById(v.getUserId());
+            if (byId != null) {
+                Auth auth = authService.getById(byId.getAuthId());
+                if (auth != null) {
+                    userName = auth.getName();
+                }
+            }
+            object.put("userName", userName);
             List<Long> giftIds = mongoTemplate.find(Query.query(Criteria.where("giftBagId").is(giftBag.getId())), GiftBagRelation.class).stream().map(GiftBagRelation::getGiftId).collect(Collectors.toList());
             if (!giftIds.isEmpty()) {
                 List<Gift> gifts = mongoTemplate.find(Query.query(Criteria.where("id").in(giftIds)), Gift.class);
