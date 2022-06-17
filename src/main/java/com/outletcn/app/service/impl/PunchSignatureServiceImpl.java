@@ -14,9 +14,11 @@ import com.outletcn.app.model.mongo.Destination;
 import com.outletcn.app.model.mongo.Gift;
 import com.outletcn.app.model.mongo.GiftBag;
 import com.outletcn.app.model.mongo.GiftBagRelation;
+import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.model.mysql.GiftVoucher;
 import com.outletcn.app.model.mysql.PunchLog;
 import com.outletcn.app.repository.PunchSignatureMongoRepository;
+import com.outletcn.app.service.ClockInUserService;
 import com.outletcn.app.service.PunchLogService;
 import com.outletcn.app.service.PunchSignatureService;
 import com.outletcn.app.utils.JwtUtil;
@@ -55,6 +57,8 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
     private PunchLogService punchLogService;
 
     private PunchSignatureMongoRepository punchSignatureMongoRepository;
+
+    private ClockInUserService clockInUserService;
 
 
     /**
@@ -144,6 +148,13 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
      */
     private Boolean exchange(String giftBagId, String type, Integer voucherType) {
         synchronized (PunchSignatureServiceImpl.class) {
+            UserInfo userInfo = JwtUtil.getInfo(UserInfo.class);
+            //判断实名认证
+            ClockInUser byId = clockInUserService.getById(Long.parseLong(userInfo.getId()));
+            if (byId == null || byId.getAuthId() == null) {
+                log.info("未实名认证不能兑换礼包");
+                throw new BasicException("未实名认证不能兑换礼包");
+            }
             //1查询礼品是否存在
             GiftBag giftBag = mongoTemplate.findOne(Query.query(Criteria.where("id").is(Long.parseLong(giftBagId))), GiftBag.class);
             if (giftBag == null) {
@@ -155,7 +166,6 @@ public class PunchSignatureServiceImpl implements PunchSignatureService {
                 log.info("礼品{}兑次数换达到上限", giftBagId);
                 throw new BasicException("哎呀，最后一份刚刚被别人领走了，再逛逛其它的吧");
             }
-            UserInfo userInfo = JwtUtil.getInfo(UserInfo.class);
             //豪礼兑换
             if (type.equals(String.valueOf(GiftTypeEnum.LUXURY.getCode()))) {
                 //判断是否已完成所有打卡点
