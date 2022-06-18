@@ -14,10 +14,13 @@ import com.outletcn.app.model.dto.ClockInUsersRequest;
 import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.ActivityRule;
 import com.outletcn.app.model.dto.applet.ActivityRuleResponse;
+import com.outletcn.app.model.dto.applet.ClockInUserResponse;
 import com.outletcn.app.model.dto.applet.UpdateUserRequest;
 import com.outletcn.app.model.mongo.GiftBag;
+import com.outletcn.app.model.mysql.Auth;
 import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.mapper.ClockInUserMapper;
+import com.outletcn.app.service.AuthService;
 import com.outletcn.app.service.ClockInUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.outletcn.app.utils.JwtUtil;
@@ -47,10 +50,13 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
 
     private final SystemConfig systemConfig;
 
-    public ClockInUserServiceImpl(UserConverter userConverter, MongoTemplate mongoTemplate, SystemConfig systemConfig) {
+    private final AuthService authService;
+
+    public ClockInUserServiceImpl(UserConverter userConverter, MongoTemplate mongoTemplate, SystemConfig systemConfig, AuthService authService) {
         this.userConverter = userConverter;
         this.mongoTemplate = mongoTemplate;
         this.systemConfig = systemConfig;
+        this.authService = authService;
     }
 
     @Override
@@ -88,7 +94,7 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
     }
 
     @Override
-    public PageInfo<ClockInUser> clockInUserPage(ClockInUsersRequest clockInUsersRequest) {
+    public PageInfo<ClockInUserResponse> clockInUserPage(ClockInUsersRequest clockInUsersRequest) {
         if (clockInUsersRequest.getCurrent() == null || clockInUsersRequest.getCurrent() == 0) {
             clockInUsersRequest.setCurrent(1);
         }
@@ -103,7 +109,7 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
         }
         Page<ClockInUser> page = new Page<>(clockInUsersRequest.getCurrent(), clockInUsersRequest.getSize());
         Page<ClockInUser> clockInUserPage = getBaseMapper().selectPage(page, queryWrapper);
-        return new PageInfo<ClockInUser>().buildPageInfo(clockInUserPage);
+        return PageInfo.buildPageInfo(clockInUserPage, (ClockInUser clockInUser) -> userConverter.toClockInUserResponse(clockInUser, authService.getById(clockInUser.getAuthId())));
     }
 
     private ActivityRule buildActivityRule() {

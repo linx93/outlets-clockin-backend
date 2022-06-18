@@ -7,6 +7,7 @@ import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.ClockInUsersRequest;
 import com.outletcn.app.model.dto.LoginRequest;
 import com.outletcn.app.model.dto.LoginResponse;
+import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.service.ClockInUserService;
@@ -92,8 +93,8 @@ public class OperatorController {
     @ApiOperation(value = "打卡小程序用户分页查询、名字模糊搜索")
     @PostMapping(value = "/clock-in-user-pages")
     @PassToken
-    public ApiResult<PageInfo<ClockInUser>> clockInUserPage(@RequestBody @Valid ClockInUsersRequest clockInUsersRequest) {
-        PageInfo<ClockInUser> pageInfo = clockInUserService.clockInUserPage(clockInUsersRequest);
+    public ApiResult<PageInfo<ClockInUserResponse>> clockInUserPage(@RequestBody @Valid ClockInUsersRequest clockInUsersRequest) {
+        PageInfo<ClockInUserResponse> pageInfo = clockInUserService.clockInUserPage(clockInUsersRequest);
         return ApiResult.ok(pageInfo);
     }
 }

@@ -1,6 +1,5 @@
 package com.outletcn.app.service.log.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mzt.logapi.beans.LogRecord;
@@ -79,7 +78,7 @@ public class SystemLogServiceImpl implements SystemLogService {
 
         Page<LogRecordPO> records = logRecordMapper.selectPage(page, new QueryWrapper<LogRecordPO>().orderByDesc("id"));
 
-        return new PageInfo<LogRecordPO>().buildPageInfo(records);
+        return new PageInfo<LogRecordPO>().buildPage(records);
     }
 
 }

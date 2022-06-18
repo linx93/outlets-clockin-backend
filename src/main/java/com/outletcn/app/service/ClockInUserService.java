@@ -3,7 +3,9 @@ package com.outletcn.app.service;
 import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.ClockInUsersRequest;
+import com.outletcn.app.model.dto.UserInfo;
 import com.outletcn.app.model.dto.applet.ActivityRuleResponse;
+import com.outletcn.app.model.dto.applet.ClockInUserResponse;
 import com.outletcn.app.model.dto.applet.UpdateUserRequest;
 import com.outletcn.app.model.mongo.GiftBag;
 import com.outletcn.app.model.mysql.ClockInUser;
@@ -29,5 +31,5 @@ public interface ClockInUserService extends IService<ClockInUser> {
 
     String contactCustomerService();
 
-    PageInfo<ClockInUser> clockInUserPage(ClockInUsersRequest clockInUsersRequest);
+    PageInfo<ClockInUserResponse> clockInUserPage(ClockInUsersRequest clockInUsersRequest);
 }
