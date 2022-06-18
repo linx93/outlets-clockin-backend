@@ -30,14 +30,17 @@ public class PageInfo<T> {
     }
 
     public static <T, R> PageInfo<R> buildPageInfo(Page<T> page, Function<T, R> f) {
-        PageInfo<R> pageInfo = new PageInfo<>();
-        List<T> records = page.getRecords();
-        ArrayList<R> ts = new ArrayList<>(16);
-        records.forEach(T -> ts.add(f.apply(T)));
-        pageInfo.setCurrent(page.getCurrent());
-        pageInfo.setSize(page.getSize());
-        pageInfo.setTotal(page.getTotal());
-        pageInfo.setRecords(ts);
+        ArrayList<R> records = new ArrayList<>(16);
+        page.getRecords().forEach(item -> records.add(f.apply(item)));
+        return PageInfo.buildPageInfo(page.getCurrent(), page.getSize(), page.getTotal(), records);
+    }
+
+    private static <T> PageInfo<T> buildPageInfo(long current, long size, long total, List<T> records) {
+        PageInfo<T> pageInfo = new PageInfo<>();
+        pageInfo.setCurrent(current);
+        pageInfo.setSize(size);
+        pageInfo.setTotal(total);
+        pageInfo.setRecords(records);
         return pageInfo;
     }
 }
