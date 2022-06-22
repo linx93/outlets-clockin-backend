@@ -109,7 +109,7 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
         }
         Page<ClockInUser> page = new Page<>(clockInUsersRequest.getCurrent(), clockInUsersRequest.getSize());
         Page<ClockInUser> clockInUserPage = getBaseMapper().selectPage(page, queryWrapper);
-        return PageInfo.buildPageInfo(clockInUserPage, (ClockInUser clockInUser) -> userConverter.toClockInUserResponse(clockInUser, authService.getById(clockInUser.getAuthId())));
+        return PageInfo.buildPageInfo(clockInUserPage, clockInUser -> userConverter.toClockInUserResponse(clockInUser, authService.getById(clockInUser.getAuthId())));
     }
 
     private ActivityRule buildActivityRule() {
