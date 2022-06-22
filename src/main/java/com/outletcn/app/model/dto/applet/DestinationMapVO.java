@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 目的地地图vo
@@ -50,4 +51,21 @@ public class DestinationMapVO {
      */
     @ApiModelProperty(value = "目的地属性，比如 酒店、娱乐、景点游玩等")
     private List<String> destinationAttrs;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        DestinationMapVO that = (DestinationMapVO) o;
+        return Objects.equals(id, that.id) && Objects.equals(destinationName, that.destinationName) && Objects.equals(longitude, that.longitude) && Objects.equals(latitude, that.latitude) && Objects.equals(destinationType, that.destinationType) && Objects.equals(destinationAttrs, that.destinationAttrs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

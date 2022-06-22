@@ -93,7 +93,7 @@ public class ClockInAppletPageController {
         lineAndMapVO.setLines(lineVOS);
         List<DestinationMapVO> destinationMapVOS = new ArrayList<>();
         if (!lineVOS.isEmpty()) {
-            destinationMapVOS = lineService.lineElementsMapById(lineVOS.get(0).getId());
+            destinationMapVOS = lineService.lineElementsMapById(null);
         }
         lineAndMapVO.setDestinationMaps(destinationMapVOS);
         return ApiResult.ok(lineAndMapVO);

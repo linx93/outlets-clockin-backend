@@ -448,12 +448,20 @@ public class LineServiceImpl implements LineService {
 
     @Override
     public List<DestinationMapVO> lineElementsMapById(Long id) {
+        List<Line.Attribute> lineElements = new ArrayList<>();
         List<DestinationMapVO> destinationMapVOS = new ArrayList<>();
-        Line byId = mongoTemplate.findById(id, Line.class);
-        if (byId == null) {
-            throw new BasicException("线路不存在");
+        if (id != null && id != 0) {
+            Line byId = mongoTemplate.findById(id, Line.class);
+            if (byId == null) {
+                throw new BasicException("线路不存在");
+            }
+            lineElements.addAll(byId.getLineElements());
+        } else {
+            List<Line> putOn = mongoTemplate.find(Query.query(Criteria.where("putOn").is(0)), Line.class);
+            putOn.forEach(item->{
+                lineElements.addAll(item.getLineElements());
+            });
         }
-        List<Line.Attribute> lineElements = byId.getLineElements();
         for (Line.Attribute item : lineElements) {
             Long id_ = item.getId();
             if (LineElementType.DESTINATION.getCode() == item.getType()) {
@@ -469,7 +477,7 @@ public class LineServiceImpl implements LineService {
                 destinationMapVOS.addAll(lineConverter.toLineMapVOList(destinationList));
             }
         }
-        return destinationMapVOS;
+        return destinationMapVOS.stream().distinct().collect(Collectors.toList());
     }
 
     @Override
