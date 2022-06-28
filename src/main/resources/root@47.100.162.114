@@ -1,0 +1,101 @@
+server:
+  port: 4598
+  tomcat:
+    max-swallow-size: -1MB
+
+
+spring:
+  application:
+    name: outlets-clockin-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_SERVER:192.168.1.100:3306}/outlets?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:123456}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      max-lifetime: 1800000
+  data:
+    mongodb:
+      uri: mongodb://test:123456@192.168.1.102:27018/test
+      #开启索引创建
+      auto-index-creation: true
+  #Springboot2.6以后将SpringMVC 默认路径匹配策略从AntPathMatcher 更改为PathPatternParser，导致出错
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  ## 上传文件大小限制
+  servlet:
+    multipart:
+      max-file-size: 32MB
+      max-request-size: 32MB
+
+## swagger 文档配置
+knife4j:
+  enable: true
+  documents:
+    - group: 1.0
+      name: 自定义文档补充
+      locations: classpath:apidoc/** # 自定义文档
+  setting:
+    enableSwaggerModels: false
+    enableDocumentManage: true
+    enableHost: false
+    enableHostText: http://192.168.0.254:9010
+    enableRequestCache: true
+    enableFilterMultipartApis: false
+    enableFilterMultipartApiMethodType: POST
+    language: zh-CN
+    enableDebug: true
+    enableSearch: false
+    enableOpenApi: false
+    enableAfterScript: false
+    enableVersion: true
+    enableFooter: false
+    enableFooterCustom: true
+    footerCustomContent: Apache License 2.0 | Copyright@2021-贵州天机信息科技
+  cors: false
+  production: false # 是否正式环境
+
+
+mybatis-plus:
+  check-config-location: false
+  typeAliasesPackage: com.outletcn.app.model.mysql
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+logging:
+  file:
+    name: ./logs/outlets.log
+  logback:
+    rollingpolicy:
+      max-file-size: 5MB
+  level:
+    net.phadata.app.certificate: info
+
+
+#小程序配置
+applet:
+  clock-in:
+    app-id: wx7b5e361ee17fccbd
+    secret: 3774fe5a7dd6fd58e25ee2f35a03bce8
+  write-off:
+    app-id: aaaaa
+    secret: bbbbb
+  address: https://api.weixin.qq.com
+
+## 腾讯cos配置
+tencent:
+  cos:
+    appid: 1311883259
+    # 存储桶的命名格式为 BucketName-APPID，此处填写的存储桶名称必须为此格式
+    bucket-name: "test-${tencent.cos.appid}"
+    region: ap-chongqing
+    secret-id: AKIDwiHacNt8GBpDKAj23nGSN0MRFEwNXQ2N
+    secret-key: 7xVmmW2HFxPaU8VbPwDF0UifLjriIbdP
+  pc-map:
+    app-key: GPJBZ-5K36U-KR7VG-2FMX3-O6F4O-EYF5R
+    secret-key: SzaCGuF17py33V4IsPHaf1eiX6zmr4Xf

@@ -17,12 +17,13 @@ import com.outletcn.app.model.dto.applet.ActivityRuleResponse;
 import com.outletcn.app.model.dto.applet.ClockInUserResponse;
 import com.outletcn.app.model.dto.applet.UpdateUserRequest;
 import com.outletcn.app.model.mongo.GiftBag;
-import com.outletcn.app.model.mysql.Auth;
 import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.mapper.ClockInUserMapper;
+import com.outletcn.app.model.mysql.ConsumerHotline;
 import com.outletcn.app.service.AuthService;
 import com.outletcn.app.service.ClockInUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.outletcn.app.service.ConsumerHotlineService;
 import com.outletcn.app.utils.JwtUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -52,11 +53,14 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
 
     private final AuthService authService;
 
-    public ClockInUserServiceImpl(UserConverter userConverter, MongoTemplate mongoTemplate, SystemConfig systemConfig, AuthService authService) {
+    private final ConsumerHotlineService consumerHotlineService;
+
+    public ClockInUserServiceImpl(UserConverter userConverter, MongoTemplate mongoTemplate, SystemConfig systemConfig, AuthService authService, ConsumerHotlineService consumerHotlineService) {
         this.userConverter = userConverter;
         this.mongoTemplate = mongoTemplate;
         this.systemConfig = systemConfig;
         this.authService = authService;
+        this.consumerHotlineService = consumerHotlineService;
     }
 
     @Override
@@ -86,11 +90,16 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
 
     @Override
     public String contactCustomerService() {
-        String phone = systemConfig.getPhone();
-        if (StringUtils.isBlank(phone)) {
-            throw new BasicException("联系客户电话未配置");
+        List<ConsumerHotline> list = consumerHotlineService.list();
+        if (list.isEmpty()) {
+            String phone = systemConfig.getPhone();
+            if (StringUtils.isBlank(phone)) {
+                throw new BasicException("联系客户不存在");
+            }
+            return phone;
         }
-        return phone;
+        List<ConsumerHotline> collect = list.stream().sorted(Comparator.comparingLong(ConsumerHotline::getUpdateTime).reversed()).collect(Collectors.toList());
+        return collect.get(0).getPhoneNumber();
     }
 
     @Override
