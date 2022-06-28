@@ -8,6 +8,7 @@ import com.outletcn.app.common.ClockInType;
 import com.outletcn.app.common.DestinationTypeEnum;
 import com.outletcn.app.common.LineElementType;
 import com.outletcn.app.common.PageInfo;
+import com.outletcn.app.configuration.model.SystemConfig;
 import com.outletcn.app.converter.LineConverter;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.applet.*;
@@ -33,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * @author tanwei
@@ -50,6 +52,9 @@ public class LineServiceImpl implements LineService {
     LineMongoRepository lineMongoRepository;
     DestinationGroupService destinationGroupService;
     private final LineConverter lineConverter;
+
+    private final SystemConfig systemConfig;
+
 
     @LogRecord(type = "线路", success = "创建线路成功", bizNo = "{{#id}}", fail = "创建线路失败，失败原因：{{#fail}}")
     @Override
@@ -458,7 +463,7 @@ public class LineServiceImpl implements LineService {
             lineElements.addAll(byId.getLineElements());
         } else {
             List<Line> putOn = mongoTemplate.find(Query.query(Criteria.where("putOn").is(0)), Line.class);
-            putOn.forEach(item->{
+            putOn.forEach(item -> {
                 lineElements.addAll(item.getLineElements());
             });
         }
@@ -579,18 +584,25 @@ public class LineServiceImpl implements LineService {
     }
 
 
-    //todo 默认查询附近5公里
-    private static final double maxDistance = 5 * 1000;
 
     @Override
     public List<DestinationVO> nearby(NearbyRequest nearbyRequest) {
-        List<Destination> all = mongoTemplate.find(Query.query(Criteria.where("putOn").is(0)), Destination.class);
-        List<Destination> collect = all.stream().filter(item -> GeoUtil.getDistance(Double.parseDouble(item.getLongitude()), Double.parseDouble(item.getLatitude()), nearbyRequest.getLongitude(), nearbyRequest.getLatitude()) <= maxDistance).collect(Collectors.toList());
-        List<DestinationVO> destinationVOS = lineConverter.toDestinationVOList(collect);
-        if (StringUtils.isNotBlank(nearbyRequest.getDestinationType())) {
-            destinationVOS = destinationVOS.stream().filter(item -> Objects.equals(item.getDestinationType(), nearbyRequest.getDestinationType())).collect(Collectors.toList());
+        Double maxDistance = systemConfig.getMaxDistance();
+        if (maxDistance == null||maxDistance == 0){
+            maxDistance = 5000D;
         }
-        return destinationVOS;
+        List<Destination> all = mongoTemplate.find(Query.query(Criteria.where("putOn").is(0)), Destination.class);
+        Double finalMaxDistance = maxDistance;
+        Stream<DestinationVO> sorted = all.stream().map(item -> {
+            DestinationVO destinationVO = lineConverter.toDestinationVO(item);
+            destinationVO.setDistance(GeoUtil.getDistance(Double.parseDouble(item.getLongitude()), Double.parseDouble(item.getLatitude()), nearbyRequest.getLongitude(), nearbyRequest.getLatitude()));
+            return destinationVO;
+        }).filter(item -> item.getDistance() <= finalMaxDistance).sorted(Comparator.comparingDouble(DestinationVO::getDistance));
+        if (StringUtils.isNotBlank(nearbyRequest.getDestinationType())) {
+            sorted = sorted.filter(item -> Objects.equals(item.getDestinationType(), nearbyRequest.getDestinationType()));
+        }
+        List<DestinationVO> collect = sorted.collect(Collectors.toList());
+        return collect;
     }
 
     @Override

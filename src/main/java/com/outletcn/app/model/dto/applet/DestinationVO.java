@@ -147,4 +147,7 @@ public class DestinationVO {
 
     @ApiModelProperty(value = "目的地详情信息")
     private DestinationDetailsVO destinationDetails;
+
+    @ApiModelProperty(value = "距离")
+    private Double distance;
 }

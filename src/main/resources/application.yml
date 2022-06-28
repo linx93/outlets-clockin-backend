@@ -109,3 +109,5 @@ system:
   clock-in-distance: 30000
   ##客服电话
   phone: 10086
+  ##计算附近的距离要求
+  max-distance: 5000000

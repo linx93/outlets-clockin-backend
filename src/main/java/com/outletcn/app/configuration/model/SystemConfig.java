@@ -28,4 +28,9 @@ public class SystemConfig {
      * 客服电话
      */
     private String phone;
+
+    /**
+     * 计算附近的距离标准
+     */
+    private Double maxDistance;
 }
