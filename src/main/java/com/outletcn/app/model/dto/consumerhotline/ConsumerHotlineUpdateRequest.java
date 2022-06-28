@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * 客服电话修改加请求
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotNull;
 public class ConsumerHotlineUpdateRequest {
     @ApiModelProperty(value = "电话号码")
     @NotBlank(message = "电话号码不能为空")
+    @Pattern(regexp = "1\\d{4,10}",message = "请输入正确的手机号")
     private String phoneNumber;
 
     @ApiModelProperty(value = "主键")

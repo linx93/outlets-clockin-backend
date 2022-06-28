@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 /**
  * 客服电话新增加请求
@@ -15,5 +16,6 @@ import javax.validation.constraints.NotBlank;
 public class ConsumerHotlineAddRequest {
     @ApiModelProperty(value = "电话号码")
     @NotBlank(message = "电话号码不能为空")
+    @Pattern(regexp = "1\\d{4,10}",message = "请输入正确的手机号")
     private String phoneNumber;
 }
