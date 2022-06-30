@@ -173,9 +173,9 @@ public class TencentCosUtil {
             config.put("allowActions", allowActions);
 
             Response response = CosStsClient.getCredential(config);
-            System.out.println(response.credentials.tmpSecretId);
+            /*System.out.println(response.credentials.tmpSecretId);
             System.out.println(response.credentials.tmpSecretKey);
-            System.out.println(response.credentials.sessionToken);
+            System.out.println(response.credentials.sessionToken);*/
             return response;
         } catch (Exception e) {
             log.error("获取临时密钥失败 {}", e.getMessage(), e);
@@ -224,7 +224,7 @@ public class TencentCosUtil {
 
             UploadResult uploadResult = upload.waitForUploadResult();
 
-            System.out.println(JSON.toJSONString(uploadResult, true));
+            //System.out.println(JSON.toJSONString(uploadResult, true));
 
 
         } catch (CosClientException | InterruptedException e) {
@@ -243,7 +243,7 @@ public class TencentCosUtil {
         PutObjectRequest putObjectRequest = new PutObjectRequest(tencentConfig.getCos().getBucketName(), key, file);
         try {
             PutObjectResult putObjectResult = client.putObject(putObjectRequest);
-            System.out.println(putObjectResult.getRequestId());
+            //System.out.println(putObjectResult.getRequestId());
         } catch (CosClientException e) {
             log.error("cosClientException", e);
         }
@@ -302,7 +302,7 @@ public class TencentCosUtil {
             showTransferProgress(upload);
             UploadResult uploadResult = upload.waitForUploadResult();
 
-            System.out.println(JSON.toJSONString(uploadResult, true));
+            //System.out.println(JSON.toJSONString(uploadResult, true));
 
         } catch (CosClientException | InterruptedException e) {
             e.printStackTrace();
@@ -394,7 +394,7 @@ public class TencentCosUtil {
      */
     public static void showTransferProgress(Transfer transfer) {
         // 这里的 Transfer 是异步上传结果 Upload 的父类
-        System.out.println(transfer.getDescription());
+        //System.out.println(transfer.getDescription());
 
         // transfer.isDone() 查询上传是否已经完成
         while (!transfer.isDone()) {
@@ -412,7 +412,7 @@ public class TencentCosUtil {
         }
 
         // 完成了 Completed，或者失败了 Failed
-        System.out.println(transfer.getState());
+        //System.out.println(transfer.getState());
     }
 
 

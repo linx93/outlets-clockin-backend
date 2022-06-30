@@ -38,13 +38,13 @@ public class BCryptPasswordEncoder {
         }
     }
 
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encode = encoder.encode("123456123456789456165165653216653131");
         String en = "$2a$10$Uk649e8bny4O6E/v/5AhS.OKnV/VCMUknCSrXKuASOah9TCjW.T7O";
         System.out.println(encode);
         System.out.println(encoder.matches("123456", en));
-    }
+    }*/
 
     public String encode(CharSequence rawPassword) {
         if (rawPassword == null) {
