@@ -2,6 +2,7 @@ package com.outletcn.app;
 
 import com.alibaba.fastjson.JSON;
 import com.outletcn.app.common.PageInfo;
+import com.outletcn.app.model.dto.activityrule.ActivityRuleResponse;
 import com.outletcn.app.model.dto.applet.*;
 import com.outletcn.app.model.dto.gift.LuxuryGiftBagResponse;
 import com.outletcn.app.model.mongo.GiftBag;

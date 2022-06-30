@@ -1,9 +1,11 @@
 package com.outletcn.app.service;
 
+import com.outletcn.app.model.dto.activityrule.ActivityRulesRequest;
 import com.outletcn.app.model.mongo.ActivityRules;
 
 public interface ActivityRulesService {
-    void insert(ActivityRules activityRules);
+    boolean save(ActivityRulesRequest activityRules);
 
-    void update(ActivityRules activityRules);
+
+    ActivityRules find();
 }

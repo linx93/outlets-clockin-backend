@@ -8,14 +8,16 @@ import com.outletcn.app.common.ApiResult;
 import com.outletcn.app.common.GiftTypeEnum;
 import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.configuration.model.SystemConfig;
+import com.outletcn.app.converter.ActivityRulesConverter;
 import com.outletcn.app.converter.UserConverter;
 import com.outletcn.app.exception.BasicException;
 import com.outletcn.app.model.dto.ClockInUsersRequest;
 import com.outletcn.app.model.dto.UserInfo;
-import com.outletcn.app.model.dto.applet.ActivityRule;
-import com.outletcn.app.model.dto.applet.ActivityRuleResponse;
+import com.outletcn.app.model.dto.activityrule.ActivityRule;
+import com.outletcn.app.model.dto.activityrule.ActivityRuleResponse;
 import com.outletcn.app.model.dto.applet.ClockInUserResponse;
 import com.outletcn.app.model.dto.applet.UpdateUserRequest;
+import com.outletcn.app.model.mongo.ActivityRules;
 import com.outletcn.app.model.mongo.GiftBag;
 import com.outletcn.app.model.mysql.ClockInUser;
 import com.outletcn.app.mapper.ClockInUserMapper;
@@ -55,12 +57,15 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
 
     private final ConsumerHotlineService consumerHotlineService;
 
-    public ClockInUserServiceImpl(UserConverter userConverter, MongoTemplate mongoTemplate, SystemConfig systemConfig, AuthService authService, ConsumerHotlineService consumerHotlineService) {
+    private final ActivityRulesConverter activityRulesConverter;
+
+    public ClockInUserServiceImpl(UserConverter userConverter, MongoTemplate mongoTemplate, SystemConfig systemConfig, AuthService authService, ConsumerHotlineService consumerHotlineService, ActivityRulesConverter activityRulesConverter) {
         this.userConverter = userConverter;
         this.mongoTemplate = mongoTemplate;
         this.systemConfig = systemConfig;
         this.authService = authService;
         this.consumerHotlineService = consumerHotlineService;
+        this.activityRulesConverter = activityRulesConverter;
     }
 
     @Override
@@ -198,12 +203,18 @@ public class ClockInUserServiceImpl extends ServiceImpl<ClockInUserMapper, Clock
                 "3、其他未尽事宜，请详细咨询客服。新奥莱对此拥有最终解释权。");
         descriptions.add(description8);
 
-        ActivityRule activityRule = new ActivityRule();
+        List<ActivityRules> all = mongoTemplate.findAll(ActivityRules.class);
+        if (all.isEmpty()) {
+            return null;
+        }
+        ActivityRules activityRules = all.get(0);
+        //ActivityRule activityRule = new ActivityRule();
         //activityRule.setRecommendAudio("https://test-1311883259.cos.ap-chongqing.myqcloud.com/25d9ca5fc88747d89dcef66b04670482.mp3");
         //activityRule.setRecommendVideo("https://test-1311883259.cos.ap-chongqing.myqcloud.com/510792601-1-208.mp4");
-        activityRule.setRecommendAudio("");
-        activityRule.setRecommendVideo("");
-        activityRule.setDescriptions(descriptions);
-        return activityRule;
+        //activityRule.setRecommendAudio("");
+        //activityRule.setRecommendVideo("");
+        //activityRule.setDescriptions(descriptions);
+
+        return activityRulesConverter.toActivityRule(activityRules);
     }
 }

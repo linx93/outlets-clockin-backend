@@ -1,47 +1,61 @@
 package com.outletcn.app.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Sequence;
+import com.outletcn.app.converter.ActivityRulesConverter;
 import com.outletcn.app.exception.BasicException;
+import com.outletcn.app.model.dto.activityrule.ActivityRulesRequest;
 import com.outletcn.app.model.mongo.ActivityRules;
-import com.outletcn.app.model.mongo.GiftBrand;
 import com.outletcn.app.service.ActivityRulesService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Objects;
+import java.util.List;
 
-@Component
+@Slf4j
+@Service
+@AllArgsConstructor
 public class ActivityRulesServiceImpl implements ActivityRulesService {
-    @Autowired
-    MongoTemplate mongoTemplate;
+    private final ActivityRulesConverter activityRulesConverter;
+
+    private final MongoTemplate mongoTemplate;
+
+    private final Sequence sequence;
 
     @Override
-    public void insert(ActivityRules activityRules) {
+    public boolean save(ActivityRulesRequest activityRulesRequest) {
         try {
-            mongoTemplate.save(activityRules);
-        }catch (Exception e){
-            throw new BasicException("插入出错");
+            List<ActivityRules> all = mongoTemplate.findAll(ActivityRules.class);
+            if (all.isEmpty()) {
+                //插入
+                ActivityRules insert = activityRulesConverter.toActivityRules(activityRulesRequest);
+                insert.setCreateTime(Instant.now().getEpochSecond());
+                insert.setUpdateTime(Instant.now().getEpochSecond());
+                long primaryId = sequence.nextId();
+                insert.setId(primaryId);
+                mongoTemplate.save(insert);
+            } else {
+                //修改
+                ActivityRules activityRules = all.get(0);
+                ActivityRules update = activityRulesConverter.toActivityRules(activityRulesRequest);
+                update.setId(activityRules.getId());
+                update.setCreateTime(activityRules.getCreateTime()==null?Instant.now().getEpochSecond() : activityRules.getCreateTime());
+                update.setUpdateTime(Instant.now().getEpochSecond());
+                mongoTemplate.save(update);
+            }
+        } catch (Exception e) {
+            log.error("保存出错:{}", e.getMessage());
+            throw new BasicException("保存出错");
         }
+        return Boolean.TRUE;
     }
 
-    public void update(ActivityRules activityRules){
-        Query query = new Query();
-        Criteria criteria = Criteria.where("id").is(activityRules.getId());
-        query.addCriteria(criteria);
-        ActivityRules temp = mongoTemplate.findOne(query, ActivityRules.class);
-        if (Objects.isNull(temp)) {
-            throw new BasicException("记录不存在");
-        }
-        temp.setDetailList(activityRules.getDetailList());
-        long time = Instant.now().getEpochSecond();
-        temp.setUpdateTime(time);
-        try {
-            mongoTemplate.save(temp);
-        } catch (Exception e) {
-            throw new BasicException("更新出错");
-        }
+    @Override
+    public ActivityRules find() {
+        List<ActivityRules> all = mongoTemplate.findAll(ActivityRules.class);
+        return all.get(0);
     }
+
 }

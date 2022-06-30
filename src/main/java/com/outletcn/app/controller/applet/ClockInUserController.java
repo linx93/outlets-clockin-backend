@@ -1,16 +1,15 @@
 package com.outletcn.app.controller.applet;
 
 
+import com.outletcn.app.annotation.PassToken;
 import com.outletcn.app.common.ApiResult;
-import com.outletcn.app.common.PageInfo;
 import com.outletcn.app.model.dto.LoginResponse;
+import com.outletcn.app.model.dto.activityrule.ActivityRuleResponse;
 import com.outletcn.app.model.dto.applet.*;
-import com.outletcn.app.model.dto.gift.LuxuryGiftBagResponse;
 import com.outletcn.app.service.AuthService;
 import com.outletcn.app.service.ClockInUserService;
 import com.outletcn.app.service.GiftVoucherService;
 import com.outletcn.app.service.PunchLogService;
-import com.outletcn.app.service.gift.GiftService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -118,6 +117,7 @@ public class ClockInUserController {
 
     @ApiOperation(value = "活动规则界面的接口")
     @GetMapping(value = "/activity-rule")
+    @PassToken
     public ApiResult<ActivityRuleResponse> activity() {
         ActivityRuleResponse activityRuleResponse = clockInUserService.activity();
         return ApiResult.ok(activityRuleResponse);

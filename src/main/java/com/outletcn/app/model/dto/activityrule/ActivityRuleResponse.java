@@ -1,4 +1,4 @@
-package com.outletcn.app.model.dto.applet;
+package com.outletcn.app.model.dto.activityrule;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
