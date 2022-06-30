@@ -43,7 +43,7 @@ public class ActivityRules implements Serializable {
 
     @Data
     public static class ActivityRuleDetail {
-        @ApiModelProperty(value = "类型 [title、text等]", required = true)
+        @ApiModelProperty(value = "类型 [title、text、image等]", required = true)
         @NotBlank(message = "类型不能为空")
         private String type;
 
