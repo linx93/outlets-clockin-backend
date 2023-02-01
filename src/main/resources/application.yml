@@ -80,8 +80,8 @@ logging:
 #小程序配置
 applet:
   clock-in:
-    app-id: wx7b5e361ee17fccbd
-    secret: 3774fe5a7dd6fd58e25ee2f35a03bce8
+    app-id: wxee177b5fccbde361
+    secret: 4377fce8e5a7d5ee2fd6fd58e235a03b
   write-off:
     app-id: aaaaa
     secret: bbbbb
@@ -90,15 +90,15 @@ applet:
 ## 腾讯cos配置
 tencent:
   cos:
-    appid: 1311883259
+    appid: 1315918832
     # 存储桶的命名格式为 BucketName-APPID，此处填写的存储桶名称必须为此格式
     bucket-name: "test-${tencent.cos.appid}"
     region: ap-chongqing
-    secret-id: AKIDwiHacNt8GBpDKAj23nGSN0MRFEwNXQ2N
-    secret-key: 7xVmmW2HFxPaU8VbPwDF0UifLjriIbdP
+    secret-id: IDwiAKHacNtSN0M8GBpDwNXQ2KAj23nGRFEN
+    secret-key: VbUifLjPw7xVmmF02HFxPriIbdPWaU8D
   pc-map:
-    app-key: GPJBZ-5K36U-KR7VG-2FMX3-O6F4O-EYF5R
-    secret-key: SzaCGuF17py33V4IsPHaf1eiX6zmr4Xf
+    app-key: GJPBZ-56K3U-VKR7G-2X3FM-O64FO-EF5RY
+    secret-key: SzF17py33VaCGu4iX6zmIsPHaf1er4Xf
 
 
 ##系统配置
